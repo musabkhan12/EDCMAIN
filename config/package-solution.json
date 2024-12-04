@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "dms-musaib-client-side-solution",
+    "id": "c6f9236c-850c-4005-a18c-781bb6265970",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.19.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "dms-musaib description"
+      },
+      "longDescription": {
+        "default": "dms-musaib description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "dms-musaib Feature",
+        "description": "The feature that activates elements of the dms-musaib solution.",
+        "id": "7f8cc92e-715e-4223-bb6a-1205584b1ee5",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/dms-musaib.sppkg"
+  }
+}

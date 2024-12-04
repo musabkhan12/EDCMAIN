@@ -1,0 +1,212 @@
+[
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "61e04dff-b3d8-4205-994c-af755b849941",
+        "odata.etag": "\"4\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(105)",
+        "Title": "FINAL TEST",
+        "Active": "Yes",
+        "SiteID": "96ddd66f-d564-44c5-b01a-da3719ff90f5",
+        "FileMasterList": "DMSFINAL TESTFileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "a301c912-35b0-4802-9c3f-5912770d159b",
+        "odata.etag": "\"4\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(106)",
+        "Title": "Testing 4",
+        "Active": "Yes",
+        "SiteID": "cf41cdec-7993-4e98-bd5a-01253de991ea",
+        "FileMasterList": "DMSTesting 4FileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "12bddae8-f85e-45c6-843f-7c62b009b98e",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(119)",
+        "Title": "TSTFNL",
+        "Active": "Yes",
+        "SiteID": "0fa9bb07-3f3d-49aa-99bf-e8983f2fc0f1",
+        "FileMasterList": "DMSTSTFNLFileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "01515f2a-3631-40f8-8d55-b4304f5d68d7",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(120)",
+        "Title": "Testing 5",
+        "Active": "Yes",
+        "SiteID": "1cbe86b3-9c5e-414a-977c-706e4fb74d6a",
+        "FileMasterList": "DMSTesting 5FileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "ee70ec50-5260-4994-b60d-c8a56778dd77",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(122)",
+        "Title": "Newt23",
+        "Active": "Yes",
+        "SiteID": "f73f396b-94d3-4407-9180-f3dda3036069",
+        "FileMasterList": "DMSNewt23FileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "4c747dd6-1a84-4f5c-9c1b-5b626c22dc45",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(123)",
+        "Title": "testing55",
+        "Active": "Yes",
+        "SiteID": "431ad092-0fc4-4cbc-b9df-b88645512680",
+        "FileMasterList": "DMStesting55FileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "6acb304b-34ae-48a8-acd9-97edfcf693ae",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(124)",
+        "Title": "testing66",
+        "Active": "Yes",
+        "SiteID": "caacfcd8-ffb2-456a-91c9-9e848c8c7388",
+        "FileMasterList": "DMStesting66FileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "ecfd2f4d-58bd-40e6-b625-f2b3884ed544",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(128)",
+        "Title": "TEST2324",
+        "Active": "Yes",
+        "SiteID": "c3322f75-a030-4a57-ac8b-7d1a94679b89",
+        "FileMasterList": "DMSTEST2324FileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "671d10a9-cf43-47d7-a3e0-7a08b3333a85",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(130)",
+        "Title": "t222",
+        "Active": "Yes",
+        "SiteID": "264ebb8e-8139-4539-85ea-a6abd3ed74dd",
+        "FileMasterList": "DMSt222FileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "3b3dc7a8-24ed-4782-a6f5-cd3a39cc96b6",
+        "odata.etag": "\"1\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(131)",
+        "Title": "Create New ",
+        "Active": "Yes",
+        "SiteID": null,
+        "FileMasterList": null
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "13588f31-b18b-4abd-b829-c7c3c5f133c5",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(132)",
+        "Title": "NewEnt",
+        "Active": "Yes",
+        "SiteID": "395a3ffd-30c4-4d1b-b0d1-e599afbb9181",
+        "FileMasterList": "DMSNewEntFileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "7d8d5f20-4033-4641-b824-d0a8d5d8e9d5",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(133)",
+        "Title": "test44",
+        "Active": "Yes",
+        "SiteID": "173e2a31-46a2-434d-8328-d7708507349a",
+        "FileMasterList": "DMStest44FileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "21e575da-10f5-429b-a8d9-b0a5afc6ed08",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(134)",
+        "Title": "NEWEntity",
+        "Active": "Yes",
+        "SiteID": "aa828c8c-c083-4cd9-987e-da478472d5e2",
+        "FileMasterList": "DMSNEWEntityFileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "7d694904-3e04-4b7c-910d-e09ed0826a01",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(135)",
+        "Title": "TestSITE",
+        "Active": "Yes",
+        "SiteID": "1caaccae-8ba1-49e6-8d8f-9107c0614883",
+        "FileMasterList": "DMSTestSITEFileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "bd38be4b-47b8-4faf-b00e-6781398cb74c",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(136)",
+        "Title": "Test3",
+        "Active": "Yes",
+        "SiteID": "a60fc6cf-a3d6-423c-861b-5a977b2bbc0e",
+        "FileMasterList": "DMSTest3FileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "2481a942-d383-41c9-8bdb-29af0bee2358",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(137)",
+        "Title": "test03",
+        "Active": "Yes",
+        "SiteID": "5aa66546-9002-46bf-bb04-05ef63679132",
+        "FileMasterList": "DMStest03FileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "a2a30700-2d06-4637-a8d6-eba00b78ed5d",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(138)",
+        "Title": "TestUser3",
+        "Active": "Yes",
+        "SiteID": "116d86e5-93d1-4beb-848c-fe5a28235349",
+        "FileMasterList": "DMSTestUser3FileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "f1ce8726-b632-459a-9ec4-2ab44e103c8b",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(139)",
+        "Title": "TestUser03",
+        "Active": "Yes",
+        "SiteID": "6446d8c9-0ee1-4746-83ea-d3e51ae7fc9b",
+        "FileMasterList": "DMSTestUser03FileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "1dc4452a-ee8b-4d7b-9dcc-93876be7dc5d",
+        "odata.etag": "\"3\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(140)",
+        "Title": "DL",
+        "Active": "Yes",
+        "SiteID": "1592a514-dd9a-468b-a839-14bfdfb94e61",
+        "FileMasterList": "DMSDLFileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "ce85619f-24cb-43fc-a271-f1c0110d4505",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(141)",
+        "Title": "finaltested",
+        "Active": "Yes",
+        "SiteID": "de0527ed-4cdf-4b3c-8cc0-a7073e64cb06",
+        "FileMasterList": "DMSfinaltestedFileMaster"
+    },
+    {
+        "odata.type": "SP.Data.MasterSiteURLListItem",
+        "odata.id": "82c31370-7185-4caa-9086-5085baa13c42",
+        "odata.etag": "\"2\"",
+        "odata.editLink": "Web/Lists(guid'1c93e050-adfa-4c89-984e-2083acdd4b2d')/Items(142)",
+        "Title": "earth",
+        "Active": "Yes",
+        "SiteID": "19c72e2f-b72b-4135-bbbb-15e792bf4cce",
+        "FileMasterList": "DMSearthFileMaster"
+    }
+]
