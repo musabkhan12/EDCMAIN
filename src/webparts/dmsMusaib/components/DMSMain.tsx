@@ -347,6 +347,7 @@ useEffect(() => {
 const buttonDivRef = useRef<HTMLDivElement>(null); 
 const [showMyrequButtons, setShowMyrequButtons] = useState(true); // Initially hidden
 const [showMyfavButtons, setShowMyfavButtons] = useState(false); // Initially hidden
+const [displayuploadfileandcreatefolder, setdisplayuploadfileandcreatefolder] = useState(false); // Initially hidden
 const [Myreqormyfav, setMyreqormyfav] = useState(''); // Initially hidden
 // console.log(Myreqormyfav , "Myreqormyfav")
   // console.log("This is current side ID",currentsiteID)
@@ -1298,6 +1299,7 @@ const myrequestbuttonclick =()=>{
 
         let clickTimer:any;
         titleElement.addEventListener("click" , async (event)=>{
+       
           // alert("in first")
           // new code added.
                 // toggle createfolder button based on the permission
@@ -1347,6 +1349,7 @@ const myrequestbuttonclick =()=>{
                 }
         })
         titleElement.addEventListener("click", async(event) => {
+          setdisplayuploadfileandcreatefolder(true)
           // alert("in second")
           // Toggle +/- button
                 // const plusMinus = document.getElementById("toggle-plus/minus");
@@ -1453,6 +1456,7 @@ const myrequestbuttonclick =()=>{
         });
         
         titleElement.addEventListener("dblclick", async (event) => {
+          setdisplayuploadfileandcreatefolder(true)
             event.stopPropagation();
             try {
               const currentUser = await sp.web.currentUser();
@@ -2018,6 +2022,7 @@ useEffect(() => {
 }, []);
 // end
   const getdoclibdata = async (FolderPath: any , siteID:any , docLibName:any) => {
+    setdisplayuploadfileandcreatefolder(true)
     //  ismyrequordoclibforfilepreview = "getdoclibdata"
      ismyrequordoclibforfilepreview = "getdoclibdata"
     console.log('path   ', FolderPath)
@@ -3926,7 +3931,7 @@ if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepre
     createbutton.addEventListener('click', function() {
       event.preventDefault()
       event.stopPropagation()
-      alert('Button was clicked!');
+      // alert('Button was clicked!');
       if(ismyrequordoclibforfilepreview === "myRequest"){
         myRequest();
       }
@@ -4231,6 +4236,7 @@ if (searchText !== "" ) {
 
 // }
 const ShareWithOther=async(event:React.MouseEvent<HTMLButtonElement>=null,searchText:HTMLInputElement=null)=>{
+  setdisplayuploadfileandcreatefolder(false)
 if(event){
   event.preventDefault();
   event.stopPropagation();
@@ -4701,6 +4707,7 @@ filteredFileData.forEach((file)=>{
 //Toggle the menu card for share with me
 // @ts-ignore
 const ShareWithMe=async(event:React.MouseEvent<HTMLButtonElement>=null,searchText:HTMLInputElement=null)=>{
+  setdisplayuploadfileandcreatefolder(false)
    ismyrequordoclibforfilepreview = "sharewithme"
 
 if(event){
@@ -5288,6 +5295,7 @@ if (!isClickInsideMenu && !isClickInsideThreeDots) {
 
 
 const Recyclebin=async (event:React.MouseEvent<HTMLButtonElement>=null, siteIdToUpdate: string = null,    searchText:any = null)=>{
+  setdisplayuploadfileandcreatefolder(false)
 if(event){
   event.preventDefault();
   event.stopPropagation();
@@ -7459,6 +7467,7 @@ const createFileButton = document.getElementById('createFileButton')
 
 // }
 const mycreatedfolders = async (event:any=null, searchText:any=null )=>{
+  setdisplayuploadfileandcreatefolder(false)
 const wait = document.getElementById('files-container')
 wait.classList.remove('hidemydatacards')
 if(createFileButton2){
@@ -8691,6 +8700,7 @@ window.toggleFavourite=async (fileId,siteId)=> {
   
 //     };
 const myRequest = async (event:React.MouseEvent<HTMLButtonElement>=null, siteIdToUpdate: string = null,    searchText:any=null ) => {
+  setdisplayuploadfileandcreatefolder(false)
   ismyrequordoclibforfilepreview = "myRequest"
       // New code to hide the create file and folder button start
     // clean Url start
@@ -10578,7 +10588,7 @@ submitButton.addEventListener('click',async(event)=>{
 
     // Extract the last part after the last '/'
     const fileName:any = filePath.substring(filePath.lastIndexOf('/') + 1);
-    alert(fileName);
+    // alert(fileName);
     // console.log("fileName",fileName);
     // Extract the rest of the path
     const folderPath = filePath.substring(0, filePath.lastIndexOf('/'));
@@ -10663,7 +10673,7 @@ submitButton.addEventListener('click',async(event)=>{
       const fileExtensionOfOldFile =fileName.split('.').pop();
       // for same file extension
       if(fileExtensionOfSelectedFile === fileExtensionOfOldFile){
-          alert("Same file extension");
+          // alert("Same file extension");
           const file = web.getFileByServerRelativePath(filePath);
             await file.setContentChunked(selectedFile);
             if (file.exists) {
@@ -10674,7 +10684,7 @@ submitButton.addEventListener('click',async(event)=>{
           showReplaceMessage('File replaced successfully.');
           myRequest(null,null,null);
       }else{
-        alert("file extension are not same");
+        // alert("file extension are not same");
         const folderInWhichWeUploadTheFile=web.getFolderByServerRelativePath(folderPath);
         const uploadResult = await folderInWhichWeUploadTheFile.files.addChunked(selectedFile.name, selectedFile);
         const listItem = await uploadResult.file.getItem();
@@ -10894,8 +10904,32 @@ librarydiv.appendChild(mainContainer)
                                   </a>
                               List View
                                 </button>
-                               
+                 
                           </div>
+                          {displayuploadfileandcreatefolder && (
+    <div id="createuploadfilecont" className="createuploadfilecont"> 
+    <button
+       className="mybutton1"
+       id="createFileButton"
+       onClick={() => handleButtonClickShow("UploadFile")}
+     >
+       + Create File
+     </button>
+     
+       <button
+       className="mybutton2"
+       id="createFileButton2"
+       onClick={() => handleButtonClickShow("CreateFolder")}
+     >
+       + Create Folder
+     </button>
+     
+     
+     </div>
+                          )
+
+                          }
+            
                           {showMyfavButtons && ( <div id="hidegidvewlistviewbutton2"  className="view-buttons mt-2">
                                   <button className="btn btngridview grid-view active"    
                                   onClick={(e)=>myFavorite(e)}>
@@ -11101,25 +11135,7 @@ librarydiv.appendChild(mainContainer)
                      
                      
                     </div>
-                   <div id="createuploadfilecont" className="createuploadfilecont"> 
-                   <button
-                      className="mybutton1"
-                      id="createFileButton"
-                      onClick={() => handleButtonClickShow("UploadFile")}
-                    >
-                      + Create File
-                    </button>
-                    
-                      <button
-                      className="mybutton2"
-                      id="createFileButton2"
-                      onClick={() => handleButtonClickShow("CreateFolder")}
-                    >
-                      + Create Folder
-                    </button>
-                    
-                    
-                    </div>
+                
               <div className="Manageworkflow">
            
               </div>

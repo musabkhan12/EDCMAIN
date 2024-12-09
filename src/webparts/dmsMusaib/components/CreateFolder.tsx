@@ -543,9 +543,9 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     }else if(validateColumns){
-        alert("Add Columns Fields and Type");
+        // alert("Add Columns Fields and Type");
     }else if(validateUser){
-        alert("Please select at least one user");
+        // alert("Please select at least one user");
     }
     else {
       
@@ -556,7 +556,9 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
       if(OthProps.DocumentLibrary === ""){
         (payloadForFolderMaster as any).DocumentLibraryName=folderName;
-        (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
+        (payloadForFolderMaster as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
+        // (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
+        // (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
         (payloadForFolderMaster as any).IsLibrary=true;
 
       }else{
