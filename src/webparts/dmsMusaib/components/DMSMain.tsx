@@ -7471,10 +7471,32 @@ if (hidegidvewlistviewbutton2) {
     hidegidvewlistviewbutton2.style.display = 'none';
 }
 
-const folderItems = await sp.web.lists
-.getByTitle("DMSFolderMaster")
-.items.select("CurrentUser" , "IsFolder" , "FolderPath" , "DocumentLibraryName","SiteTitle","ID" , "IsPrivate","IsLibrary","FolderName")
-.filter(`CurrentUser eq '${currentUserEmailRef.current}'`).orderBy("Created", false)();
+// Check if the user is super Admin start
+let superAdmin=false;
+let folderItems:any[]=[]
+  const currentUser = await sp.web.currentUser();
+  const userGroups = await sp.web.siteUsers.getById(currentUser.Id).groups();
+  const isMemberOfSuperAdmin = userGroups.some(group => group.Title === `DMSSuper_Admin`);
+  if(isMemberOfSuperAdmin){
+    // alert("Current user is super admin")
+    superAdmin=true;
+    folderItems = await sp.web.lists
+    .getByTitle("DMSFolderMaster")
+    .items.select("CurrentUser" , "IsFolder" , "FolderPath" , "DocumentLibraryName","SiteTitle","ID" , "IsPrivate","IsLibrary","FolderName")
+    .orderBy("Created", false).getAll();
+  }else{
+    // alert("Current user not a super admin")
+    folderItems = await sp.web.lists
+    .getByTitle("DMSFolderMaster")
+    .items.select("CurrentUser" , "IsFolder" , "FolderPath" , "DocumentLibraryName","SiteTitle","ID" , "IsPrivate","IsLibrary","FolderName")
+    .filter(`CurrentUser eq '${currentUserEmailRef.current}'`).orderBy("Created", false).getAll();
+  }
+// end
+
+// const folderItems = await sp.web.lists
+// .getByTitle("DMSFolderMaster")
+// .items.select("CurrentUser" , "IsFolder" , "FolderPath" , "DocumentLibraryName","SiteTitle","ID" , "IsPrivate","IsLibrary","FolderName")
+// .filter(`CurrentUser eq '${currentUserEmailRef.current}'`).orderBy("Created", false)();
 // console.log(folderItems , "folderItems");
 
 // new code to fetch the siteId from the masterSiteURl and map this siteid with corresponding siteTitle forEach folder in the folderData that fetch from the DMSFolderMaster
@@ -7532,8 +7554,8 @@ let filteredFileData;
 if(searchText !== null){
   // here we change the array to new siteId containing array
   filteredFileData=folderDataWithSiteId.filter((folder: any) =>
-       folder.DocumentLibraryName.toLowerCase().includes(searchText.value.toLowerCase())
-  // ||   folder.FolderName.toLowerCase().includes(searchText.value.toLowerCase())
+       folder.DocumentLibraryName?.toLowerCase().includes(searchText.value.toLowerCase())
+  ||   folder.FolderName?.toLowerCase().includes(searchText.value.toLowerCase())
   // ||   folder.ParentFolder.toLowerCase().includes(searchText.value.toLowerCase())
 )
 
@@ -7581,7 +7603,7 @@ for(const files of filteredFileData){
   <p class="p3rd">${files.SiteTitle}</p>
   <p class="filestatus"> ${folderisprivateorpublic}  </p>
   </div>
-  <div class="three-dots" onclick="toggleMenu2('${files.ID}')">
+  <div class="three-dots" onclick="toggleMenu2('${files.ID}','${files.SiteID}')">
       <span>...</span>
   </div> </div>
            </div>
@@ -7603,7 +7625,16 @@ menu.innerHTML = `
     <img src=${editIcon} alt="Edit"/>
     Edit
   </li>
-
+   ${superAdmin === true ? 
+      `<li onclick="deleteFolder('${files.SiteTitle}','${files.DocumentLibraryName}')">
+      <img src=${deleteIcon} alt="Edit"/>
+      Delete
+      </li>
+      <li onclick="renameFolder('${files.SiteTitle}','${files.DocumentLibraryName}')">
+        <img src=${editIcon} alt="Edit"/>
+        Rename
+      </li>`
+      : ''}
 </ul>
 `;
 // menu.innerHTML = `
@@ -7667,6 +7698,20 @@ if(files.IsFolder === true){
 }
 
 }
+// Function to delete the folder
+// @ts-ignore
+window.deleteFolder=(siteName:any,documentLibraryName:any)=>{
+  console.log("siteName",siteName)
+  console.log("documentLibraryName",documentLibraryName)
+}
+
+// Function to rename the folder
+// @ts-ignore
+window.renameFolder=(siteName:any,documentLibraryName:any)=>{
+  console.log("siteName",siteName)
+  console.log("documentLibraryName",documentLibraryName)
+}
+
 
    const myFavorite= async (event: any = null, siteIdToUpdate: string = null,searchText:any=null) => {
     // // alert()
