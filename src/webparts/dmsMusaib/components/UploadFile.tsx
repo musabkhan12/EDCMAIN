@@ -398,7 +398,7 @@ const handleSubmit = async (event: any) => {
       console.log("Generated Preview URL:", previewUrl);
       if (!listItem) throw new Error("List item not found for the uploaded file.");
 
-      alert(`IsApproval,${IsApproval}`);
+      // alert(`IsApproval,${IsApproval}`);
       if(IsApproval === true){
         // alert(`status is pending`);
         status="Pending";
@@ -411,7 +411,7 @@ const handleSubmit = async (event: any) => {
       console.log("File metadata updated successfully with:", payload);
      
       
-      alert(`status,${status}`);
+      // alert(`status,${status}`);
       const newItem = await sp.web.lists.getByTitle(`DMS${currentfolderpath.Entity}FileMaster`).items.add({
           FileName: String(uploadResult.data.Name),
           FileSize: String(uploadResult.data.Length),
@@ -567,12 +567,12 @@ const Deletemedia = () => {
     
     return (
       <>
-          <button className='BackButton' onClick={(event) => {
+          <button className='BackButton me-3 mb-3' onClick={(event) => {
                 onReturnToMain();
                 // myRequest(event);
           }}> Back 
           </button>
-          <div className="container mt-4 UploadFileCont">
+          <div className="container mt-3 UploadFileCont">
               <div className='main-containeruploadfile'>
                       <div className='column column1 p-3'>
                           <form id='formSelector'>

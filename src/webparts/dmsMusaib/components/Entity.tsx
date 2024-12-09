@@ -3,8 +3,8 @@ import { getSP } from '../loc/pnpjsConfig';
 import { SPFI } from '@pnp/sp';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../CustomCss/mainCustom.scss";
-import "../../verticalSideBar/components/VerticalSidebar.scss"
-import VerticalSideBar from '../../verticalSideBar/components/VerticalSideBar';
+// import "../../verticalSideBar/components/VerticalSidebar.scss"
+// import VerticalSideBar from '../../verticalSideBar/components/VerticalSideBar';
 import UserContext from '../../../GlobalContext/context';
 
 import Provider from '../../../GlobalContext/provider';
@@ -20,7 +20,7 @@ import styles from './Form.module.scss'
 // import Jodit from 'jodit-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../CustomCss/mainCustom.scss";
-import "../../verticalSideBar/components/VerticalSidebar.scss"
+// import "../../verticalSideBar/components/VerticalSidebar.scss"
 import CreateEntity from './CreateMaster';
 
 const Entity = () => {

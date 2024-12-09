@@ -5,7 +5,7 @@ import classNames from "classnames";
 import { getSP } from '../loc/pnpjsConfig';
 import { SPFI } from '@pnp/sp';
 import { useState} from "react";
-import {BasicFormProps} from '../components/BasicFormProps'
+import {BasicFormProps} from './BasicFormProps'
 import Swal from 'sweetalert2';
 // import swal from 'sweetalert2';
 

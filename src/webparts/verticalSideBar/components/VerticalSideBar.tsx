@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faFile, faImage, faClipboard, faSun, faBell, faMoon } from '@fortawesome/free-regular-svg-icons';
-import "../components/VerticalSidebar.scss";
+// import "../components/VerticalSidebar.scss";
 import "../../horizontalNavBar/components/horizontalNavbar.scss";
 import UserContext from '../../../GlobalContext/context';
 import { faBars, faChevronRight, faChevronUp, faExpand, faGear, faHome, faMicrochip, faUserGroup, faWaveSquare, faWifi } from '@fortawesome/free-solid-svg-icons';

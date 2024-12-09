@@ -151,14 +151,15 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
   console.log("Users Array", users);
 
   const handleToggleApproval = (event:any) => {
-    event.preventDefault();
-    setToggleApproval(true);
+    // event.preventDefault();
     setApprovalOption(event.target.value);
+    setToggleApproval(true);
   };
 
   const handleToggleRemove = (event:any) => {
-    setToggleApproval(false);
     setApprovalOption(event.target.value);
+    setToggleApproval(false);
+    
   };
   const [rows, setRows] = React.useState<
     { id: number; selectionType: "All" | "One"; approvedUserList: string[] }[]
@@ -445,7 +446,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
     //end
   };
 
-  // remove new row
+//   remove new row
   const handleRemoveRow = (
     id: number,
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
@@ -805,15 +806,13 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
   return (
     <>
-      <button className="BackButton">
+      <button className="BackButton me-3 mb-3">
         {" "}
         Back{" "}
       </button>
-      <div className="container mt-4 CreateFolderCont">
+      <div className="container mt-3">
         <div className="card cardborder p-3" style={{
-            height: "auto",
-            width:"1200px",
-            marginTop:"50px"
+          
         }}>
           <form>
             <div className="row mt-3">
@@ -1091,11 +1090,9 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
         </div>
       </div>
       {toggleApproval ? (
-        <div className="container mt-4 second">
+        <div className="container mt-3">
           <div className="card cardborder marginleftcard" style={{
-            height: "auto",
-            width:"1200px",
-            marginTop:"50px"
+            
         }}>
             <h5 className="mb-3 Permissionsectionstyle">
               <strong>Approval Hierarchy</strong>
@@ -1233,11 +1230,9 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
       )}
       
       {/* {permission && ( */}
-        <div className="container mt-4 second">
+        <div className="container mt-3">
                 <div className="card cardborder marginleftcard" style={{
-                height: "auto",
-                width:"1200px",
-                marginTop:"50px"
+               
                   }}>
                       <h5 className="mb-3 Permissionsectionstyle">
                           <strong>Permission</strong>
@@ -1295,7 +1290,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
                                     >
                                       <img
                                         className="fas fa-trash"
-                                        src={require("../assets/delete.png")}
+                                        src={require("../assets/del.png")}
                                         alt="delete"
                                       />
                                     </a>
@@ -1329,14 +1324,9 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
                             </div>
 
                       </div> */}
-                </div>
-        </div>
-      {/* ) */}
-      {/* } */}
-      <br/>
-      <div className="d-flex justify-content-end buttonstyle">
+                      <div className="d-flex mt-3 justify-content-center buttonstyle">
         <button
-          className="btn btn-create me-2 btncolorCreate"
+          className="btn btn-create me-2 mt-0 btncolorCreate"
           onClick={handleCreate}
         >
           <img
@@ -1355,6 +1345,12 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
           Cancel
         </button>
       </div>
+                </div>
+        </div>
+      {/* ) */}
+      {/* } */}
+      <br/>
+      
     </>
   );
 };

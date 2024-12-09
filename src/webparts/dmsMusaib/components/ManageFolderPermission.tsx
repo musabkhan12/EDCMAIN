@@ -181,7 +181,7 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
 // fetch the initial data from the  DMSFolderPrivacy list
     const defaultValue=async(flag:string=null)=>{
         try {
-          alert(`OthProps.FolderName is ${OthProps.FolderName}`)
+          // alert(`OthProps.FolderName is ${OthProps.FolderName}`)
           if(OthProps.FolderName === "null" ){
             folderName=null;
             // alert(`folder id undefied or null ${OthProps.FolderName}`)
@@ -326,7 +326,7 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
             }
             
             // const fetchData=await sp.web.lists.getByTitle("DMSFolderPrivacy").items.select("User","UserID","UserPermission","FolderName").filter(`SiteName eq '${OthProps.SiteTitle}' and DocumentLibraryName eq '${OthProps.DocumentLibraryName}' and CurrentUser eq '${currentUserEmailRef.current}' and FolderName eq ${null}`)();
-            alert(`folderName is :${folderName}`)
+            // alert(`folderName is :${folderName}`)
             const fetchData=await sp.web.lists.getByTitle("DMSFolderPrivacy").items.select("User","UserID","UserPermission","FolderName","Id").filter(`SiteName eq '${OthProps.SiteTitle}' and DocumentLibraryName eq '${OthProps.DocumentLibraryName}' and CurrentUser eq '${currentUserEmailRef.current}' and FolderName eq ${folderName}`)();
             console.log("Fetch data",fetchData);    
             
@@ -505,7 +505,7 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
 
           if (OthProps.FolderName !== "null") {
               // For folder
-              alert('add permission to folder')
+              // alert('add permission to folder')
               const folder =await web.getFolderByServerRelativePath(`${OthProps.FolderPath}`).getItem();
               // securableObject=await folder.listItemAllFields.select("RoleAssignments").expand("RoleAssignments")();
               securableObject=folder;
@@ -518,7 +518,7 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
               }
               console.log("securableObject",securableObject);
           } else {
-            alert('add permission to doclib')
+            // alert('add permission to doclib')
               // For document library
               securableObject =await web.lists.getByTitle(`${OthProps.DocumentLibraryName}`);
               console.log("securableObject",securableObject);
@@ -823,8 +823,8 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
                           }}
                           >
                           <h5 className="mb-3 " style={{
-                              display:"block",
-                              width:"200px"
+                              display:"block", margin:'inherit'
+                             
                           }}>
                               <strong>Manage Permission</strong>
                           </h5>
@@ -868,7 +868,7 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
                                   {/* {row.id === 0 ? null : ( */}
                                     <div className="col-12 col-md-2 d-flex align-items-end">
                                       <a onClick={(e) => handleRemoveRow(row.id, e)} style={{ width: "50px",    height: "50px", cursor: "pointer" }}>
-                                        <img className="fas fa-trash" src={require("../assets/delete.png")} alt="delete" />
+                                        <img className="fas fa-trash" src={require("../assets/del.png")} alt="delete" />
                                       </a>
                                     </div>
                                   {/* )} */}
@@ -876,43 +876,42 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
                           ))}
                       {/* Tabular view */}
                       <div style={{
-                          marginLeft:"50px",
-                          marginTop:"50px"
+                         
                         }}>
 
-                        <header>
-                        </header>
-                        <div className={styles.container}>
-                        <table className={styles["event-table"]}>
+                       
+                        <div>
+                        <table className='mtbalenew'>
 
                             <thead>
                             <tr>
                                 <th style={{minWidth:'55px', maxWidth:'55px'}}>S.No.</th>
-                                <th className={styles.serialno}>User</th>
+                                <th>User</th>
                                 {/* <th className={styles.tabledept}>Email</th> */}
-                                <th  className={styles.tabledept}>Permisson</th>
+                                <th >Permisson</th>
+                                <th style={{minWidth:'75px', maxWidth:'75px'}}>Action</th>
                             </tr>
                             </thead>
                             <tbody>
                             {currentData.map((item:any, index:any) => (
                                 <React.Fragment key={item.Id}>
-                                <tr className={styles.tabledata}>
-                                    <td className={styles.tabledept}>
-                                    {index + 1}
+                                <tr >
+                                    <td >
+                                  <span className='indexdesign'>{index + 1}</span>   
                                     </td>
-                                    <td className={styles.tabledept}>
+                                    <td >
                                     {item.value || ''}
                                     </td>
                                     {/* <td className={styles.tabledept}>
                                     {item?.email || ''}
                                     </td> */}
-                                    <td className={styles.tabledept}>
+                                    <td >
                                     {item.Permission || ''}
                                     </td>
-                                    <td className={styles.editdeleteicons}>
+                                    <td style={{minWidth:'75px', maxWidth:'75px'}}>
                                         <img
                                             className={styles.deleteicon}
-                                            src={require("../assets/delete.png")}
+                                            src={require("../assets/del.png")}
                                             alt="Delete"
                                             style={{
                                               height:"25px"

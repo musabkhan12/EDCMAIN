@@ -32,7 +32,7 @@
 // import "bootstrap/dist/css/bootstrap.min.css";
 // // import "bootstrap//dist/"
 // import "../../../CustomCss/mainCustom.scss";
-// import "../../verticalSideBar/components/VerticalSidebar.scss";
+// import "// import "../../verticalSideBar/components/VerticalSidebar.scss";
 // import VerticalSideBar from "../../verticalSideBar/components/VerticalSideBar";
 // import UserContext from "../../../GlobalContext/context";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -61,7 +61,7 @@
 // import { PermissionKind } from "@pnp/sp/security";
 // import "bootstrap/dist/css/bootstrap.min.css";
 // import "../../../CustomCss/mainCustom.scss";
-// import "../../verticalSideBar/components/VerticalSidebar.scss";
+// import "// import "../../verticalSideBar/components/VerticalSidebar.scss";
 // import "./dmscss";
 // import { useState , useRef , useEffect} from "react";
 // import UploadFile from "./UploadFile";

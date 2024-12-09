@@ -23,8 +23,8 @@ import { SPFI } from "@pnp/sp";
 import "bootstrap/dist/css/bootstrap.min.css";
 // import "bootstrap//dist/"
 import "../../../CustomCss/mainCustom.scss";
-import "../../verticalSideBar/components/VerticalSidebar.scss";
-import VerticalSideBar from "../../verticalSideBar/components/VerticalSideBar";
+// import "../../verticalSideBar/components/VerticalSidebar.scss";
+// import VerticalSideBar from "../../verticalSideBar/components/VerticalSideBar";
 import UserContext from "../../../GlobalContext/context";
 // import { useState , useEffect } from "react";
 import Provider from "../../../GlobalContext/provider";
@@ -40,7 +40,7 @@ import { LogLevel, PnPLogging } from "@pnp/logging";
 import { PermissionKind } from "@pnp/sp/security";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../CustomCss/mainCustom.scss";
-import "../../verticalSideBar/components/VerticalSidebar.scss";
+// import "../../verticalSideBar/components/VerticalSidebar.scss";
 import "./dmscss";
 import "./DMSAdmincss"
 import { useState , useRef , useEffect} from "react";
@@ -484,11 +484,11 @@ const handleReturnToMain = (Name:any) => {
 
   return (
     <div id="wrapper" ref={elementRef}>
-    <div
+    {/* <div
       className="app-menu"
       id="myHeader">
       <VerticalSideBar _context={sp} />
-    </div>
+    </div> */}
     <div className="content-page">
       <HorizontalNavbar/>
       <div className="content" style={{marginLeft: `${!useHide ? '240px' : '80px'}`,marginTop:'1.5rem'}}>

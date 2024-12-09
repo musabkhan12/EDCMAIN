@@ -7,7 +7,7 @@ import { SPFI } from "@pnp/sp";
 import "bootstrap/dist/css/bootstrap.min.css";
 // import "bootstrap//dist/"
 import "../../../CustomCss/mainCustom.scss";
-import "../../verticalSideBar/components/VerticalSidebar.scss";
+// import "../../verticalSideBar/components/VerticalSidebar.scss";
 // import VerticalSideBar from "../../verticalSideBar/components/VerticalSideBar";
 import UserContext from "../../../GlobalContext/context";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -24,12 +24,12 @@ import "@pnp/sp/presets/all"
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../CustomCss/mainCustom.scss";
 
-import "../../verticalSideBar/components/VerticalSidebar.scss";
+// import "../../verticalSideBar/components/VerticalSidebar.scss";
 import "./dmscss";
 import { useState , useRef , useEffect} from "react";
 import "./MediaMaster.module.scss"
 import "./mediamaster.scss"
-import "./CustomTable.scss"
+// import "./CustomTable.scss"
 
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
@@ -196,7 +196,7 @@ const Table: React.FC<CreateFolderProps> = ({Currentbuttonclick , onReturnToMain
               , "Modified"
             )
             .filter(
-              `CurrentUser eq '${currentUserEmailRef.current}'`
+              `CurrentUser eq '${currentUserEmailRef.current}' and MyRequest eq 1`
             )();
     
           console.log(`Files of Current user ${fileItem.FileMasterList}`, filesData);
@@ -444,12 +444,12 @@ const Pagination = ( { currentPage, totalPages, handlePageChange }: PaginationPr
   return (
 <>
 {/* <button onClick={onReturnToMain}>Back To Main Component</button> */}
-<table className="mtable table-centered table-nowrap table-borderless mb-0">
-                        <thead className="tablehead">
+<table className="mtbalenew">
+                        <thead>
                           <tr>
-                            <th className="tableheadtitle" style={{ borderBottomLeftRadius: '10px', minWidth: '50px', maxWidth: '50px', borderTopLeftRadius: '10px' }}>
+                            <th  style={{ minWidth: '50px', maxWidth: '50px'}}>
  
-                              <div className="d-flex pb-0"
+                              <div
                                 >
                                 <span>S.No.</span>
                                 {/* <span onClick={() => handleSortChange('SNo')}>
@@ -466,8 +466,8 @@ const Pagination = ( { currentPage, totalPages, handlePageChange }: PaginationPr
                                 />
                               </div> */}
                             </th>
-                            <th className="tableheadtitle" ><div className="d-flex flex-column bd-highlight ">
-                              <div className="d-flex pb-0" >
+                            <th ><div className=" ">
+                              <div className="" >
                                 <span >Document Name</span>  
                                 {/* <span className="Sorting" onClick={() => handleSortChange('Title')}><FontAwesomeIcon icon={faSort} /> </span> */}
                                 </div>
@@ -476,9 +476,9 @@ const Pagination = ( { currentPage, totalPages, handlePageChange }: PaginationPr
                                   className='inputcss' style={{ width: '100%' }} />
                               </div> */}
                             </div></th>
-                            <th className="tableheadtitle" >
-                              <div className="d-flex flex-column bd-highlight ">
-                                <div className="d-flex pb-0" >
+                            <th >
+                              <div >
+                                <div  >
                                   <span >	Submiited By</span>  
                                   {/* <span onClick={() => handleSortChange('Entity')}><FontAwesomeIcon icon={faSort} /> </span></div>
                                 <div className=" bd-highlight">
@@ -487,9 +487,9 @@ const Pagination = ( { currentPage, totalPages, handlePageChange }: PaginationPr
                                 </div>
                               </div>
                             </th>
-                            <th className="tableheadtitle" >
-                              <div className="d-flex flex-column bd-highlight ">
-                                <div className="d-flex pb-0" >
+                            <th  >
+                              <div>
+                                <div >
                                   <span >Modified date</span> 
                                    {/* <span onClick={() => handleSortChange('Status')}><FontAwesomeIcon icon={faSort} /> </span> */}
                                    </div>
@@ -499,8 +499,9 @@ const Pagination = ( { currentPage, totalPages, handlePageChange }: PaginationPr
                                 </div> */}
                               </div>
                             </th>
-                            <th className="tableheadtitle"  style={{ minWidth: '80px', maxWidth: '80px' }}><div className="d-flex flex-column bd-highlight ">
-                              <div className="d-flex pb-0" >
+                            <th   style={{ minWidth: '80px', maxWidth: '80px' }}>
+                              <div >
+                              <div >
                                 <span >Status</span> 
                                  {/* <span onClick={() => handleSortChange('SubmittedDate')}><FontAwesomeIcon icon={faSort} /> </span> */}
                                 </div>
@@ -509,14 +510,14 @@ const Pagination = ( { currentPage, totalPages, handlePageChange }: PaginationPr
                                   className='inputcss' style={{ width: '100%' }} />
                               </div> */}
                             </div></th>
-                            <th className="tableheadtitle"  style={{ textAlign: 'center' }}>
-                              <div className="d-flex flex-column bd-highlight pb-0">
-                                <div className="d-flex  pb-0" >  <span >Action</span> 
+                            <th  style={{ minWidth: '80px', maxWidth: '80px' }} >
+                              <div>
+                                <div  >  <span >Action</span>  &nbsp;&nbsp;
                                <div className="dropdown">
-                                  <FontAwesomeIcon icon={faEllipsisV} onClick={toggleDropdown} size='xl'/>
+                                  <FontAwesomeIcon  icon={faEllipsisV} onClick={toggleDropdown} size='sm'/>
                                 </div> 
                                 </div>
-                                <div className=" bd-highlight">   <div id="myDropdown" className={`dropdown-content ${isOpen ? 'show' : ''}`}>
+                                <div className=" bd-highlight">   <div style={{zIndex:'9'}} id="myDropdown" className={`dropdown-content ${isOpen ? 'show' : ''}`}>
                                   <div onClick={handleExportClick} className="" >
                                     <FontAwesomeIcon icon={faFileExport} />  Export
                                   </div>
@@ -533,21 +534,23 @@ const Pagination = ( { currentPage, totalPages, handlePageChange }: PaginationPr
                             // const ImageUrl = item.Image == undefined || item.Image == null ? "" : JSON.parse(item.Image);
                             return (
  
-                              <tr key={index} className="tablerow">
-                                <td style={{ minWidth: '50px', maxWidth: '50px' }}>{index + 1}</td>
+                              <tr key={index}>
+                                <td style={{ minWidth: '50px', maxWidth: '50px' }}>
+                                  <span className="indexdesign"> {index + 1}</span>
+                                 </td>
                                 <td>{item.FileName}</td>
                                 <td>{item.CurrentUser}</td>
                                 <td>{item.Modified}</td>
-                                <td >{item.Status} </td>
-                                 <td style={{ minWidth: '50px', maxWidth: '50px' }} className="ng-binding">
-                                  <div className="d-flex  pb-2" style={{ justifyContent: 'space-around' }}>
+                                <td style={{ minWidth: '80px', maxWidth: '80px' }}>{item.Status} </td>
+                                 <td style={{ minWidth: '80px', maxWidth: '80px' }} className="ng-binding">
+                                  <div>
                                     <span >
                                        {/* <a className="action-icon text-primary" onClick={() => Editmedia(item.ID)}>
                                   <FontAwesomeIcon icon={faEdit} /> 
                                     </a> */}
                                     
                                     </span>  <span >
-                                      <a className="action-icon text-danger" onClick={() => Deletemedia(item.ID)}>
+                                      <a style={{width:'25px', height:'25px', borderRadius:'1000px', border:'1px solid #000', margin:'auto', padding:'1px', cursor:'pointer'}} className="action-icon text-danger" onClick={() => Deletemedia(item.ID)}>
                                            <FontAwesomeIcon className="Exclamationamark" icon={faExclamation} /> 
                                        {/* <FontAwesomeIcon style={{color: "black"}} icon={faListSquares}/> */}
                                       </a></span></div>

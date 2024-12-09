@@ -3,8 +3,8 @@ import { getSP } from '../loc/pnpjsConfig';
 import { SPFI } from '@pnp/sp';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../CustomCss/mainCustom.scss";
-import "../../verticalSideBar/components/VerticalSidebar.scss"
-import VerticalSideBar from '../../verticalSideBar/components/VerticalSideBar';
+// import "../../verticalSideBar/components/VerticalSidebar.scss"
+// import VerticalSideBar from '../../verticalSideBar/components/VerticalSideBar';
 import UserContext from '../../../GlobalContext/context';
 
 import Provider from '../../../GlobalContext/provider';
@@ -21,7 +21,7 @@ import styles from './Form.module.scss'
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../CustomCss/mainCustom.scss";
 import "../../verticalSideBar/components/VerticalSidebar.scss"
-import CreateEntityMapping from '../components/CreateEntityMapping';
+import CreateEntityMapping from './CreateEntityMapping';
 import Swal from 'sweetalert2';
 
 const EntityMapping = () => {
