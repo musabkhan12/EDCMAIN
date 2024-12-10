@@ -467,6 +467,7 @@ const myrequestbuttonclick =()=>{
           FolderName,
           ParentFolderId,
           FolderPath,
+          IsRename
         } = folderItem;
         if (SiteTitle) {
           const key = `${SiteTitle.trim()}::${Devision?.trim() || ""}::${
@@ -479,6 +480,7 @@ const myrequestbuttonclick =()=>{
             folderMap
               .get(key)
               .push({
+                IsRename,
                 FolderPath,
                 ParentFolderId,
                 DocumentLibraryName,
@@ -664,8 +666,19 @@ const myrequestbuttonclick =()=>{
           // Now render each unique DocumentLibraryName and its associated folders
           uniqueDocLibs.forEach((data, docLibName) => {
             const docLibElement = document.createElement("li");
-            docLibElement.textContent = docLibName;
-
+            // New code to check the Document library name is Rename or not start
+            const checkIsRename = data.folders.filter((item:any) => 
+              item.FolderName.length === 1 && item.FolderName[0] === null
+            );
+            console.log("checkIsRename",checkIsRename);
+            let renameText=docLibName;
+            if(checkIsRename[0].IsRename !== null){
+              renameText=checkIsRename[0].IsRename;
+            }
+            // End
+            docLibElement.textContent = renameText;
+            // docLibElement.textContent = docLibName;
+            console.log("Data of doclib/folder",data);
             // Optionally display the FolderPath in the docLibElement
             const pathText = document.createElement("span");
             // pathText.textContent = ` (${data.folderPath})`; // Display FolderPath
@@ -749,7 +762,14 @@ const myrequestbuttonclick =()=>{
                   if (folderName && item.ParentFolderId === parentFolderId) {
                     // Only display non-null folder names
                     const folderElement = document.createElement("li");
-                    folderElement.textContent = folderName;
+                    // New code to check the folder library name is Rename or not start
+                    let folderRenameText=folderName;
+                    if(item.IsRename !== null){
+                      folderRenameText=item.IsRename
+                    }
+                    // End
+                    // folderElement.textContent = folderName;
+                    folderElement.textContent = folderRenameText;
                     parentElement.appendChild(folderElement);
                     const entityImage = createImageElement(
                       "icons/entity-icon.png",
@@ -830,6 +850,7 @@ const myrequestbuttonclick =()=>{
           devisionElement.appendChild(docLibList);
 
           // Display unique DocumentLibraryName under Devision
+          console.log("devisionValue.docLibs",devisionValue.docLibs);
           devisionValue.docLibs.forEach((docLibName: any) => {
             const docLibElement = document.createElement("li");
             docLibElement.textContent = docLibName;
@@ -844,6 +865,7 @@ const myrequestbuttonclick =()=>{
             const docLibKey = `${entityTitle.trim()}::${devisionTitle.trim()}::`;
             const docLibFolders = folderMap.get(docLibKey) || [];
             docLibFolders.forEach((folderItem: any) => {
+              console.log("Folder under divisions",folderItem);
               const folderElement = document.createElement("li");
               folderElement.textContent = folderItem.FolderName;
 
@@ -1095,12 +1117,25 @@ const myrequestbuttonclick =()=>{
             documentLibraries.forEach((item: any) => {
               const normalizedDocLibName =
                 item.DocumentLibraryName.trim().toLowerCase();
+                console.log("item of doclib under division",item);
 
               if (!uniqueDocLibNames.has(normalizedDocLibName)) {
                 uniqueDocLibNames.add(normalizedDocLibName);
 
                 const docLibElement = document.createElement("li");
+                // New code to check the Document library name is Rename or not start
+                // const checkIsRename = item.folders.filter((item:any) => 
+                //   item.FolderName.length === 1 && item.FolderName[0] === null
+                // );
+                // console.log("checkIsRename",checkIsRename);
+                // let renameText=item.DocumentLibraryName;
+                // if(checkIsRename[0].IsRename !== null){
+                //   renameText=checkIsRename[0].IsRename;
+                // }
+                // End
+                // docLibElement.textContent = renameText;
                 docLibElement.textContent = item.DocumentLibraryName;
+                
                 departmentList.appendChild(docLibElement);
 
                 const folderList = document.createElement("ul");
@@ -3944,8 +3979,8 @@ if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepre
   }
 }else{
 // Generate the correct preview URL
-const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-// const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${docLibName}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+// const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
 // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
 
 console.log(previewUrl, "Generated preview URL");
@@ -4003,10 +4038,11 @@ if (searchText !== "" ) {
     try {
       console.log(currentfolderpath, "currentfolderpath")
         const searchQuery = {
-             Querytext:`"${searchText}" AND ParentLink:"https://officeindia.sharepoint.com${currentfolderpath}"`,
+             Querytext:`${searchText} AND Path:"https://officeindia.sharepoint.com${currentfolderpath}"`,
             // Querytext: `"${searchText}"`,
             RowLimit: 500,
-            SelectProperties: ["Title", "Path", "FileExtension", "UniqueId", "Size", "Created", "Modified"],  // Additional file properties
+            SelectProperties: ["Title", "Path", "FileExtension", "UniqueId", "Size", "Created", "Modified"], 
+            // Additional file properties
             // Refiners: 'FileExtension',
             // RefinementFilters: ['FileExtension:equals("docx")',
             //                     'FileExtension:equals("pdf")',
@@ -4864,7 +4900,7 @@ filteredFileData.forEach((file)=>{
   // `;
   menu.innerHTML = `
   <ul>
-    <li onclick="PreviewFile('${file.CurrentFolderPath}/${file.FileName}', '${file.SiteID}','${file.DocumentLibraryName}')">
+    <li onclick="PreviewFile('${file.CurrentFolderPath}/${file.FileName}', '${file.SiteID}','${file.DocumentLibraryName}','${file.FilePreviewURL}')">
       <img src=${ShareFile} alt="Share"/> File Preview
     </li>
 
@@ -7514,13 +7550,13 @@ let folderItems:any[]=[]
     superAdmin=true;
     folderItems = await sp.web.lists
     .getByTitle("DMSFolderMaster")
-    .items.select("CurrentUser" , "IsFolder" , "FolderPath" , "DocumentLibraryName","SiteTitle","ID" , "IsPrivate","IsLibrary","FolderName")
+    .items.select("CurrentUser" , "IsFolder" , "FolderPath" , "DocumentLibraryName","SiteTitle","ID" , "IsPrivate","IsLibrary","FolderName","IsRename")
     .orderBy("Created", false).getAll();
   }else{
     // alert("Current user not a super admin")
     folderItems = await sp.web.lists
     .getByTitle("DMSFolderMaster")
-    .items.select("CurrentUser" , "IsFolder" , "FolderPath" , "DocumentLibraryName","SiteTitle","ID" , "IsPrivate","IsLibrary","FolderName")
+    .items.select("CurrentUser" , "IsFolder" , "FolderPath" , "DocumentLibraryName","SiteTitle","ID" , "IsPrivate","IsLibrary","FolderName","IsRename")
     .filter(`CurrentUser eq '${currentUserEmailRef.current}'`).orderBy("Created", false).getAll();
   }
 // end
@@ -7610,6 +7646,9 @@ for(const files of filteredFileData){
   }else if(files.IsFolder === true){
     folderName=files.FolderName;
   }
+  if(files.IsRename !== null){
+    folderName=files.IsRename;
+  }
   let folderisprivateorpublic : any = ""
   if(files.IsPrivate === true){
     folderisprivateorpublic = "Private"
@@ -7662,7 +7701,7 @@ menu.innerHTML = `
       <img src=${deleteIcon} alt="Edit"/>
       Delete
       </li>
-      <li onclick="renameFolder('${files.SiteTitle}','${files.DocumentLibraryName}')">
+      <li onclick="renameFolder('${files.SiteTitle}','${folderName}','${files.ID}','${files.SiteID}')">
         <img src=${editIcon} alt="Edit"/>
         Rename
       </li>`
@@ -7739,9 +7778,96 @@ window.deleteFolder=(siteName:any,documentLibraryName:any)=>{
 
 // Function to rename the folder
 // @ts-ignore
-window.renameFolder=(siteName:any,documentLibraryName:any)=>{
+window.renameFolder=(siteName:any,folderName:any,itemId:any,siteId:any)=>{
   console.log("siteName",siteName)
-  console.log("documentLibraryName",documentLibraryName)
+  console.log("documentLibraryName",folderName)
+  console.log("itemId",itemId)
+
+    // Check if a popup already exists, if so, remove it
+    const existingPopup = document.getElementById("rename-popup");
+    if (existingPopup) {
+      existingPopup.remove();
+    }
+  
+    // Create the popup container
+    const popup = document.createElement("div");
+    popup.id = "rename-popup";
+    popup.style.position = "fixed";
+    popup.style.top = "50%";
+    popup.style.left = "50%";
+    popup.style.transform = "translate(-50%, -50%)";
+    popup.style.padding = "20px";
+    popup.style.backgroundColor = "#fff";
+    popup.style.boxShadow = "0px 4px 6px rgba(0,0,0,0.1)";
+    popup.style.borderRadius = "8px";
+    popup.style.zIndex = "1000";
+  
+    // Add the heading
+    const heading = document.createElement("h3");
+    heading.innerText = "Rename Folder";
+    heading.style.marginBottom = "15px";
+    popup.appendChild(heading);
+  
+    // Add a close button
+    const closeButton = document.createElement("span");
+    closeButton.innerText = "×";
+    closeButton.style.position = "absolute";
+    closeButton.style.top = "10px";
+    closeButton.style.right = "10px";
+    closeButton.style.cursor = "pointer";
+    closeButton.style.fontSize = "18px";
+    closeButton.onclick = () => popup.remove();
+    popup.appendChild(closeButton);
+  
+    // Add the input box with the current folder name as the default value
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = folderName; // Pre-fill with current name
+    input.style.width = "100%";
+    input.style.marginBottom = "15px";
+    input.style.padding = "8px";
+    input.style.border = "1px solid #ccc";
+    input.style.borderRadius = "4px";
+    popup.appendChild(input);
+  
+    // Add the submit button
+    const submitButton = document.createElement("button");
+    submitButton.innerText = "Submit";
+    submitButton.style.padding = "10px 20px";
+    submitButton.style.backgroundColor = "#0078d4";
+    submitButton.style.color = "#fff";
+    submitButton.style.border = "none";
+    submitButton.style.borderRadius = "4px";
+    submitButton.style.cursor = "pointer";
+    submitButton.onclick = async() => {
+      const newName = input.value.trim();
+      if (newName) {
+        console.log("New folder name:", newName);
+        // submit the new name to the list
+        try {
+          if(newName === ''){
+            console.log("required")
+            return;
+          }
+          // const {web}=await sp.site.openWebById(siteId);
+          await sp.web.lists.getByTitle('DMSFolderMaster').items.getById(itemId).update({
+            IsRename:newName
+          });
+          console.log("Folder Rename successfully");
+          mycreatedfolders()
+          popup.remove();
+        } catch (error) {
+          console.log("Error in rename the folders ",error)
+        }
+        
+      } else {
+        alert("Folder name cannot be empty.");
+      }
+    };
+    popup.appendChild(submitButton);
+  
+    // Add the popup to the document body
+    document.body.appendChild(popup);
 }
 
 
