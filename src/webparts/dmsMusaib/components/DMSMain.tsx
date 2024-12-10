@@ -4369,7 +4369,7 @@ filteredFileData.forEach((file)=>{
     <p class="p1st">${file.FileName}</p>
     <div class="fileSizeAndVersion">
     <p class="p3rd">${file.FileSize} MB</p>
-    <p class="p2nd">${file.FileVersion}</p>
+ 
     </div></div></div>
     <div class="sharedFile">
       ${sharedUsersHTML}
@@ -5388,10 +5388,12 @@ FilesItems.forEach(async (fileItem) => {
         card.className = "card";
         card.dataset.listId = file.SiteID;
         card.innerHTML = `  
-        <div class="row>
-          <div class="col-md-2 pe-0">       
+        <div class="row">
+          <div class="col-md-2 pe-0"> 
+          <div class="IMGContainer"> 
+          <div class="CardTextContainer">       
           <img class="filextension" src=${fileIcon} alt="${fileExtension} icon"/>
-         /div>
+         </div></div></div>
          <div class="col-md-10 pe-0">
           <p class="p1st">${file.FileName}</p>
           <p class="p2nd"></p>
@@ -7639,8 +7641,8 @@ for(const files of filteredFileData){
   <img class="filextension" src=${folderimg} icon"/>
   </div></div></div>
   <div class="col-md-10"> 
-  <p class="p1st">${folderName}</p>
-  <p class="p2nd"></p>
+  <p class="p1st p1stfolder">${folderName}</p>
+
   <p class="p3rd">${files.SiteTitle}</p>
   <p class="filestatus"> ${folderisprivateorpublic}  </p>
   </div>
@@ -7924,7 +7926,7 @@ const createFileCard = (file:any, fileIcon:any, siteId:any,listToUpdate:any,file
      </div>
          <div class="col-md-10 pe-0">
     <p class="p1st">${file.FileName}</p>
-    <p class="p2nd">${file.FileVersion}</p>
+
     <p class="p3rd">${file.FileSize} MB</p>
     </div></div>
     <div id="three-dots" class="three-dots" onclick="toggleMenu2('${file.FileUID}', '${siteId}')">
@@ -10885,20 +10887,20 @@ librarydiv.appendChild(mainContainer)
                     {" "}
                     <li className="breadcrumb-item">Home</li>
                    
-                    <li className="breadcrumb-item">&gt;</li>{" "} 
+                    <li className="breadcrumb-item">&gt;</li>
                     <li className="breadcrumb-item active">Settings</li>
                   </ol>
                             </div>
 
                             
-                            <div className="col-lg-6">
+                            <div style={{display:'flex', justifyContent:'end', gap:'5px'}} className="col-lg-6 newbutton">
                         <div id="hidegidvewlistviewbutton" className="view-buttons mt-2">
-                                <button  type="button" className="btn btngridview grid-view active"    
+                                <button  type="button" className="btn me-1 btngridview mt-0 grid-view active"    
                                 onClick={(event: any = null, siteIdToUpdate: string = null)=>myRequest(event) }>
                                   <a className="listviewfonticon">          
                                     <FontAwesomeIcon style={{color: "black"}} icon={faTableCells}/> </a>Grid View
                                 </button>
-                                <button type="button" className="btn btnlistview list-view" onClick={(event:any)=>MyrequestshowListView('ListViewComponent')}>
+                                <button type="button" className="btn btnlistview list-view mt-0" onClick={(event:any)=>MyrequestshowListView('ListViewComponent')}>
                                   <a className="listviewfonticon">
                                   <FontAwesomeIcon style={{color: "black"}} icon={faListSquares}/>
                                   </a>
@@ -10907,9 +10909,9 @@ librarydiv.appendChild(mainContainer)
                  
                           </div>
                           {displayuploadfileandcreatefolder && (
-    <div id="createuploadfilecont" className="createuploadfilecont"> 
+    <div id="createuploadfilecont" className="createuploadfilecont mt-2"> 
     <button
-       className="mybutton1"
+       className="mybutton1 mt-0"
        id="createFileButton"
        onClick={() => handleButtonClickShow("UploadFile")}
      >
@@ -10917,7 +10919,7 @@ librarydiv.appendChild(mainContainer)
      </button>
      
        <button
-       className="mybutton2"
+       className="mybutton2 mt-0"
        id="createFileButton2"
        onClick={() => handleButtonClickShow("CreateFolder")}
      >
@@ -11048,7 +11050,7 @@ librarydiv.appendChild(mainContainer)
                           <span className="sidebarText">Recycle Bin</span>
                         </button>
                       </div>
-                      <div id="folderContainer2"></div>
+                      <div  style={{position:'sticky', top:'100px'}} className="is-sticky">  <div   id="folderContainer2"></div></div>
                     </div>
                     <div className="librarydata">
                       {showDeletepopup && (

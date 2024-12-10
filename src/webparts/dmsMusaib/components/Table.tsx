@@ -550,7 +550,7 @@ const Pagination = ( { currentPage, totalPages, handlePageChange }: PaginationPr
                                     </a> */}
                                     
                                     </span>  <span >
-                                      <a style={{width:'25px', height:'25px', borderRadius:'1000px', border:'1px solid #000', margin:'auto', padding:'1px', cursor:'pointer'}} className="action-icon text-danger" onClick={() => Deletemedia(item.ID)}>
+                                      <a style={{width:'25px', height:'25px', borderRadius:'1000px', border:'1px solid #000', margin:'auto', textAlign:'center', padding:'4px', cursor:'pointer'}} className="action-icon text-danger" onClick={() => Deletemedia(item.ID)}>
                                            <FontAwesomeIcon className="Exclamationamark" icon={faExclamation} /> 
                                        {/* <FontAwesomeIcon style={{color: "black"}} icon={faListSquares}/> */}
                                       </a></span></div>
