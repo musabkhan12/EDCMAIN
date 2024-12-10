@@ -543,9 +543,9 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     }else if(validateColumns){
-        alert("Add Columns Fields and Type");
+        // alert("Add Columns Fields and Type");
     }else if(validateUser){
-        alert("Please select at least one user");
+        // alert("Please select at least one user");
     }
     else {
       
@@ -556,7 +556,9 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
       if(OthProps.DocumentLibrary === ""){
         (payloadForFolderMaster as any).DocumentLibraryName=folderName;
-        (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
+        (payloadForFolderMaster as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
+        // (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
+        // (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
         (payloadForFolderMaster as any).IsLibrary=true;
 
       }else{
@@ -958,18 +960,24 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
             {toggleaddFieldsButton && ( 
                 <div className="row mt-3" id="addFieldsButton">
-                    <div className="mb-3">
+                  <div className="col-md-6"></div>
+                  <div className="col-md-5"></div>
+                  <div style={{position:'relative'}} className="col-md-1">
+                  <div className="mb-3">
                     <div className="col-12 d-flex justify-content-end">
                         <a onClick={handleAddFields}>
-                        <img
-                            className="bi bi-plus"
-                            src={require("../assets/plus.png")}
-                            alt="add"
-                            style={{ width: "50px", height: "50px", top:"0px"}}
-                        />
+                        <img 
+                              className="bi bi-plus"
+                              src={require("../assets/plus.png")}
+                              alt="add"
+                              style={{ width: "50px", top:'46px', marginLeft:'16px', position:'absolute', height: "50px" }}
+                            />
+                       
                         </a>
                     </div>
                     </div>
+                  </div>
+                    
                 </div>
             )}
             {/* <div className="row mt-3">
@@ -1035,7 +1043,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
             </div>
           </div>
 
-          <div className="col-12 col-md-6">
+          <div className="col-12 col-md-5">
             <div className="form-group">
               <label htmlFor={`selectField-${formField.id}`} className="headerfont">
                 Select Field Type
@@ -1065,7 +1073,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
           {formField.id === 0 ? (
                   <></>
                 ) : (
-                  <div className="col-12 col-md-2 d-flex align-items-end">
+                  <div className="col-12 col-md-1 d-flex align-items-end">
                     <a
                       onClick={(e) => handleRemoveField(formField.id, e)}
                       style={{
@@ -1074,9 +1082,9 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
                         cursor: "pointer",
                       }}
                     >
-                      <img
+                      <img style={{marginTop:'14px'}}
                         className="fas fa-trash"
-                        src={require("../assets/delete.png")}
+                        src={require("../assets/del.png")}
                         alt="delete"
                       />
                     </a>
@@ -1215,7 +1223,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
                     >
                       <img
                         className="fas fa-trash"
-                        src={require("../assets/delete.png")}
+                        src={require("../assets/del.png")}
                         alt="delete"
                       />
                     </a>
@@ -1237,18 +1245,26 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
                       <h5 className="mb-3 Permissionsectionstyle">
                           <strong>Permission</strong>
                       </h5>
-                      <div className="mb-3">
-                        <div className="col-12 d-flex justify-content-end">
+                      <div className="row">
+                        <div className="col-md-6"></div>
+                        <div className="col-md-5"></div>
+                        <div className="col-md-1">
+                        <div style={{position:'relative'}} className="mb-3">
+                        <div className="col-12  d-flex justify-content-end">
                           <a onClick={handleAddRowForPermission}>
-                            <img
+                            <img 
                               className="bi bi-plus"
                               src={require("../assets/plus.png")}
                               alt="add"
-                              style={{ width: "50px", height: "50px" }}
+                              style={{ width: "50px", top:'10px', marginLeft:'10px', position:'absolute', height: "50px" }}
                             />
                           </a>
                         </div>
                       </div>
+                        </div>
+
+                      </div>
+                      
                       {rowsForPermission.map((rowForPermission)=>(
                           <div className="row mb-3 approvalheirarcystyle" key={rowForPermission.id}>
                               <div className="col-12 col-md-6">
@@ -1262,10 +1278,8 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
                                       noOptionsMessage={() => "No User Found..."}
                                   />
                               </div>
-                              <div className="col-12 col-md-6" 
-                                style={{
-                                  width:"auto"
-                                }}
+                              <div className="col-12 col-md-5" 
+                              
                               >
                                   <Select
                                       options={permissionArray}
@@ -1279,7 +1293,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
                               {rowForPermission.id === 0 ? (
                                   <></>
                                 ) : (
-                                  <div className="col-12 col-md-2 d-flex align-items-end">
+                                  <div className="col-12 col-md-1 d-flex align-items-end">
                                     <a
                                       onClick={(e) => handleRemoveRowForPermission(rowForPermission.id, e)}
                                       style={{

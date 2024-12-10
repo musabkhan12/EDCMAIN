@@ -165,7 +165,7 @@ const CreateDevision2: React.FC<BasicFormProps> = ({
             }
         } catch (error) {
             console.error('Error saving division:', error);
-            alert('Error saving division');
+            // alert('Error saving division');
         }
         
     };

@@ -11,15 +11,43 @@
   width: 19%;
   float: left;
   padding: 0 0px 20px 0px;
-  position: relative;
+  position: relative; margin-top: 20px;
 }
+.newhe{overflow: auto; max-height: 350px;}
 #folderContainer2{
     /* width: 17rem; */
   
     padding: 7px;
-
+    max-height: 325px;
+    overflow-y: auto;
+    overflow-x: hidden;
     
 }
+#folderContainer2::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Track */
+#folderContainer2::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+#folderContainer2::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+#folderContainer2::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+p.folder {font-size: 14px; font-weight: 600;}
+.p3rd{
+  width: 100%; float: left;
+}
+.filestatus{float:right;    width: 70px;
+  text-align: center;
+  line-height: 21px !important;}
 .sidebardms {
   background-color: transparent;
   
@@ -35,7 +63,7 @@
 .librarydata{
   /* margin-top: 3rem; */
   /* padding: 20px; */
-  margin-top: 0rem;
+
   padding-left: 25px;
  overflow: initial !important;
   width: 81%;
@@ -85,6 +113,7 @@
     justify-content: end;
     margin-bottom: 10px;
 }
+
 .mtable {
   width: 100%;
   position: relative;
@@ -200,10 +229,7 @@ a:hover
   border: 2px solid #54ade0;
   background: #efefef !important;
 }
-.content-page
-{
-top: 0rem!important;
-}
+
 
 
 .shared-user {
@@ -213,10 +239,11 @@ top: 0rem!important;
   background-color: #dadcde;
   border-radius: 50%;
   text-align: center;
-  line-height: 30px;
+  line-height: 34px;
   margin-right: 5px;
   font-size: 14px;
   color: #6c757d;margin-left: -12px;
+  margin-top: -5px;
 }
 
 .more-users {
@@ -233,7 +260,7 @@ top: 0rem!important;
 .sharedFile{
   display: flex;
   gap: 10px;
-  padding-left: 64px; margin-top:3px;
+  padding-left: 55px; margin-top:3px;
 }
 
 /* START TOOLTIP STYLES */
@@ -438,12 +465,16 @@ top: 0rem!important;
   color: #333;
   font-weight: bold; border:1px solid #ededed; height: 30px; border-radius: 1000px; width: 30px;
 }
-#showfolderpermission .modal-dialog {min-width: 70% !important;}
+.setApprover{margin-left: 0px !important; justify-content: center;}
+#showfolderpermission .modal-dialog, #workflowdiv .modal-dialog {min-width: 70% !important;}
 /* #files-container iframe{width: 100% !important;} */
-#showfolderpermission .modal-dialog .modal-content{
-  width: 100% !important;
+#showfolderpermission .modal-dialog .modal-content, #workflowdiv .modal-dialog .modal-content{
+  width: 100% !important; padding: 15px !important;
 }
- #folderContainer2 ul li{font-weight:400;}
+#showfolderpermission .modal-dialog h6, #workflowdiv .modal-dialog h6{
+  text-align: center;
+}
+ #folderContainer2 ul li{font-weight:300; font-size: 12px;}
 /* Popup body: Spacing for the select and textarea */
 .share-popup-body {
   margin-bottom: 20px;
@@ -729,11 +760,11 @@ top: 0rem!important;
   margin-bottom: 0;}
 .popup-menu ul li{ padding: 7px; cursor: pointer; margin-bottom: 1px;}
 .popup-menu ul li:hover{background: #f7fbfc;}
-.popup-menu ul li img{width: 14px; margin-right: 5px;}
+.popup-menu ul li img{width: 14px; float: left; margin-top: 3px; margin-right: 5px;}
 .sidebardmsButton:hover{background: #fff;}
-#hidegidvewlistviewbutton, #hidegidvewlistviewbutton2{justify-content: end; display: flex; gap: 10px;}
+#hidegidvewlistviewbutton, #hidegidvewlistviewbutton2{justify-content: end; display: flex; gap: 5px;}
 .btngridview.active {
-  background: #1fb0e5 ; color: #fff
+  background: #1fb0e5 ; color: #fff; border-color: #1fb0e5;
 }
 .btngridview.active svg{color: #fff !important;}
 
@@ -742,6 +773,10 @@ top: 0rem!important;
   font-weight: 500; background: #fff ;
   border: 1px solid #54ade0 !important;
 }
+#hidegidvewlistviewbutton button:hover, #hidegidvewlistviewbutton2 button:hover,#createuploadfilecont button:hover {
+  background: #008751 !important; border-color: #008751 !important; color: #fff !important;
+}
+#hidegidvewlistviewbutton button:hover svg, #hidegidvewlistviewbutton2 button:hover svg, #createuploadfilecont button:hover svg{color: #fff !important ;}
 .search-container input{padding: 10px 14px;
   background: #fff !important;
   border-radius: 30px;}
@@ -772,9 +807,9 @@ top: 0rem!important;
 #createuploadfilecont{
   display: flex;
     justify-content: start;
-    gap: 10px;
+    gap: 5px;
     float: left;
-    margin-left: 25px;
+   
 }
 #createuploadfilecont .mybutton1{
 
@@ -784,13 +819,28 @@ top: 0rem!important;
   background: #fff;
     color: #000; border: 1px solid #1fb0e5;
 }
+.input-container input{height: 36px;}
 .main-containeruploadfile h1{font-size: 20px; text-align: center;}
-.p3rd, .p2nd{margin-bottom: 2px; font-size: 12px; color: #6b6b6b;}
-.p1st{margin-bottom: 2px;overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.p3rd, .p2nd{margin-bottom: 5px !important; font-size: 12px; color: #6b6b6b;}
+.p1st{-webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  margin-top: -4px !important;
+  overflow: hidden;
+  line-height: 20px !important;
   padding-right: 35px;
-   margin-top: -4px; font-weight: 500; font-size: 14px;}
+  text-overflow: ellipsis;
+
+  margin-bottom: 5px !important;
+  height: 20px;
+}
+.p1stfolder{
+
+}
+   .newbutton button{height: 40px; font-size: 14px; padding: 6px 10px;}
 .filestatus {
   font-size: 11px;
   line-height: 19px;
@@ -829,7 +879,7 @@ top: 0rem!important;
   background:#f3f7f9 !important;
   font-weight: 600 !important;
   color: #3c3c3c;
-  font-size: 16px;
+  font-size: 15px !important;
 text-align: center;
   min-width: 130px;
   max-width: 130px;
@@ -850,7 +900,7 @@ text-align: center;
   padding: 8px 10px; font-size: 15px;
   text-align: left;
   background-color: #fff;
-  overflow: hidden;
+  overflow: hidden; font-size: 14px !important;
   text-overflow: ellipsis;
   white-space: nowrap; color: #6b6b6b;
   border-bottom: 1px solid #e1e1e1;
@@ -891,3 +941,26 @@ text-align: center;
 .hidemydatacards{
   display: none !important;
  }
+ @supports (position: sticky) {
+  .is-sticky {
+    position: sticky;
+    top: 20px; 
+  }
+}
+.main-containeruploadfile h1{color: #000;}
+@media(max-width:1920px)
+{
+  .sharedFile{padding-left: 75px;}
+}
+@media(max-width:1800px)
+{
+  .sharedFile{padding-left: 65px;}
+}
+@media(max-width:1600px)
+{
+  .sharedFile{padding-left: 60px;}
+}
+@media(max-width:1440px)
+{
+  .sharedFile{padding-left: 54px;}
+}

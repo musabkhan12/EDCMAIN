@@ -8,7 +8,7 @@
     padding-left: 25px;
    overflow: initial !important;
     width: 81%;
-    float: left;
+    float: left; margin-top: 30px;
   
   }
   .font-18{font-size:18px;}
@@ -19,11 +19,20 @@
     font-size: 16px;
     padding-right: 10px;
   }
+  button:hover{
+    background-color: #1fb0e5 !important;
+  }
+  .mainsidebardms button:hover{
+    background-color: #fff !important;
+  }
+
+
+  
   .modal.show{background:rgb(0,0,0,0.3)}
     .bi-plus1{    width: 40px;
       height: 40px;
       position: absolute;
-      right: 33px;
+      right: 33px; cursor: pointer;
       top: 9px;
       left: auto;}
       .d-flex1{    gap: 10px;
@@ -167,10 +176,7 @@
     border: 2px solid #54ade0;
     background: #efefef !important;
   }
-  .content-page
-  {
-  top: 0rem!important;
-  }
+  
   
   .hidemydatacards{
    display: none !important;
@@ -407,7 +413,7 @@
     color: #333;
     font-weight: bold;
   }
-   #folderContainer2 ul li{font-weight:400;}
+   #folderContainer2 ul li{font-weight:400; margin-top: 6px; }
   /* Popup body: Spacing for the select and textarea */
   .share-popup-body {
     margin-bottom: 20px;
@@ -669,6 +675,7 @@
       /* width: 17rem; */
       
       padding: 7px;
+
   
      
   }
@@ -682,7 +689,8 @@
     line-height: 14px;
     font-size: 18px;
     margin: 3px 5px 0px 0px;}
-    #folderContainer2 ul{padding: 8px; list-style: none;}
+    #folderContainer2 ul{list-style: none; padding: 0px; margin-bottom: 0px;}
+    #folderContainer2 ul li{padding-left: 5px;}
   .sidebardms {
     background-color: transparent;
     
@@ -694,6 +702,9 @@
   
   
   }
+  .content-page {
+    top: -3px !important;
+}
   #showfolderpermission h5{    margin: inherit;
     margin-bottom: 3px !important;}
   #hidegidvewlistviewbutton button,   #hidegidvewlistviewbutton2 button{font-size: 14px; margin-top: 5px;}

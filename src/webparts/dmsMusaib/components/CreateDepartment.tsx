@@ -131,7 +131,7 @@ const CreateDepartment: React.FC<BasicFormProps> = ({
 
         } catch (error) {
             console.error('Error adding item:', error);
-            alert('Error adding item');
+            // alert('Error adding item');
         }
         // clearForm();
         // setTimeout(()=>{

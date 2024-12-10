@@ -205,6 +205,7 @@ a:hover, a:active {
 // .sidebar.close .navlink .closecss {
 //   display: block;
 // }
+#files-container iframe{width: 100% !important;}
 .nav_link:hover {
   color:  var(--blue-color);
   font-size: 15.2px;
@@ -215,7 +216,9 @@ a:hover, a:active {
 .item{
   margin: 0.8rem;
 } 
-
+.nav_link.submenu_item.active .link_name1{
+  color: #fff;
+}
  .sidebar.close .nav_link:hover {
   background: var(--blue-color);
   color: #fff;

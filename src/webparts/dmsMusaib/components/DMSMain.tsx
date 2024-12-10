@@ -347,6 +347,7 @@ useEffect(() => {
 const buttonDivRef = useRef<HTMLDivElement>(null); 
 const [showMyrequButtons, setShowMyrequButtons] = useState(true); // Initially hidden
 const [showMyfavButtons, setShowMyfavButtons] = useState(false); // Initially hidden
+const [displayuploadfileandcreatefolder, setdisplayuploadfileandcreatefolder] = useState(false); // Initially hidden
 const [Myreqormyfav, setMyreqormyfav] = useState(''); // Initially hidden
 // console.log(Myreqormyfav , "Myreqormyfav")
   // console.log("This is current side ID",currentsiteID)
@@ -1333,6 +1334,7 @@ const myrequestbuttonclick =()=>{
 
         let clickTimer:any;
         titleElement.addEventListener("click" , async (event)=>{
+       
           // alert("in first")
           // new code added.
                 // toggle createfolder button based on the permission
@@ -1382,6 +1384,7 @@ const myrequestbuttonclick =()=>{
                 }
         })
         titleElement.addEventListener("click", async(event) => {
+          setdisplayuploadfileandcreatefolder(true)
           // alert("in second")
           // Toggle +/- button
                 // const plusMinus = document.getElementById("toggle-plus/minus");
@@ -1488,6 +1491,7 @@ const myrequestbuttonclick =()=>{
         });
         
         titleElement.addEventListener("dblclick", async (event) => {
+          setdisplayuploadfileandcreatefolder(true)
             event.stopPropagation();
             try {
               const currentUser = await sp.web.currentUser();
@@ -2053,6 +2057,7 @@ useEffect(() => {
 }, []);
 // end
   const getdoclibdata = async (FolderPath: any , siteID:any , docLibName:any) => {
+    setdisplayuploadfileandcreatefolder(true)
     //  ismyrequordoclibforfilepreview = "getdoclibdata"
      ismyrequordoclibforfilepreview = "getdoclibdata"
     console.log('path   ', FolderPath)
@@ -3961,7 +3966,7 @@ if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepre
     createbutton.addEventListener('click', function() {
       event.preventDefault()
       event.stopPropagation()
-      alert('Button was clicked!');
+      // alert('Button was clicked!');
       if(ismyrequordoclibforfilepreview === "myRequest"){
         myRequest();
       }
@@ -4267,6 +4272,7 @@ if (searchText !== "" ) {
 
 // }
 const ShareWithOther=async(event:React.MouseEvent<HTMLButtonElement>=null,searchText:HTMLInputElement=null)=>{
+  setdisplayuploadfileandcreatefolder(false)
 if(event){
   event.preventDefault();
   event.stopPropagation();
@@ -4399,7 +4405,7 @@ filteredFileData.forEach((file)=>{
     <p class="p1st">${file.FileName}</p>
     <div class="fileSizeAndVersion">
     <p class="p3rd">${file.FileSize} MB</p>
-    <p class="p2nd">${file.FileVersion}</p>
+ 
     </div></div></div>
     <div class="sharedFile">
       ${sharedUsersHTML}
@@ -4737,6 +4743,7 @@ filteredFileData.forEach((file)=>{
 //Toggle the menu card for share with me
 // @ts-ignore
 const ShareWithMe=async(event:React.MouseEvent<HTMLButtonElement>=null,searchText:HTMLInputElement=null)=>{
+  setdisplayuploadfileandcreatefolder(false)
    ismyrequordoclibforfilepreview = "sharewithme"
 
 if(event){
@@ -5324,6 +5331,7 @@ if (!isClickInsideMenu && !isClickInsideThreeDots) {
 
 
 const Recyclebin=async (event:React.MouseEvent<HTMLButtonElement>=null, siteIdToUpdate: string = null,    searchText:any = null)=>{
+  setdisplayuploadfileandcreatefolder(false)
 if(event){
   event.preventDefault();
   event.stopPropagation();
@@ -5416,10 +5424,12 @@ FilesItems.forEach(async (fileItem) => {
         card.className = "card";
         card.dataset.listId = file.SiteID;
         card.innerHTML = `  
-        <div class="row>
-          <div class="col-md-2 pe-0">       
+        <div class="row">
+          <div class="col-md-2 pe-0"> 
+          <div class="IMGContainer"> 
+          <div class="CardTextContainer">       
           <img class="filextension" src=${fileIcon} alt="${fileExtension} icon"/>
-         /div>
+         </div></div></div>
          <div class="col-md-10 pe-0">
           <p class="p1st">${file.FileName}</p>
           <p class="p2nd"></p>
@@ -7495,6 +7505,7 @@ const createFileButton = document.getElementById('createFileButton')
 
 // }
 const mycreatedfolders = async (event:any=null, searchText:any=null )=>{
+  setdisplayuploadfileandcreatefolder(false)
 const wait = document.getElementById('files-container')
 wait.classList.remove('hidemydatacards')
 if(createFileButton2){
@@ -7669,8 +7680,8 @@ for(const files of filteredFileData){
   <img class="filextension" src=${folderimg} icon"/>
   </div></div></div>
   <div class="col-md-10"> 
-  <p class="p1st">${folderName}</p>
-  <p class="p2nd"></p>
+  <p class="p1st p1stfolder">${folderName}</p>
+
   <p class="p3rd">${files.SiteTitle}</p>
   <p class="filestatus"> ${folderisprivateorpublic}  </p>
   </div>
@@ -8041,7 +8052,7 @@ const createFileCard = (file:any, fileIcon:any, siteId:any,listToUpdate:any,file
      </div>
          <div class="col-md-10 pe-0">
     <p class="p1st">${file.FileName}</p>
-    <p class="p2nd">${file.FileVersion}</p>
+
     <p class="p3rd">${file.FileSize} MB</p>
     </div></div>
     <div id="three-dots" class="three-dots" onclick="toggleMenu2('${file.FileUID}', '${siteId}')">
@@ -8817,6 +8828,7 @@ window.toggleFavourite=async (fileId,siteId)=> {
   
 //     };
 const myRequest = async (event:React.MouseEvent<HTMLButtonElement>=null, siteIdToUpdate: string = null,    searchText:any=null ) => {
+  setdisplayuploadfileandcreatefolder(false)
   ismyrequordoclibforfilepreview = "myRequest"
       // New code to hide the create file and folder button start
     // clean Url start
@@ -10704,7 +10716,7 @@ submitButton.addEventListener('click',async(event)=>{
 
     // Extract the last part after the last '/'
     const fileName:any = filePath.substring(filePath.lastIndexOf('/') + 1);
-    alert(fileName);
+    // alert(fileName);
     // console.log("fileName",fileName);
     // Extract the rest of the path
     const folderPath = filePath.substring(0, filePath.lastIndexOf('/'));
@@ -10789,7 +10801,7 @@ submitButton.addEventListener('click',async(event)=>{
       const fileExtensionOfOldFile =fileName.split('.').pop();
       // for same file extension
       if(fileExtensionOfSelectedFile === fileExtensionOfOldFile){
-          alert("Same file extension");
+          // alert("Same file extension");
           const file = web.getFileByServerRelativePath(filePath);
             await file.setContentChunked(selectedFile);
             if (file.exists) {
@@ -10800,7 +10812,7 @@ submitButton.addEventListener('click',async(event)=>{
           showReplaceMessage('File replaced successfully.');
           myRequest(null,null,null);
       }else{
-        alert("file extension are not same");
+        // alert("file extension are not same");
         const folderInWhichWeUploadTheFile=web.getFolderByServerRelativePath(folderPath);
         const uploadResult = await folderInWhichWeUploadTheFile.files.addChunked(selectedFile.name, selectedFile);
         const listItem = await uploadResult.file.getItem();
@@ -11001,27 +11013,51 @@ librarydiv.appendChild(mainContainer)
                     {" "}
                     <li className="breadcrumb-item">Home</li>
                    
-                    <li className="breadcrumb-item">&gt;</li>{" "} 
+                    <li className="breadcrumb-item">&gt;</li>
                     <li className="breadcrumb-item active">Settings</li>
                   </ol>
                             </div>
 
                             
-                            <div className="col-lg-6">
+                            <div style={{display:'flex', justifyContent:'end', gap:'5px'}} className="col-lg-6 newbutton">
                         <div id="hidegidvewlistviewbutton" className="view-buttons mt-2">
-                                <button  type="button" className="btn btngridview grid-view active"    
+                                <button  type="button" className="btn me-1 btngridview mt-0 grid-view active"    
                                 onClick={(event: any = null, siteIdToUpdate: string = null)=>myRequest(event) }>
                                   <a className="listviewfonticon">          
                                     <FontAwesomeIcon style={{color: "black"}} icon={faTableCells}/> </a>Grid View
                                 </button>
-                                <button type="button" className="btn btnlistview list-view" onClick={(event:any)=>MyrequestshowListView('ListViewComponent')}>
+                                <button type="button" className="btn btnlistview list-view mt-0" onClick={(event:any)=>MyrequestshowListView('ListViewComponent')}>
                                   <a className="listviewfonticon">
                                   <FontAwesomeIcon style={{color: "black"}} icon={faListSquares}/>
                                   </a>
                               List View
                                 </button>
-                               
+                 
                           </div>
+                          {displayuploadfileandcreatefolder && (
+    <div id="createuploadfilecont" className="createuploadfilecont mt-2"> 
+    <button
+       className="mybutton1 mt-0"
+       id="createFileButton"
+       onClick={() => handleButtonClickShow("UploadFile")}
+     >
+       + Create File
+     </button>
+     
+       <button
+       className="mybutton2 mt-0"
+       id="createFileButton2"
+       onClick={() => handleButtonClickShow("CreateFolder")}
+     >
+       + Create Folder
+     </button>
+     
+     
+     </div>
+                          )
+
+                          }
+            
                           {showMyfavButtons && ( <div id="hidegidvewlistviewbutton2"  className="view-buttons mt-2">
                                   <button className="btn btngridview grid-view active"    
                                   onClick={(e)=>myFavorite(e)}>
@@ -11140,7 +11176,7 @@ librarydiv.appendChild(mainContainer)
                           <span className="sidebarText">Recycle Bin</span>
                         </button>
                       </div>
-                      <div id="folderContainer2"></div>
+                      <div  style={{position:'sticky', top:'100px'}} className="is-sticky">  <div   id="folderContainer2"></div></div>
                     </div>
                     <div className="librarydata">
                       {showDeletepopup && (
@@ -11227,25 +11263,7 @@ librarydiv.appendChild(mainContainer)
                      
                      
                     </div>
-                   <div id="createuploadfilecont" className="createuploadfilecont"> 
-                   <button
-                      className="mybutton1"
-                      id="createFileButton"
-                      onClick={() => handleButtonClickShow("UploadFile")}
-                    >
-                      + Create File
-                    </button>
-                    
-                      <button
-                      className="mybutton2"
-                      id="createFileButton2"
-                      onClick={() => handleButtonClickShow("CreateFolder")}
-                    >
-                      + Create Folder
-                    </button>
-                    
-                    
-                    </div>
+                
               <div className="Manageworkflow">
            
               </div>
