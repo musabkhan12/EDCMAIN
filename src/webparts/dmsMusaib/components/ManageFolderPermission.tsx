@@ -206,10 +206,10 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
               //       Member?: IMember; 
               //       roleDefinitionBindings?:IRoleAssignmentInfo
               //     }
-              //      const encodedFolderPath = encodeURIComponent(`/sites/AlRostmani/CMS Entity/CMSD1/CMSD1F4`);
+ 
               //      alert(`encodedFolderPath : ${encodedFolderPath}`)
               //      const {web} =await sp.site.openWebById(`b74b305b-6893-4f7e-ab77-d25bce5cfb04`)
-              //      const folderItem = await web.getFolderByServerRelativePath(`/sites/AlRostmani/CMS Entity/CMSD1/CMSD1F4`).listItemAllFields();
+           
               //      const itemId = folderItem.Id;
               //      alert(`itemId of folder is : ${itemId}`)
               
@@ -246,11 +246,11 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
               
           
               //     try {
-              //         const encodedFolderPath = encodeURIComponent(`/sites/AlRostmani/CMS Entity/CMSD1/CMSD1F4`);
+              //       
               //         alert(`encodedFolderPath : ${encodedFolderPath}`);
               
               //         const { web } = await sp.site.openWebById(`b74b305b-6893-4f7e-ab77-d25bce5cfb04`);
-              //         const folderItem = await web.getFolderByServerRelativePath(`/sites/AlRostmani/CMS Entity/CMSD1/CMSD1F4`).listItemAllFields();
+              //      
               //         const itemId = folderItem.Id;
               //         alert(`itemId of folder is : ${itemId}`);
               

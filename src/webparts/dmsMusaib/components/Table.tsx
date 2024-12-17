@@ -512,7 +512,7 @@ const Pagination = ( { currentPage, totalPages, handlePageChange }: PaginationPr
                             </div></th>
                             <th  style={{ minWidth: '80px', maxWidth: '80px' }} >
                               <div>
-                                <div  >  <span >Action</span>  &nbsp;&nbsp;
+                                <div  >  <span >Size</span>  &nbsp;&nbsp;
                                <div className="dropdown">
                                   <FontAwesomeIcon  icon={faEllipsisV} onClick={toggleDropdown} size='sm'/>
                                 </div> 
@@ -543,18 +543,17 @@ const Pagination = ( { currentPage, totalPages, handlePageChange }: PaginationPr
                                 <td>{item.Modified}</td>
                                 <td style={{ minWidth: '80px', maxWidth: '80px' }}>{item.Status} </td>
                                  <td style={{ minWidth: '80px', maxWidth: '80px' }} className="ng-binding">
-                                  <div>
+                                  {/* <div>
+                                  this was action column 
                                     <span >
-                                       {/* <a className="action-icon text-primary" onClick={() => Editmedia(item.ID)}>
-                                  <FontAwesomeIcon icon={faEdit} /> 
-                                    </a> */}
-                                    
                                     </span>  <span >
                                       <a style={{width:'25px', height:'25px', borderRadius:'1000px', border:'1px solid #000', margin:'auto', textAlign:'center', padding:'4px', cursor:'pointer'}} className="action-icon text-danger" onClick={() => Deletemedia(item.ID)}>
                                            <FontAwesomeIcon className="Exclamationamark" icon={faExclamation} /> 
-                                       {/* <FontAwesomeIcon style={{color: "black"}} icon={faListSquares}/> */}
-                                      </a></span></div>
                                      
+                                      </a></span>
+                                      
+                                      </div> */}
+                                    <td>{((item.FileSize as unknown as number) / (1024 * 1024)).toFixed(2)} MB</td> 
                                 </td> 
                               </tr>
                             )

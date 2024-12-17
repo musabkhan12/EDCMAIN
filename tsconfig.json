@@ -7,6 +7,8 @@
     "moduleResolution": "node",
     "jsx": "react",
     "declaration": true,
+    "downlevelIteration": true,
+	  "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
@@ -31,7 +33,8 @@
     "es2015",
       "dom",
       "es2015.collection",
-      "es2015.promise"
+      "es2015.promise",
+        "es2019"
     ]
   },
   "include": [

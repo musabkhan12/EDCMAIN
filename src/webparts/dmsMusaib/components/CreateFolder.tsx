@@ -10,6 +10,7 @@ import "@pnp/sp/folders";
 import "@pnp/sp/webs"; 
 import "./CreateFoldercss";
 import Select from "react-select";
+import Swal from "sweetalert2";
 // import Form from "react-bootstrap/Form";
 
 // let selectedArrayForUserPermission:{
@@ -556,8 +557,8 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
       if(OthProps.DocumentLibrary === ""){
         (payloadForFolderMaster as any).DocumentLibraryName=folderName;
-        (payloadForFolderMaster as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
-        // (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
+         (payloadForFolderMaster as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
+        //  (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmanispfx2/${OthProps.Entity}/${folderName}`;
         // (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
         (payloadForFolderMaster as any).IsLibrary=true;
 
@@ -786,6 +787,27 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
     // new code end
             
       // Clear form on successful submission
+      Swal.fire({
+        title: "Folder Created Successfully",
+        text: "Folder Created Successfully. It will reflect after a few seconds as we set up everything for the folder.",
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.reload(); // This will reload the page
+        }
+        if(result.isDismissed){
+          window.location.reload();
+        }
+      });
+      
+      //  setTimeout(() => {
+      //     Swal.close(); // Close the pop-up
+      //     onReturnToMain(); // Call onReturnToMain if needed
+      //   }, 3000); // 3000 milliseconds = 3 seconds
+      
       clearForm();
     }
   };
@@ -808,7 +830,9 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
   return (
     <>
-      <button className="BackButton me-3 mb-3">
+      <button className="BackButton me-3 mb-3"
+       onClick={()=>window.location.reload()}
+      >
         {" "}
         Back{" "}
       </button>

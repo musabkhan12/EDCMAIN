@@ -1410,7 +1410,7 @@
 
 // console.log(path , ".....path")
 // // Generate the correct preview URL
-// const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+
 
 // console.log(previewUrl, "Generated preview URL");
  
@@ -1443,7 +1443,7 @@
 // //   container.innerHTML = "";
 // //   try {
 
-// //     //   const actualpath = `/sites/AlRostmani${FolderPath}`;
+
 // //     //   const folder = await sp.web.getFolderByServerRelativePath(actualpath).files();
 // //       const folder = await testidsub.web.getFolderByServerRelativePath(FolderPath).files();
 // //       console.log(folder, "folder", typeof(folder), "type of folder");

@@ -11,6 +11,7 @@ declare global {
     documentLibraryPopUp:(fileId: string , siteID:any , FolderPath:any , FileName:any,permission:any)=>void;
     undo:(fileId:any,siteId:any,FileMasterList:any,documentLibraryName:any,ID:any,folderPath:any,fileName:any)=>void;
     confirmUndo:(fileId:any, siteId:any, FileMasterList:any, documentLibraryName:any, ID:any,folderPath:any,fileName:any) =>void;
+    hideSharePopUp : ()=>void;
   }
 
 }
@@ -3481,7 +3482,7 @@ const createFileCardForDocumentLibrary=(file:any,fileIcon:any,siteID:string,IsHa
 
 // console.log(path , ".....path")
 // // Generate the correct preview URL
-// // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+// //
 
 // // console.log(previewUrl, "Generated preview URL");
  
@@ -3548,7 +3549,7 @@ const createFileCardForDocumentLibrary=(file:any,fileIcon:any,siteID:string,IsHa
   
 //   console.log(path , ".....path")
 //   // Generate the correct preview URL
-//   const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+//   
   
 //   console.log(previewUrl, "Generated preview URL");
    
@@ -3583,7 +3584,7 @@ const createFileCardForDocumentLibrary=(file:any,fileIcon:any,siteID:string,IsHa
 //   container.innerHTML = "";
 //   try {
 
-//     //   const actualpath = `/sites/AlRostmani${FolderPath}`;
+
 //     //   const folder = await sp.web.getFolderByServerRelativePath(actualpath).files();
 //       const folder = await testidsub.web.getFolderByServerRelativePath(FolderPath).files();
 //       console.log(folder, "folder", typeof(folder), "type of folder");
@@ -3772,7 +3773,7 @@ const createFileCardForDocumentLibrary=(file:any,fileIcon:any,siteID:string,IsHa
 //     // console.log(webInfo , "webinfo")
 //     // console.log("WebId: ", (webInfo as any).Id);
 //     // const folder = await sp.web.getFolderByServerRelativePath(currentfolderpath)();
-//     fetch("/sites/AlRostmani/AARG/_api/web", {
+
 //       method: "GET",
 //       headers: {
 //         "Accept": "application/json;odata=verbose"
@@ -3982,10 +3983,11 @@ if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepre
       
   });
   }
-}else{
+}
+if(ismyrequordoclibforfilepreview === "getdoclibdata"){
 // Generate the correct preview URL
 // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
 // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
 
 console.log(previewUrl, "Generated preview URL");
@@ -4011,6 +4013,36 @@ console.log(previewUrl, "Generated preview URL");
   });
   }
 }
+
+// else{
+// // Generate the correct preview URL
+// // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+// const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+// // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+
+// console.log(previewUrl, "Generated preview URL");
+ 
+//   console.log("Generated Preview URL:", previewUrl);
+//   if(previewUrl){
+//     librarydiv.innerHTML = "";
+//     previewfileframe.src = previewUrl;
+//     createpreviewdiv.appendChild(createbutton)
+//     createpreviewdiv.appendChild(previewfileframe);
+//     librarydiv.appendChild(createpreviewdiv)
+//     createbutton.addEventListener('click', function() {
+//       event.preventDefault()
+//       event.stopPropagation()
+//       // alert('Button was clicked!');
+//       // if(flag === "shareWithMe"){
+//       //     ShareWithMe(null,null);
+//       // }
+//       // if(flag === "documentLibrary"){
+//       //   getdoclibdata(currentfolderpath , currentsiteID , currentDocumentLibrary)
+//       // }
+//       getdoclibdata(currentfolderpath , currentsiteID , currentDocumentLibrary)
+//   });
+//   }
+// }
 }
 const searchFiles = async (event: React.FormEvent ) => {
 event.preventDefault();
@@ -4398,6 +4430,7 @@ filteredFileData.forEach((file)=>{
       
   card.innerHTML = `  
 <div class="row">
+
           <div class="col-md-2 pe-0">
     <img class="filextension" src=${fileIcon} alt="${fileExtension} icon"/>
     </div>
@@ -4907,11 +4940,11 @@ filteredFileData.forEach((file)=>{
   // `;
   menu.innerHTML = `
   <ul>
-    <li onclick="PreviewFile('${file.CurrentFolderPath}/${file.FileName}', '${file.SiteID}','${file.DocumentLibraryName}','${file.FilePreviewURL}')">
+    <li onclick="PreviewFile('${file.CurrentFolderPath}' , '${file.FileName}', '${file.SiteID}','${file.DocumentLibraryName}','${file.FilePreviewURL}')">
       <img src=${ShareFile} alt="Share"/> File Preview
     </li>
 
-    <li onclick="DownloadFile('${file.FileUID}', '${file.SiteID}')">
+    <li onclick="Download('${file.FileUID}', '${file.SiteID}')">
       <img src=${downloadicon} alt="Share"/> Download File                
     </li>
   </ul>
@@ -6136,7 +6169,17 @@ userDropdown.style.display = 'block';
 // Display all users initially
 renderDropdown(users); 
 });
-
+userInput.addEventListener('paste', (event) => {
+  setTimeout(() => {
+    const inputValue = userInput.value.toLowerCase();
+    const matchedUser = users.find(user => user.email.toLowerCase() === inputValue);
+    
+    if (matchedUser) {
+      renderDropdown([matchedUser]);
+      userDropdown.style.display = 'none';
+    }
+  }, 0); // Use setTimeout to ensure the paste event updates the input value first
+});
 // Filter dropdown based on input value
 userInput.addEventListener('input', () => {
 const searchValue = userInput.value.toLowerCase();
@@ -6778,7 +6821,7 @@ window.deleteFile = async(fileId:string, siteID:string, IsHardDelete:any, ListTo
           const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
           const siteUrl = window.location.origin;
           // const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-          // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+          //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
           const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
           console.log("previewUrl",previewUrl);
           payload.FilePreviewURL=previewUrl
@@ -7708,10 +7751,8 @@ menu.innerHTML = `
     Edit
   </li>
    ${superAdmin === true ? 
-      `<li onclick="deleteFolder('${files.SiteTitle}','${files.DocumentLibraryName}')">
-      <img src=${deleteIcon} alt="Edit"/>
-      Delete
-      </li>
+      `
+ 
       <li onclick="renameFolder('${files.SiteTitle}','${folderName}','${files.ID}','${files.SiteID}')">
         <img src=${editIcon} alt="Edit"/>
         Rename
@@ -8163,7 +8204,7 @@ window.toggleFavourite=async (fileId,siteId)=> {
             const siteUrl = window.location.origin;
             // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-            // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+            //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             console.log("previewUrl",previewUrl);
 
             payload.FilePreviewURL=previewUrl             
@@ -8335,8 +8376,8 @@ window.toggleFavourite=async (fileId,siteId)=> {
             const encodedFilePath = encodeURIComponent(file.ServerRelativeUrl);
             const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
             const siteUrl = window.location.origin;
-            const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-            // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+             const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+            //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             console.log("previewUrl",previewUrl);
 
@@ -8974,7 +9015,9 @@ FilesItems.forEach(async (fileItem, index) => {
   //  console.log(file.ID , "file.odata.id ")
   if(file.IsDeleted === null){
     const card = document.createElement("div");
-  
+    const fileSizeInKB = 2048; // Example file size in KB
+    const fileSizeInMB = (fileSizeInKB / 1024).toFixed(2); // Convert to MB and round to 2 decimal places
+
     // console.log("searchArray",searchArray);
     let fileIcon;
     const fileExtension = file.FileName?.split(".").pop().toLowerCase(); // Get the file extension
@@ -9013,8 +9056,8 @@ FilesItems.forEach(async (fileItem, index) => {
          <div class="CardTextContainer">
       <p class="p1st">${file.FileName}</p>
       <p class="p2nd"></p>
-      <p class="p3rd">${file.FileSize}</p>
-      <p class="filestatus"> ${file.Status}  </p>
+      <p class="p3rd">${((file.FileSize as unknown as number) / (1024 * 1024)).toFixed(2)}MB</p>
+      <p class="filestatus"> ${file.Status ? file.Status : ''}  </p>
       </div>
 
       <div class="three-dots" onclick="toggleMenu2('${file.FileUID}','${fileItem.SiteID}','${file.ID}' , '${fileItem.FileMasterList}')  ">
@@ -9076,8 +9119,8 @@ FilesItems.forEach(async (fileItem, index) => {
           fileStatusElement.style.color = "#000b56";
           break;
           default:
-            fileStatusElement.style.backgroundColor = "gray";
-            fileStatusElement.style.color = "white";
+            fileStatusElement.style.backgroundColor = "none";
+            fileStatusElement.style.color = "none";
             break;
     }
     
@@ -9294,10 +9337,10 @@ const fileNotFound=(fileName:any)=>{
         case 'My Folder':
           setDynamicContent('All the folder Created by me.');
           break;
-        case 'Share with Other':
+        case 'Shared with Others':
           setDynamicContent('My files shared with other users.');
           break;
-        case 'Share with me':
+        case 'Shared with me':
           setDynamicContent('File upload by other team members and shared with me.');
           break;
         case 'Recycle Bin':
@@ -9518,35 +9561,22 @@ formContent.addEventListener('click', (event) => {
 
 //  Share File
 window.shareFile=async(fileID:string,siteId:string,currentFolderPathForFile:string,fileName:string,flag:string,FileVersion:any,FileSize:any,Status:any,FilePreviewURL:any,DocumentLibraryName:any)=>{
-console.log("Share File called");
-console.log("flag",flag);
-console.log("file Id",fileID);
-console.log("site Id",siteId);
-console.log("FileName",fileName);
-console.log("currentFolderPath",currentFolderPathForFile);
-
-// Check permission of file when it come from the myrequest start
 const testidsub =await sp.site.openWebById(siteId)  
 
 let filePath=`${currentFolderPathForFile}/${fileName}`;
-console.log("filePath",filePath);
+
 const fileServerRelativePath = testidsub.web.getFileByServerRelativePath(filePath);
-// Retrieve the list item associated with the file
+
 const item = await fileServerRelativePath.getItem();
-console.log("items",item);
-// Get current user permissions on the item (file)
+
+
 const filePermissions = await item.getCurrentUserEffectivePermissions(); 
-console.log("File permissions:", filePermissions);
-// console.log("file listItems All field",file.ListItemAllFields);
 
 const hasFullControl = testidsub.web.hasPermissions(filePermissions, PermissionKind.ManageWeb);
 const hasEdit = testidsub.web.hasPermissions(filePermissions, PermissionKind.EditListItems);
 const hasContribute = testidsub.web.hasPermissions(filePermissions, PermissionKind.AddListItems) && testidsub.web.hasPermissions(filePermissions, PermissionKind.EditListItems);
 const hasRead = testidsub.web.hasPermissions(filePermissions, PermissionKind.ViewListItems);
-console.log(hasFullControl , "hasFullControl")
-console.log(hasEdit , "hasEdit")
-console.log(hasContribute , "hasContribute")
-console.log(hasRead , "hasRead")
+
 let filePermission:string;
 if (hasFullControl) {
   filePermission ="Full Control";
@@ -9560,37 +9590,12 @@ if (hasFullControl) {
   filePermission = "No Access";
 }
 
-console.log("filePermission",filePermission);
 
-// exreact the Entity from folder path
 const parts = currentFolderPathForFile.split("/");  
 const entity = parts[3]; 
 console.log(entity); 
 
 const fetchUser=async(entity:any)=>{
-  // const [
-  //   users,
-  //   users1,
-  //   users2,
-  //   users3,
-  //   users4,
-  // ] = await Promise.all([
-  //   sp.web.siteGroups.getByName(`${entity}_Read`).users(),
-  //   sp.web.siteGroups.getByName(`${entity}_Initiator`).users(),
-  //   sp.web.siteGroups.getByName(`${entity}_Contribute`).users(),
-  //   sp.web.siteGroups.getByName(`${entity}_Admin`).users(),
-  //   sp.web.siteGroups.getByName(`${entity}_View`).users(),
-  // ]);
-  // console.log(users, "users ", users1,users2,users3,users4);
-  // const combineArray = [
-  //   ...(users || []),
-  //   ...(users1 || []),
-  //   ...(users2 || []),
-  //   ...(users3 || []),
-  //   ...(users4 || []),
-  // ];
-
-  // const siteContext = await sp.site.openWebById(OthProps.siteID);
   const user0 = await sp.web.siteUsers();
   const combineUsersArray=user0.map((user)=>(
         {
@@ -9600,50 +9605,22 @@ const fetchUser=async(entity:any)=>{
         }
   ))
   console.log("Sub site users",combineUsersArray);
-    
-  // const resultArray=combineUsersArray.map((user) => ( 
-  //   {
-  //     id:String(user.Id),
-  //     value: user.Title,
-  //     email: user.Email
-  //   }
-  // ))
-  // console.log("combineArray", combineArray);
-  // console.log("resultArray",resultArray)
 
   return combineUsersArray;
 }
 
 const users=await fetchUser(entity);
-console.log("UserArray",users);
-
-
-// Check if a popup already exists, if so, remove it before creating a new one
 const existingPopup = document.getElementById('share-popup');
 if (existingPopup) {
 existingPopup.remove();
 }
 
-// Dummy data
-// const users = [
-//   { value: 'Test1', id: '14',email:"User1@officeindia.onmicrosoft.com" },
-//   { value: 'Test2', id: '31',email:"User2@officeindia.onmicrosoft.com" },
-//   { value: 'Test3', id: '137',email:"User3@officeindia.onmicrosoft.com"},
-//   { value: 'Test4', id: '33',email:"User4@officeindia.onmicrosoft.com" },
-//   { value: 'Test5', id: '32',email:"User5@officeindia.onmicrosoft.com" },
-//   { value: 'Test6', id: '34',email:"User6@officeindia.onmicrosoft.com" },
-//   { value: 'Test User1', id: '39',email:"User7@officeindia.onmicrosoft.com" },
-//   ];
-
-
-// Declare selectedUsers with an explicit type, assuming user IDs are of type string for selecting the user for share
 let selectedUsers: { id: string; value: string; email:string }[] = [];
-// Create the pop-up element
+
 const popup = document.createElement("div");
 popup.id = 'share-popup';
 popup.className = "share-popup";
 
-// Show permissions options.
 let options=''
 if(filePermission === "Full Control"){
 options=`
@@ -9664,8 +9641,6 @@ options=`
 ` 
 }
 
-
-// Add HTML structure for the pop-up with a dropdown and a close "X" button
 popup.innerHTML = `
 <div class="share-popup-content">
 <div class="share-popup-header">
@@ -9812,17 +9787,6 @@ console.log("Selected Permission:", selectedPermission);
 
 // Adding event listener to the "Share" button
 document.getElementById('share-shareFileButton').addEventListener('click', async function() {
-  console.log("selectedUserArray",selectedUsers);
-  console.log("Entity",entity);
-  console.log("FileId",fileID);
-  console.log("SiteId",siteId);
-  console.log("currentFolderPathForFile",currentFolderPathForFile);
-  console.log("FileName",fileName);
-  console.log("filesize",FileSize);
-  console.log("FileVersion",FileVersion);
-  console.log("Status",Status);
-  console.log("FilePreviewURL",FilePreviewURL);
-  console.log("DocumentLibraryName",DocumentLibraryName)
   const filePath=`${currentFolderPathForFile}/${fileName}`;
   console.log("filePath",filePath);
   // Check the Break role on the file start
@@ -9848,7 +9812,7 @@ document.getElementById('share-shareFileButton').addEventListener('click', async
       FileUID:fileID,
       CurrentUser:currentUserEmailRef.current,
       CurrentFolderPath:currentFolderPathForFile,
-      SiteName:entity,
+      SiteName:entity, 
       PermissionType:selectedPermission,
       ShareAt:isoDate,
       FileVersion:FileVersion,
@@ -9875,7 +9839,7 @@ document.getElementById('share-shareFileButton').addEventListener('click', async
       roleType=0;
     }
     console.log("roletype",roleType);
-    selectedUsers.forEach(async(user)=>{
+    const Promiseshare = selectedUsers.map(async(user)=>{
           (payloadForDMSShareWithOtherMaster as any).UserID=user.id;
           (payloadForDMSShareWithOtherMaster as any).ShareWithOthers=user.value;
           (payloadForDMSShareWithOtherMaster as any).ShareWithMe=user.email;
@@ -9884,128 +9848,29 @@ document.getElementById('share-shareFileButton').addEventListener('click', async
           //Add permission to the user in the file 
           const id=Number(user.id)
           console.log("User Id",id,"type",typeof id);
-          // const roleDefinitions = await sp.web.roleDefinitions();     
-          // const roleDefinition = roleDefinitions.find(rd => rd.RoleTypeKind === roleType); 
-          // console.log("roleDefinition",roleDefinition);    
-          // if(!roleDefinition) {       
-          //   throw new Error(`Role type ${roleType} not found.`);
-          // }
           await item.roleAssignments.add(id,roleType);
           console.log(`User ${user.email} added with role type ${selectedPermission},${roleType}.`);
           console.log("Data added successfully in the",newItem);
     })
-   
+
+    await Promise.all(Promiseshare)
+    alert(selectedUsers.length)
+  
+      const existingPopup = document.getElementById('share-popup');
+      if (existingPopup) {
+        existingPopup.remove();
+        Swal.fire({
+          title: "Access Provided Successfully",
+          text: "The access has been provided successfully.",
+          icon: "success"
+        })
+      }
+
   } catch (error) {
     console.log("Error in adding data to the DMSShareWithOtherMaster",error);
   }
  
-  // End
-
-
-  // required column
-  // FileNamex FileUIDx  CurrentUserx CurrentFolderPathx ShareWithOthersx ShareWithMex  SiteNamex       ShareAtx UserIDx PermissionTypex
-  // FileVersion FileSize Status FilePreviewURL
-
-  // const listToUpdateWithShareData=`DMS${entity}FileMaster`;
-  // console.log("listToUpdateWithShareData",listToUpdateWithShareData);
-
-  // Fetch the item from the list using its ID
-  // const item = await sp.web.lists.getByTitle(listToUpdateWithShareData).items.select("FileName","ShareWithOthers","ShareWithMe","FileUID","ID").filter(`FileUID eq '${fileID}' and CurrentUser eq '${currentUserEmailRef.current}'`)();
-  // console.log("Items",item)
-
-  // console.log("item",item);
-
-  // let dataArray;
-  // let dataArray: Array<{ FirstName: string; LastName?: string; SharedWith: string; SharedAt: string; TimeStamp: number; Permission: string,userId:string }> = [];
-        
-  // selectedUsers.forEach(async(user)=>{
-  
-  // const nameParts = user.value.trim().split(" ");
-  // const firstName = nameParts[0]; 
-  // let lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
-  // console.log("firstName",firstName) 
-  // console.log("lastName",lastName);
-  // if(lastName === ""){
-  //   lastName="";
-  // }
-
-  // const isoDate = new Date().toISOString().slice(0, 19) + 'Z';
-  // const timestamp = Date.now();
-  //   // let userObj={
-  //   //   FirstName:firstName,
-  //   //   LastName:lastName,
-  //   //   SharedWith:user.email,
-  //   //   SharedAt:isoDate,
-  //   //   TimeStamp:timestamp,
-  //   //   Permission:selectedPermission,
-  //   //   userId:user.id
-  //   // }
-  //   // dataArray.push(userObj);
-  //   // console.log("userObj",userObj);
-  // })
-
-  // console.log("dataArray",dataArray);
-
-  
-
-  // if(item[0].ShareWithMe === null && item[0].ShareWithOthers === null){
-
-  //       const dataInTheFormoOfString=JSON.stringify(dataArray);
-  //        // Now update specific columns of the item
-  //         const updatedItem = await sp.web.lists.getByTitle(listToUpdateWithShareData).items.getById(item[0].ID).update({
-  //           ShareWithOthers:dataInTheFormoOfString,
-  //           ShareWithMe:dataInTheFormoOfString
-  //         });
-
-  //         console.log("Data updated when ShareWithMe and ShareWithOthers are null",updatedItem);
-  // }else{
-  //    const shareWithOthers =JSON.parse(item[0].ShareWithOthers);
-  //    const shareWithMe=JSON.parse(item[0].ShareWithMe);
-
-  //    dataArray.forEach((user)=>{
-  //         // apply condition for sharing same file with same user multiple time using id of the user
-  //         const alReadySharedUserIndex=shareWithOthers.findIndex((item:any)=>{
-  //               return item.userId === user.userId
-  //         })
-  //         console.log("alReadySharedUser in shareWithOthers",alReadySharedUserIndex);
-  //         const alReadySharedUserIndex1=shareWithMe.findIndex((item:any)=>{
-  //             return item.userId === user.userId
-  //         })
-  //         console.log("alReadySharedUser in shareWithMe",alReadySharedUserIndex1);
-
-  //         if(alReadySharedUserIndex !== -1){
-  //               shareWithOthers.splice(alReadySharedUserIndex, 1);
-  //               shareWithOthers.push(user);
-  //               console.log("shareWithOthers",shareWithOthers);
-  //         }else{
-  //           shareWithOthers.push(user);
-  //         }
-
-  //         if(alReadySharedUserIndex1 !== -1){
-  //           shareWithMe.splice(alReadySharedUserIndex1, 1);
-  //           shareWithMe.push(user);
-  //           console.log("shareWithMe",shareWithMe);
-  //         }else{
-  //           shareWithMe.push(user);
-  //         }
-  //    })
-
-  //    console.log("shareWithOthers",shareWithOthers);
-  //    console.log("shareWithMe",shareWithMe);
-
-  //    const dataInTheFormoOfStringForShareWithMe=JSON.stringify(shareWithMe);
-  //    const dataInTheFormoOfStringForShareWithOthers=JSON.stringify(shareWithOthers);
-  //    // Now update specific columns of the item
-  //    const updatedItem = await sp.web.lists.getByTitle(listToUpdateWithShareData).items.getById(item[0].ID).update({
-  //     ShareWithOthers:dataInTheFormoOfStringForShareWithOthers,
-  //     ShareWithMe:dataInTheFormoOfStringForShareWithMe
-  //   });
-
-  //   console.log("Data updated when ShareWithMe and ShareWithOthers",updatedItem);
-  // }
-
 });
-
 
 }
 
@@ -11012,9 +10877,7 @@ librarydiv.appendChild(mainContainer)
                                 <ol className="breadcrumb m-0">
                     {" "}
                     <li className="breadcrumb-item">Home</li>
-                   
-                    <li className="breadcrumb-item">&gt;</li>
-                    <li className="breadcrumb-item active">Settings</li>
+                    <li className="breadcrumb-item active">Dossier</li>
                   </ol>
                             </div>
 
@@ -11041,7 +10904,7 @@ librarydiv.appendChild(mainContainer)
        id="createFileButton"
        onClick={() => handleButtonClickShow("UploadFile")}
      >
-       + Create File
+       + Upload File
      </button>
      
        <button
@@ -11147,7 +11010,7 @@ librarydiv.appendChild(mainContainer)
                             {/* <FontAwesomeIcon icon={faShareAlt} /> */}
                             <img className="sidebariconssmall" src={sharewithothericon}></img>
                           </span>
-                          <span className="sidebarText">Share with Other</span>
+                          <span className="sidebarText">Shared with Others</span>
                         </button>
 
                         <button
@@ -11160,7 +11023,7 @@ librarydiv.appendChild(mainContainer)
                           <img className="sidebariconssmall" src={sharewithmeicon}></img>
                             {/* <FontAwesomeIcon icon={faShareAlt} /> */}
                           </span>
-                          <span className="sidebarText">Share with me</span>
+                          <span className="sidebarText">Shared with me</span>
                         </button>
 
                         <button

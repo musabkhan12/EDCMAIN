@@ -105,11 +105,12 @@ console.log("documentLibraryName" , documentLibraryName)
     const encodedFilePath = encodeURIComponent(serverRelativeUrl);
     
     // Example: 
-    // serverRelativeUrl = "/sites/AlRostmani/test/DocumentLibraryInsideTest/Book.xlsx"
+
     const parentFolder = serverRelativeUrl.substring(0, serverRelativeUrl.lastIndexOf('/'));
     const siteUrl = window.location.origin;
 
     // const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+    // const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
     const previewUrl = `${siteUrl}/sites/IntranetUAT/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
     console.log("Generated Preview URL:", previewUrl);
    if(previewUrl){
@@ -395,6 +396,7 @@ const handleSubmit = async (event: any) => {
       const encodedFilePath = encodeURIComponent(uploadResult.data.ServerRelativeUrl);
       console.log(encodedFilePath , "encodedFilePath")
       // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentfolderpath.Entity}/${currentfolderpath.DocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+      //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentfolderpath.Entity}/${currentfolderpath.DocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
        const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentfolderpath.Entity}/${currentfolderpath.DocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
       
       console.log("Generated Preview URL:", previewUrl);
@@ -406,7 +408,7 @@ const handleSubmit = async (event: any) => {
         status="Pending";
       }else if(IsApproval === false){
         // alert(`status is null`);
-        status="";
+        status="Approved";
       }
       (payload as any).Status=status;
       await listItem.update(payload);
@@ -454,7 +456,7 @@ const handleSubmit = async (event: any) => {
     if(newItem ){
       Deletemedia()
       setTimeout(() => {
-        location.reload()
+        
         onReturnToMain(); // Call onReturnToMain after 3 seconds
     }, 3000); // 3000 milliseconds = 3 seconds
      }
@@ -569,10 +571,13 @@ const Deletemedia = () => {
     
     return (
       <>
-          <button className='BackButton me-3 mb-3' onClick={(event) => {
-                onReturnToMain();
-                // myRequest(event);
-          }}> Back 
+          <button className='BackButton me-3 mb-3' 
+          // onClick={(event) => {
+          //       onReturnToMain();
+          //       // myRequest(event);
+          // }}
+          onClick={()=>onReturnToMain()}
+          > Back 
           </button>
           <div className="container mt-3 UploadFileCont">
               <div className='main-containeruploadfile'>
