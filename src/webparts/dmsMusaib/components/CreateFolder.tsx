@@ -796,10 +796,12 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
         cancelButtonText: 'No'
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.reload(); // This will reload the page
+          location.reload(); // This will reload the page
+          onReturnToMain()
         }
         if(result.isDismissed){
-          window.location.reload();
+          location.reload();
+          onReturnToMain()
         }
       });
       
@@ -831,10 +833,10 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
   return (
     <>
       <button className="BackButton me-3 mb-3"
-       onClick={()=>window.location.reload()}
+         onClick={()=>{location.reload() ;onReturnToMain()}}
       >
-        {" "}
-        Back{" "}
+ 
+        Back
       </button>
       <div className="container mt-3">
         <div className="card cardborder p-3" style={{

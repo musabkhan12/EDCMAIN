@@ -1299,6 +1299,10 @@ const myrequestbuttonclick =()=>{
           ///End: display all Document libraries under Devision directly if Department null with nested folder //////
 
           devisionElement.addEventListener("click", (event) => {
+            const breadcrumbElement=document.getElementById("breadcrumb");
+            if(breadcrumbElement){
+              breadcrumbElement.style.display="none";
+            }
             event.stopPropagation();
             currentDevision = devisionTitle;
             currentEntityURL = value.siteURL;
@@ -1335,7 +1339,10 @@ const myrequestbuttonclick =()=>{
 
         let clickTimer:any;
         titleElement.addEventListener("click" , async (event)=>{
-       
+          const breadcrumbElement=document.getElementById("breadcrumb");
+          if(breadcrumbElement){
+            breadcrumbElement.style.display="none";
+          }
           // alert("in first")
           // new code added.
                 // toggle createfolder button based on the permission
@@ -1385,6 +1392,10 @@ const myrequestbuttonclick =()=>{
                 }
         })
         titleElement.addEventListener("click", async(event) => {
+          const breadcrumbElement=document.getElementById("breadcrumb");
+          if(breadcrumbElement){
+            breadcrumbElement.style.display="none";
+          }
           setdisplayuploadfileandcreatefolder(true)
           // alert("in second")
           // Toggle +/- button
@@ -1492,6 +1503,11 @@ const myrequestbuttonclick =()=>{
         });
         
         titleElement.addEventListener("dblclick", async (event) => {
+          const breadcrumbElement=document.getElementById("breadcrumb");
+          if(breadcrumbElement){
+            breadcrumbElement.style.display="none";
+          }
+          
           setdisplayuploadfileandcreatefolder(true)
             event.stopPropagation();
             try {
@@ -2054,7 +2070,10 @@ useEffect(() => {
   cleanUrlInMyRequest=true;
   getdoclibdata(path,siteId,folderName);
   }
-  
+  const hidegidvewlistviewbutton = document.getElementById('hidegidvewlistviewbutton')
+  if (hidegidvewlistviewbutton) {
+     hidegidvewlistviewbutton.style.display = 'none'
+  }
 }, []);
 // end
   const getdoclibdata = async (FolderPath: any , siteID:any , docLibName:any) => {
@@ -4896,6 +4915,21 @@ filteredFileData.forEach((file)=>{
   card.dataset.fileId = file.FileUID;
   card.dataset.listId = file.SiteID;
          
+  // card.innerHTML = `   
+  // <div class="row">
+  //         <div class="col-md-2 pe-0">     
+  //   <img class="filextension" src=${fileIcon} alt="${fileExtension} icon"/>
+  //   </div>
+  //   <div class="col-md-10 pe-0">
+  //   <p class="p1st">${file.FileName}</p>
+  //   <div class="fileSizeAndVersion">
+  //   <p class="p3rd">${file.FileSize} MB</p>
+  //   <p class="p2nd">${file.FileVersion}</p>
+  //   </div>  </div>  </div>
+  //   <div id="three-dots" class="three-dots" onclick="shareWithMePopUp('${file.FileUID}','${file.SiteID}','${file.CurrentFolderPath}','${file.FileName}')">
+  //   <span>...</span>
+  //   </div>
+  // `;
   card.innerHTML = `   
   <div class="row">
           <div class="col-md-2 pe-0">     
@@ -4905,7 +4939,6 @@ filteredFileData.forEach((file)=>{
     <p class="p1st">${file.FileName}</p>
     <div class="fileSizeAndVersion">
     <p class="p3rd">${file.FileSize} MB</p>
-    <p class="p2nd">${file.FileVersion}</p>
     </div>  </div>  </div>
     <div id="three-dots" class="three-dots" onclick="shareWithMePopUp('${file.FileUID}','${file.SiteID}','${file.CurrentFolderPath}','${file.FileName}')">
     <span>...</span>
@@ -7724,11 +7757,12 @@ for(const files of filteredFileData){
   </div></div></div>
   <div class="col-md-10"> 
   <p class="p1st p1stfolder">${folderName}</p>
-
-  <p class="p3rd">${files.SiteTitle}</p>
-  <p class="filestatus"> ${folderisprivateorpublic}  </p>
+  <p class="p3rd">${files.SiteTitle} </p>
+  <div class="mycreatedfolderpublicorlibrary"> <p class="filestatus">${folderisprivateorpublic} </p> 
+  
+  <p class="filestatus2 ${files.IsLibrary === true ? 'root-folder' : 'sub-folder'}"> ${files.IsLibrary === true ? 'Root Folder' : 'Sub Folder'} </p> </div>
   </div>
-  <div class="three-dots" onclick="toggleMenu2('${files.ID}','${files.SiteID}')">
+  <div class="three-dots folderthreedots" onclick="toggleMenu2('${files.ID}','${files.SiteID}')">
       <span>...</span>
   </div> </div>
            </div>
@@ -7760,32 +7794,15 @@ menu.innerHTML = `
       : ''}
 </ul>
 `;
-// menu.innerHTML = `
-// <ul>
-//      <li onclick="managePermission('${files.DocumentLibraryName}','${files.SiteTitle}','${files.SiteID}')">
-//       <img src=${managePermissionIcon} alt="ManagePermission"/>
-//       Manage Permission
-//   </li>
-//   <li onclick="manageWorkflow('${files.DocumentLibraryName}','${files.SiteTitle}','${files.SiteID}')">
-//     <img src=${manageWorkFlowIcon} alt="ManageWorkFlow"/>
-//     Manage Workflow
-//   </li>
-//   <li onclick="editFile('${files.SiteTitle}','${files.DocumentLibraryName}')">
-//     <img src=${editIcon} alt="Edit"/>
-//     Edit
-//   </li>
-//   <li onclick="view('view')">
-//     <img src=${viewIcon} alt="View"/>
-//     View
-//   </li>
-//   <li onclick="deleteFile('delete')">
-//     <img src=${deleteIcon} alt="Delete"/>
-//     Delete
-//   </li>  
-// </ul>
-// `;
+
 
 card.appendChild(menu);
+ const isfolderordoclib = card.querySelector(".filestatus2") as HTMLElement;
+ switch (files.IsLibrary === true){
+  case true:
+  isfolderordoclib.style.backgroundColor = "gray";
+  isfolderordoclib.style.color = "white";
+ }
 const fileStatusElement = card.querySelector(".filestatus") as HTMLElement;
 switch (files.IsPrivate) {
   case false:
@@ -9056,8 +9073,8 @@ FilesItems.forEach(async (fileItem, index) => {
          <div class="CardTextContainer">
       <p class="p1st">${file.FileName}</p>
       <p class="p2nd"></p>
-      <p class="p3rd">${((file.FileSize as unknown as number) / (1024 * 1024)).toFixed(2)}MB</p>
-      <p class="filestatus"> ${file.Status ? file.Status : ''}  </p>
+      <p class="p3rd ">${((file.FileSize as unknown as number) / (1024 * 1024)).toFixed(2)}MB</p>
+      <p class="filestatus myrequestp3rd"> ${file.Status ? file.Status : ''}  </p>
       </div>
 
       <div class="three-dots" onclick="toggleMenu2('${file.FileUID}','${fileItem.SiteID}','${file.ID}' , '${fileItem.FileMasterList}')  ">
@@ -9105,6 +9122,12 @@ FilesItems.forEach(async (fileItem, index) => {
       case "Approved":
         fileStatusElement.style.backgroundColor = "#b5e7d3";
         fileStatusElement.style.color = "#008751";
+        break;
+      case "Auto Approved":
+        fileStatusElement.style.backgroundColor = "#b5e7d3";
+        fileStatusElement.style.color = "#008751";
+        fileStatusElement.style.width = "96px";
+
         break;
       case "Rejected":
         fileStatusElement.style.backgroundColor = "rgba(241, 85, 108, 0.1)";

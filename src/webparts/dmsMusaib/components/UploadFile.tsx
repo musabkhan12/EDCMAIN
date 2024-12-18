@@ -408,7 +408,7 @@ const handleSubmit = async (event: any) => {
         status="Pending";
       }else if(IsApproval === false){
         // alert(`status is null`);
-        status="Approved";
+        status="Auto Approved";
       }
       (payload as any).Status=status;
       await listItem.update(payload);
@@ -456,7 +456,7 @@ const handleSubmit = async (event: any) => {
     if(newItem ){
       Deletemedia()
       setTimeout(() => {
-        
+        location.reload()
         onReturnToMain(); // Call onReturnToMain after 3 seconds
     }, 3000); // 3000 milliseconds = 3 seconds
      }
@@ -576,7 +576,7 @@ const Deletemedia = () => {
           //       onReturnToMain();
           //       // myRequest(event);
           // }}
-          onClick={()=>onReturnToMain()}
+          onClick={()=>{location.reload() ;onReturnToMain()}}
           > Back 
           </button>
           <div className="container mt-3 UploadFileCont">
