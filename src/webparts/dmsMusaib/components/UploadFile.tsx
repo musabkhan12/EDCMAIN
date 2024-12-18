@@ -205,7 +205,7 @@ React.useEffect(()=>{
 
       // start
       
-      const documentLibraryFields=await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName","ColumnType","IsRequired")
+      const documentLibraryFields=await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName","ColumnType","IsRequired","IsRename")
       .filter(
             `SiteName eq '${currentfolderpath.Entity}' 
             and DocumentLibraryName eq '${currentfolderpath.DocumentLibrary}' 
@@ -218,14 +218,19 @@ React.useEffect(()=>{
       const submitButton=document.createElement('button');
       const uploadFileDiv=document.createElement('div');
 
-      const createElement=(fieldName:string,type:string,required:boolean)=>{
+      const createElement=(fieldName:string,type:string,required:boolean,IsRename:string)=>{
+            let fName=fieldName
+            if(IsRename!== null){
+              fName=IsRename
+            }
             const inputContainer = document.createElement("div"); 
             inputContainer.className = "input-container";
     
             // Create and set label
             const label = document.createElement("label");
             label.setAttribute("htmlFor", fieldName);
-            label.textContent = fieldName;
+            // label.textContent = fieldName;
+            label.textContent = fName;
             inputContainer.appendChild(label);
     
             let inputElement: HTMLInputElement | null = null;
@@ -275,7 +280,7 @@ React.useEffect(()=>{
 
       // start
       documentLibraryFields.forEach((field)=>{
-        createElement(field.ColumnName,field.ColumnType,field.IsRequired);
+        createElement(field.ColumnName,field.ColumnType,field.IsRequired,field.IsRename);
         })
       // end
 

@@ -3445,7 +3445,7 @@ const createFileCardForDocumentLibrary=(file:any,fileIcon:any,siteID:string,IsHa
  const getFileIcon = (fileName:any) => {
        
    
-  const fileExtension = fileName.split(".").pop().toLowerCase();
+  const fileExtension = fileName?.split(".").pop().toLowerCase();
   let fileIcon;
   switch (fileExtension) {
     case "doc":
@@ -4450,18 +4450,19 @@ filteredFileData.forEach((file)=>{
   card.innerHTML = `  
 <div class="row">
 
-          <div class="col-md-2 pe-0">
+    <div class="col-md-2 pe-0">
     <img class="filextension" src=${fileIcon} alt="${fileExtension} icon"/>
     </div>
-         <div class="col-md-10 pe-0">
+    <div class="col-md-10 pe-0">
     <p class="p1st">${file.FileName}</p>
     <div class="fileSizeAndVersion">
     <p class="p3rd">${file.FileSize} MB</p>
- 
-    </div></div></div>
-    <div class="sharedFile">
-      ${sharedUsersHTML}
     </div>
+    </div>
+</div>
+<div class="sharedFile">
+      ${sharedUsersHTML}
+</div>
   `;
   container.appendChild(card);
 })
@@ -8027,7 +8028,7 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
   console.log("documentLibraryName",documentLibraryName)
 
     // Fetch the existing columns and types from the list
-    const existingColumns = await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName", "ColumnType","ID").filter(`SiteName eq '${siteName}' and DocumentLibraryName eq '${documentLibraryName}' and IsDocumentLibrary eq 0`)();
+    const existingColumns = await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName", "ColumnType","ID","IsRename").filter(`SiteName eq '${siteName}' and DocumentLibraryName eq '${documentLibraryName}' and IsDocumentLibrary eq 0`)();
 
     console.log("existingColumns",existingColumns);
 
@@ -8071,7 +8072,7 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
           <input 
             type="text" 
             id="col-${column.ID}" 
-            value="${column.ColumnName}" 
+            value="${column.IsRename !== null ? column.IsRename : column.ColumnName}" 
             data-id="${column.ID}" 
             style="width: calc(100% - 10px); padding: 8px; border: 1px solid #ccc; border-radius: 4px;" />
         </div>
@@ -8132,12 +8133,40 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
       // Filter only updated items
       const updatedItems = updates.filter(updatedItem => {
         const oldItem = existingColumns.find(old => old.ID === parseInt(updatedItem.ID, 10));
-        return oldItem && oldItem.ColumnName !== updatedItem.ColumnName;
+        if(oldItem.IsRename !== null){
+          return oldItem && oldItem.IsRename !== updatedItem.ColumnName
+        }else if(oldItem.IsRename === null){
+          return oldItem && oldItem.ColumnName !== updatedItem.ColumnName
+        }
       });
+
+      if(updatedItems.length > 0 ){
+        for(const item of updatedItems){
+
+          try {
+              await sp.web.lists
+            .getByTitle("DMSPreviewFormMaster")
+            .items.getById(Number(item.ID))
+            .update({
+              IsRename: item.ColumnName,
+            });
+            console.log("Column Updated successfully")
+          } catch (error) {
+            console.log("Error in Column Updated",error)
+          }
+          
+          }
+          Swal.fire('Success','Column Updated successfully','success');
+      }else{
+        Swal.fire('Warning','Please update atleast one column','warning');
+        return;
+      }
 
       console.log("Updated items:", updatedItems);
 
-      alert("Column names updated successfully!");
+
+
+      // alert("Column names updated successfully!");
       document.body.removeChild(popup);
     });
 
@@ -9639,7 +9668,7 @@ window.editFile = async (siteName: string, documentLibraryName:string ) => {
   console.log("Inside the editFile");
 
   // Fetch the existing columns and types from the list
-  const existingColumns = await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName", "ColumnType","ID").filter(`SiteName eq '${siteName}' and DocumentLibraryName eq '${documentLibraryName}' and IsDocumentLibrary eq 0`)();
+  const existingColumns = await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName", "ColumnType","ID","IsRename").filter(`SiteName eq '${siteName}' and DocumentLibraryName eq '${documentLibraryName}' and IsDocumentLibrary eq 0`)();
 
   console.log("existingColumns",existingColumns);
 
@@ -9670,7 +9699,7 @@ window.editFile = async (siteName: string, documentLibraryName:string ) => {
     <div class="form-group">
       <div class="col-md-5">
         <label>Field Name</label>
-        <input type="text" class="form-control" value="${col.ColumnName}" disabled />
+        <input type="text" class="form-control" value="${col.IsRename !== null ? col.IsRename : col.ColumnName}" disabled />
       </div>
       <div class="col-md-5">
         <label>Field Type</label>
@@ -10161,13 +10190,17 @@ window.auditHistory=async(fileId:string, siteId:string,DocumentLibraryName:strin
    console.log("fileItem",fileItem.ListItemAllFields.Status);
   
   // fetched the columns details corresponding to the file 
-  const fileColumns =await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName","SiteName","DocumentLibraryName").filter(`SiteName eq '${SiteName}' and DocumentLibraryName eq '${DocumentLibraryName}' and IsDocumentLibrary ne 1`)();
+  const fileColumns =await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName","SiteName","DocumentLibraryName","IsRename").filter(`SiteName eq '${SiteName}' and DocumentLibraryName eq '${DocumentLibraryName}' and IsDocumentLibrary ne 1`)();
   console.log("fileColumns",fileColumns);
 
   // Create an array of objects to store the columnName with there corresponding value
   const resultArrayThatContainstheColumnDetails = fileColumns.map((column) => {
-  const columnName = column.ColumnName;
+    
+  let columnName = column.ColumnName;
   const columnValue = fileItem.ListItemAllFields[columnName];
+    if(column.IsRename !== null){
+      columnName=column.IsRename
+    }
 
     return {
       label: columnName,
