@@ -7784,14 +7784,21 @@ menu.innerHTML = `
     <img src=${editIcon} alt="Edit"/>
     Edit
   </li>
-   ${superAdmin === true ? 
-      `
- 
-      <li onclick="renameFolder('${files.SiteTitle}','${folderName}','${files.ID}','${files.SiteID}')">
-        <img src=${editIcon} alt="Edit"/>
-        Rename
-      </li>`
-      : ''}
+  ${superAdmin === true ? 
+    `<li onclick="deleteFolder('${files.SiteTitle}','${folderName}','${files.ID}','${files.SiteID}','${files.FolderPath}','${files.IsLibrary}')">
+    <img src=${deleteIcon} alt="Edit"/>
+    Delete
+    </li>
+    <li onclick="renameFolder('${files.SiteTitle}','${folderName}','${files.ID}','${files.SiteID}')">
+      <img src=${editIcon} alt="Edit"/>
+      Rename
+    </li>
+    ${files.IsLibrary === true ? `<li onclick="renameColumn('${files.SiteTitle}','${files.DocumentLibraryName}')">
+      <img src=${editIcon} alt="Edit"/>
+      Rename Column
+    </li>`: ''}
+    `
+    : ''}
 </ul>
 `;
 
@@ -7840,9 +7847,83 @@ if(files.IsFolder === true){
 }
 // Function to delete the folder
 // @ts-ignore
-window.deleteFolder=(siteName:any,documentLibraryName:any)=>{
+// window.deleteFolder=(siteName:any,documentLibraryName:any)=>{
+//   console.log("siteName",siteName)
+//   console.log("documentLibraryName",documentLibraryName)
+// }
+
+// Function to delete the folder
+// @ts-ignore
+window.deleteFolder=(siteName:any,folderName:any,itemId:any,siteId:any,folderpath:any,IsLibrary:any)=>{
   console.log("siteName",siteName)
-  console.log("documentLibraryName",documentLibraryName)
+  console.log("folderName",folderName)
+  console.log("itemId",itemId)
+  console.log("siteId",siteId)
+  console.log("folderpath",folderpath)
+  console.log("IsLibrary",IsLibrary)
+  Swal.fire({
+    title: "Are you sure you want to delete this folder?",
+    text: "Deleting this folder will also permanently delete all files and subfolders inside it.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!"
+  }).then(async(result) => {
+    if (result.isConfirmed) {
+      // Delete the Library and folder in sharepoint
+      try {
+
+        const {web}=await sp.site.openWebById(siteId);
+        if(IsLibrary === 'true'){
+          const data=await web.lists.getByTitle(folderName).delete();
+          console.log("Library deleted succesfully",data);
+        }else{
+          const data=await web.getFolderByServerRelativePath(`${folderpath}`).delete();
+          console.log("Folder deleted succesfully",data);
+        }
+        
+        // Delete the data related to the folder/library inside the DMSFolderMster
+        try {
+          await sp.web.lists.getByTitle(`DMSFolderMaster`).items.getById(itemId).delete();
+          console.log(`Item with ID ${itemId} deleted successfully from list DMSFolderMaster.`);
+        } catch (error) {
+          console.error(`Error deleting item: ${error.message}`);
+        }
+
+        try {
+           // Query the list for items where the 'FolderPath' column matches the given value
+          const items = await sp.web.lists.getByTitle(`DMS${siteName}FileMaster`)
+          .items.filter(`CurrentFolderPath eq '${folderpath}'`)
+          .select("Id")();
+
+          // Check if any items match the query
+          if (items.length > 0) {
+            // Delete all matching items
+            for (const item of items) {
+              await sp.web.lists.getByTitle(`DMS${siteName}FileMaster`).items.getById(item.Id).delete();
+              console.log(`Deleted item with ID: ${item.Id}`);
+            }
+
+            console.log("All matching items deleted successfully.");
+          }
+        } catch (error) {
+          console.error(`Error deleting items in DMS${siteName}FileMaster: ${error.message}`);
+        }
+      } catch (error) {
+        console.log("Error in deleteing Folder ",error);
+      }
+      
+      
+      Swal.fire({
+        title: "Deleted!",
+        text: "Your folder has been deleted.",
+        icon: "success"
+      });
+      mycreatedfolders(null,null);
+    }
+  });
+
 }
 
 // Function to rename the folder
@@ -7937,6 +8018,134 @@ window.renameFolder=(siteName:any,folderName:any,itemId:any,siteId:any)=>{
   
     // Add the popup to the document body
     document.body.appendChild(popup);
+}
+
+// This function called when we click on the Rename Column option inside the mycreated Folder
+// @ts-ignore
+window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
+  console.log("siteName",siteName)
+  console.log("documentLibraryName",documentLibraryName)
+
+    // Fetch the existing columns and types from the list
+    const existingColumns = await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName", "ColumnType","ID").filter(`SiteName eq '${siteName}' and DocumentLibraryName eq '${documentLibraryName}' and IsDocumentLibrary eq 0`)();
+
+    console.log("existingColumns",existingColumns);
+
+    
+  // Create the popup container
+  const popup = document.createElement("div");
+  popup.id = "renamePopup";
+  popup.style.cssText = `
+    position: fixed; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    background: white; 
+    padding: 20px; 
+    border: 1px solid #ccc; 
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); 
+    z-index: 1000; 
+    width: 400px;
+  `;
+
+  // Add the close button
+  const closeButton = document.createElement("span");
+  closeButton.innerHTML = "&times;";
+  closeButton.style.cssText = `
+    position: absolute; 
+    top: 10px; 
+    right: 15px; 
+    font-size: 20px; 
+    font-weight: bold; 
+    color: #333; 
+    cursor: pointer;
+  `;
+  closeButton.onclick = () => document.body.removeChild(popup);
+
+  // Generate the form dynamically
+  const formContent = existingColumns
+    .map(
+      (column) => `
+        <div style="margin-bottom: 15px;">
+          <input 
+            type="text" 
+            id="col-${column.ID}" 
+            value="${column.ColumnName}" 
+            data-id="${column.ID}" 
+            style="width: calc(100% - 10px); padding: 8px; border: 1px solid #ccc; border-radius: 4px;" />
+        </div>
+      `
+    )
+    .join("");
+
+  popup.innerHTML = `
+    <h3 style="margin-top: 0; text-align: center; font-size: 18px;">Rename Columns</h3>
+    <form id="renameForm">
+      ${formContent}
+      <div style="margin-top: 20px; text-align: right;">
+        <button type="button" id="cancelBtn" style="
+          background: #ccc; 
+          border: none; 
+          padding: 8px 15px; 
+          border-radius: 4px; 
+          cursor: pointer; 
+          margin-right: 10px;">Cancel</button>
+        <button type="submit" style="
+          background: #0078d4; 
+          color: white; 
+          border: none; 
+          padding: 8px 15px; 
+          border-radius: 4px; 
+          cursor: pointer;">Save</button>
+      </div>
+    </form>
+  `;
+
+  popup.prepend(closeButton); // Add the close button to the popup
+  document.body.appendChild(popup);
+
+  // Handle form submission
+  document
+    .getElementById("renameForm")!
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const inputs = popup.querySelectorAll("input");
+      const updates = Array.from(inputs).map((input) => ({
+        ID: input.getAttribute("data-id"),
+        ColumnName: (input as HTMLInputElement).value,
+      }));
+
+      console.log("Updates to save:", updates);
+
+      // Update the list with new column names
+      // for (const update of updates) {
+      //   await sp.web.lists
+      //     .getByTitle("DMSPreviewFormMaster")
+      //     .items.getById(update.ID)
+      //     .update({
+      //       ColumnName: update.ColumnName,
+      //     });
+      // }
+      
+      // Filter only updated items
+      const updatedItems = updates.filter(updatedItem => {
+        const oldItem = existingColumns.find(old => old.ID === parseInt(updatedItem.ID, 10));
+        return oldItem && oldItem.ColumnName !== updatedItem.ColumnName;
+      });
+
+      console.log("Updated items:", updatedItems);
+
+      alert("Column names updated successfully!");
+      document.body.removeChild(popup);
+    });
+
+  // Handle cancel button
+  document.getElementById("cancelBtn")!.addEventListener("click", () => {
+    document.body.removeChild(popup);
+  });
+
 }
 
 
