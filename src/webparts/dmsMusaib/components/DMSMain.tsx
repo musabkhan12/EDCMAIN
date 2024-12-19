@@ -454,10 +454,10 @@ const myrequestbuttonclick =()=>{
         .items.getAll();
        console.log("folderItems", folderItems);
 
-      const myButton = document.getElementById("mybutton");
-           const createFileButton=document.getElementById("createFileButton");
-           const createFileButton2=document.getElementById("createFileButton2");
-                 const createFolderButton=document.getElementById("createFolderButton");
+      // const myButton = document.getElementById("mybutton");
+      //      const createFileButton=document.getElementById("createFileButton");
+      //      const createFileButton2=document.getElementById("createFileButton2");
+      //            const createFolderButton=document.getElementById("createFolderButton");
       // Create a map to hold folder data by SiteTitle, Devision, Department
       const folderMap = new Map();
       folderItems.forEach((folderItem) => {
@@ -724,24 +724,24 @@ const myrequestbuttonclick =()=>{
               console.log(currentfolderpath , "currentfolderpath")
               console.log(currentDevision , "currentfolderpath")
               console.log(currentDepartment , "currentfolderpath")
-                   createFileButton.style.display = "block";
-                   createFileButton2.style.display = "block";
-                    if(createFolderButton){
-                createFolderButton.style.display="block"
-              }
+              //      createFileButton.style.display = "block";
+              //      createFileButton2.style.display = "block";
+              //       if(createFolderButton){
+              //   createFolderButton.style.display="block"
+              // }
               
-              if(createFileButton){
-                createFileButton.style.display = "block";
-              }
-              if(createFileButton2){
-                createFileButton2.style.display = "block";
-              }
+              // if(createFileButton){
+              //   createFileButton.style.display = "block";
+              // }
+              // if(createFileButton2){
+              //   createFileButton2.style.display = "block";
+              // }
                     
-              if (myButton) {
-                myButton.textContent = `Create Folder under ${docLibName}`;
-              } else {
-                console.error();
-              }
+              // if (myButton) {
+              //   myButton.textContent = `Create Folder under ${docLibName}`;
+              // } else {
+              //   console.error();
+              // }
             });
 
             // Handle double-click to hide the folder list
@@ -806,11 +806,11 @@ const myrequestbuttonclick =()=>{
                       handleNavigation(value.entityTitle, null , null , docLibName , folderName )
                       event.stopPropagation();
                       getdoclibdata(item.FolderPath,currentsiteID ,docLibName )
-                      if (myButton) {
-                        myButton.textContent = `Create Folder under ${folderName}`;
-                      } else {
-                        console.error();
-                      }
+                      // if (myButton) {
+                      //   myButton.textContent = `Create Folder under ${folderName}`;
+                      // } else {
+                      //   console.error();
+                      // }
 
         
                       toggleVisibility(subFolderList);
@@ -890,11 +890,11 @@ const myrequestbuttonclick =()=>{
               console.log("currentsiteID", currentsiteID);
               console.log("currentDevision", currentDevision);
               console.log("currentDocumentLibrary", currentDocumentLibrary);
-              if (myButton) {
-                myButton.textContent = `Create Library under ${docLibName}`;
-              } else {
-                console.error();
-              }
+              // if (myButton) {
+              //   myButton.textContent = `Create Library under ${docLibName}`;
+              // } else {
+              //   console.error();
+              // }
 
               toggleVisibility(folderList);
             });
@@ -943,11 +943,11 @@ const myrequestbuttonclick =()=>{
                   console.log("currentDepartment", currentDepartment);
                   handleNavigation(value.entityTitle, devisionTitle , departmentTitle , null , null )
               event.stopPropagation();
-              if (myButton) {
-                myButton.textContent = `Create Library under ${departmentTitle}`;
-              } else {
-                console.error();
-              }
+              // if (myButton) {
+              //   myButton.textContent = `Create Library under ${departmentTitle}`;
+              // } else {
+              //   console.error();
+              // }
 
               // Prevent toggling visibility before the list is populated
               if (documentList.innerHTML === "") {
@@ -1016,15 +1016,15 @@ const myrequestbuttonclick =()=>{
                       data.folderPath
                     );
                     toggleVisibility(folderList);
-                        const createFileButton=document.getElementById("createFileButton")
-                        const createFileButton2=document.getElementById("createFileButton")
-                    createFileButton.style.display="block";
-                    createFileButton2.style.display="block";
-                    if (myButton) {
-                      myButton.textContent = `Create Folder under ${docLibName}`;
-                    } else {
-                      console.error();
-                    }
+                    //     const createFileButton=document.getElementById("createFileButton")
+                    //     const createFileButton2=document.getElementById("createFileButton")
+                    // createFileButton.style.display="block";
+                    // createFileButton2.style.display="block";
+                    // if (myButton) {
+                    //   myButton.textContent = `Create Folder under ${docLibName}`;
+                    // } else {
+                    //   console.error();
+                    // }
                   });
 
                   docLibElement.addEventListener("dblclick", (event) => {
@@ -1077,15 +1077,15 @@ const myrequestbuttonclick =()=>{
                           console.log("currentfolderpath", item.FolderPath);
                           getdoclibdata(item.FolderPath,currentsiteID , docLibName)
                           handleNavigation(value.entityTitle, devisionTitle , departmentTitle , docLibName , folderName )
-                               const createFileButton=document.getElementById("createFileButton")
-                          createFileButton.style.display="block";
-                               const createFileButton2=document.getElementById("createFileButton")
-                          createFileButton2.style.display="block";
-                            if (myButton) {
-                              myButton.textContent = `Create Folder under ${folderName}`;
-                            } else {
-                              console.error();
-                            }
+                          //      const createFileButton=document.getElementById("createFileButton")
+                          // createFileButton.style.display="block";
+                          //      const createFileButton2=document.getElementById("createFileButton")
+                          // createFileButton2.style.display="block";
+                          //   if (myButton) {
+                          //     myButton.textContent = `Create Folder under ${folderName}`;
+                          //   } else {
+                          //     console.error();
+                          //   }
                             event.stopPropagation();
                             toggleVisibility(subFolderList);
                             subFolderList.innerHTML = "";
@@ -1169,15 +1169,15 @@ const myrequestbuttonclick =()=>{
                   console.log("currentfolderpath", currentfolderpath);
                   getdoclibdata(item.FolderPath , value.siteID , item.DocumentLibraryName)
                   handleNavigation(value.entityTitle , devisionTitle, null , item.DocumentLibraryName )
-                  const createFileButton=document.getElementById("createFileButton")
-                  createFileButton.style.display="block";
-                  const createFileButton2=document.getElementById("createFileButton2")
-                  createFileButton2.style.display="block";
-                  if (myButton) {
-                    myButton.textContent = `Create Folder under ${item.DocumentLibraryName}`;
-                  } else {
-                    console.error();
-                  }
+                  // const createFileButton=document.getElementById("createFileButton")
+                  // createFileButton.style.display="block";
+                  // const createFileButton2=document.getElementById("createFileButton2")
+                  // createFileButton2.style.display="block";
+                  // if (myButton) {
+                  //   myButton.textContent = `Create Folder under ${item.DocumentLibraryName}`;
+                  // } else {
+                  //   console.error();
+                  // }
                   toggleVisibility(folderList);
                   folderList.innerHTML = "";
                   const buildFolderStructure = (
@@ -1260,15 +1260,15 @@ const myrequestbuttonclick =()=>{
                                 toggleVisibility(subFolderList2);
                                 console.log("enter ee");
                                 getdoclibdata(folderPath,currentsiteID, item.DocumentLibraryName)
-                                  const createFileButton=document.getElementById("createFileButton")
-                                createFileButton.style.display="block";
-                                  const createFileButton2=document.getElementById("createFileButton")
-                                createFileButton2.style.display="block";
-                                if (myButton) {
-                                  myButton.textContent = `Create Folder under ${folderName}`;
-                                } else {
-                                  console.error();
-                                }
+                                //   const createFileButton=document.getElementById("createFileButton")
+                                // createFileButton.style.display="block";
+                                //   const createFileButton2=document.getElementById("createFileButton")
+                                // createFileButton2.style.display="block";
+                                // if (myButton) {
+                                //   myButton.textContent = `Create Folder under ${folderName}`;
+                                // } else {
+                                //   console.error();
+                                // }
 
                                 // Clear existing sub-folder list to avoid duplications
                                 subFolderList2.innerHTML = "";
@@ -1322,11 +1322,11 @@ const myrequestbuttonclick =()=>{
             devisionElement.classList.remove("expanded");
              // const //createFileButton=document.getElementById("createFileButton")
            // createFileButton.style.display="block";
-            if (myButton) {
-              myButton.textContent = `Create Library under ${devisionTitle}`;
-            } else {
-              console.error();
-            }
+            // if (myButton) {
+            //   myButton.textContent = `Create Library under ${devisionTitle}`;
+            // } else {
+            //   console.error();
+            // }
           });
 
           devisionElement.addEventListener("dblclick", (event) => {
@@ -1343,6 +1343,8 @@ const myrequestbuttonclick =()=>{
           if(breadcrumbElement){
             breadcrumbElement.style.display="none";
           }
+          // setdisplayuploadfileandcreatefolder(true)
+
           // alert("in first")
           // new code added.
                 // toggle createfolder button based on the permission
@@ -1352,44 +1354,46 @@ const myrequestbuttonclick =()=>{
                 // const usersFromInitiator=await subsiteContext.web.siteGroups.getByName(`${value.entityTitle}_Initiator`).users();
                 // console.log("usersFromAdmin",usersFromAdmin);
                 // console.log("usersFromInitiator",usersFromInitiator);
-                try {
-                  const currentUser = await sp.web.currentUser();
-                  const userGroups = await sp.web.siteUsers.getById(currentUser.Id).groups();
-                  const isMemberOfGroup = userGroups.some(group => group.Title === `${currentEntity}_Admin`);
-                  const isMemberOfSuperAdmin = userGroups.some(group => group.Title === `DMSSuper_Admin`);
-                  console.log("isMemberOfSuperAdmin",isMemberOfSuperAdmin);
-                  console.log(`Is member of ${currentEntity}_Admin:`, isMemberOfGroup);
-                  // console.log(`User is a member of the group: ${currentEntity}_Admin`);
-                  if (isMemberOfGroup || isMemberOfSuperAdmin) {
-                  console.log(`User is a member of the group: ${currentEntity}_Admin`);
-                  if(createFileButton){
-                    createFileButton.style.display=  "none";
-                  }
-                  if(createFileButton2){
-                  createFileButton2.style.display="block";
-                  }
-                 }else {
-                    console.log(`User is not a member of the group: ${currentEntity}_Admin`);
-                    if(createFileButton){
-                      createFileButton.style.display="none";
-                    }
-                    if(createFileButton2){
-                      createFileButton2.style.display="none";
-                    }
+                // const CreateFolder=document.getElementById("CreateFolder")
+                // const createFileButton=document.getElementById("createFileButton")
+                // try {
+                //   const currentUser = await sp.web.currentUser();
+                //   const userGroups = await sp.web.siteUsers.getById(currentUser.Id).groups();
+                //   const isMemberOfGroup = userGroups.some(group => group.Title === `${currentEntity}_Admin`);
+                //   const isMemberOfSuperAdmin = userGroups.some(group => group.Title === `DMSSuper_Admin`);
+                //   console.log("isMemberOfSuperAdmin",isMemberOfSuperAdmin);
+                //   console.log(`Is member of ${currentEntity}_Admin:`, isMemberOfGroup);
+                //   // console.log(`User is a member of the group: ${currentEntity}_Admin`);
+                //   if (isMemberOfGroup || isMemberOfSuperAdmin) {
+                //   console.log(`User is a member of the group: ${currentEntity}_Admin`);
+                //   if(createFileButton){
+                //     createFileButton.style.display=  "none";
+                //   }
+                //   if(CreateFolder){
+                //     CreateFolder.style.display="block";
+                //   }
+                //  }else {
+                //     console.log(`User is not a member of the group: ${currentEntity}_Admin`);
+                //     if(createFileButton){
+                //       createFileButton.style.display="none";
+                //     }
+                //     if(CreateFolder){
+                //       CreateFolder.style.display="none";
+                //     }
                   
               
-                   }
-                } catch (error) {
-                  console.log(`User is not a member of the group: ${currentEntity}_Admin`);
-                  if(createFileButton){
-                    createFileButton.style.display="none";
-                  }
-                  if(createFileButton2){
-                    createFileButton2.style.display="none";
-                  }
+                //    }
+                // } catch (error) {
+                //   console.log(`User is not a member of the group: ${currentEntity}_Admin`);
+                //   if(createFileButton){
+                //     createFileButton.style.display="none";
+                //   }
+                //   if(CreateFolder){
+                //     CreateFolder.style.display="none";
+                //   }
               
                  
-                }
+                // }
         })
         titleElement.addEventListener("click", async(event) => {
           const breadcrumbElement=document.getElementById("breadcrumb");
@@ -1405,46 +1409,49 @@ const myrequestbuttonclick =()=>{
                 }else if(toggleButton.textContent){
                   toggleButton.textContent = "+";
                 }
-          const createFileButton=document.getElementById("createFileButton")
-          const createFileButton2=document.getElementById("createFileButton2")
-          try {
-            const currentUser = await sp.web.currentUser();
-            const userGroups = await sp.web.siteUsers.getById(currentUser.Id).groups();
-            const isMemberOfGroup = userGroups.some(group => group.Title === `${currentEntity}_Admin`);
-            const isMemberOfSuperAdmin = userGroups.some(group => group.Title === `DMSSuper_Admin`);
-            console.log("isMemberOfSuperAdmin",isMemberOfSuperAdmin);
-            console.log(`Is member of ${currentEntity}_Admin:`, isMemberOfGroup);
-            // console.log(`User is a member of the group: ${currentEntity}_Admin`);
-            if (isMemberOfGroup || isMemberOfSuperAdmin) {
-            console.log(`User is a member of the group: ${currentEntity}_Admin`);
-            if(createFileButton){
-              createFileButton.style.display=  "none";
-            }
-            if(createFileButton2){
-            createFileButton2.style.display="block";
-            }
-           }else {
-              console.log(`User is not a member of the group: ${currentEntity}_Admin`);
-              if(createFileButton){
-                createFileButton.style.display="none";
-              }
-              if(createFileButton2){
-                createFileButton2.style.display="none";
-              }
+                const CreateFolder=document.getElementById("CreateFolder")
+                const CreateRoot=document.getElementById("CreateFolder1")
+                const createFileButton=document.getElementById("createFileButton")
+                const currentUser = await sp.web.currentUser();
+                const userGroups = await sp.web.siteUsers.getById(currentUser.Id).groups();
+          // try {
+          //   // const currentUser = await sp.web.currentUser();
+          //   // const userGroups = await sp.web.siteUsers.getById(currentUser.Id).groups();
+          //   const isMemberOfGroup = userGroups.some(group => group.Title === `${currentEntity}_Admin`);
+          //   const isMemberOfSuperAdmin = userGroups.some(group => group.Title === `DMSSuper_Admin`);
+          //   console.log("isMemberOfSuperAdmin",isMemberOfSuperAdmin);
+          //   console.log(`Is member of ${currentEntity}_Admin:`, isMemberOfGroup);
+          //   // console.log(`User is a member of the group: ${currentEntity}_Admin`);
+          //   if (isMemberOfGroup || isMemberOfSuperAdmin) {
+          //   console.log(`User is a member of the group: ${currentEntity}_Admin`);
+          //   if(createFileButton){
+          //     createFileButton.style.display=  "none";
+          //   }
+          //   if(CreateFolder){
+          //     CreateFolder.style.display="block";
+          //   }
+          //  }else {
+          //     console.log(`User is not a member of the group: ${currentEntity}_Admin`);
+          //     if(createFileButton){
+          //       createFileButton.style.display="none";
+          //     }
+          //     if(CreateFolder){
+          //       CreateFolder.style.display="none";
+          //     }
             
         
-             }
-          } catch (error) {
-            console.log(`User is not a member of the group: ${currentEntity}_Admin`);
-            if(createFileButton){
-              createFileButton.style.display="none";
-            }
-            if(createFileButton2){
-              createFileButton2.style.display="none";
-            }
+          //    }
+          // } catch (error) {
+          //   console.log(`User is not a member of the group: ${currentEntity}_Admin`);
+          //   if(createFileButton){
+          //     createFileButton.style.display="none";
+          //   }
+          //   if(CreateFolder){
+          //     CreateFolder.style.display="none";
+          //   }
         
            
-          }
+          // }
             event.stopPropagation();
             // const createFileButton2 = document.getElementById("createFileButton2");
             // Clear any existing timer
@@ -1482,22 +1489,63 @@ const myrequestbuttonclick =()=>{
                 // Toggle plus/minus icon
                 titleElement.classList.toggle("expanded");
                 console.log(value, "value");
-                const createFileButton = document.getElementById("createFileButton");
-                const createFileButton2 = document.getElementById("createFileButton2");
+                try {
+                  // const currentUser = await sp.web.currentUser();
+                  // const userGroups = await sp.web.siteUsers.getById(currentUser.Id).groups();
+                  const isMemberOfGroup = userGroups.some(group => group.Title === `${currentEntity}_Admin`);
+                  const isMemberOfSuperAdmin = userGroups.some(group => group.Title === `DMSSuper_Admin`);
+                  console.log("isMemberOfSuperAdmin",isMemberOfSuperAdmin);
+                  console.log(`Is member of ${currentEntity}_Admin:`, isMemberOfGroup);
+                  // console.log(`User is a member of the group: ${currentEntity}_Admin`);
+                  if (isMemberOfGroup || isMemberOfSuperAdmin) {
+                  console.log(`User is a member of the group: ${currentEntity}_Admin`);
+                  if(createFileButton){
+                    createFileButton.style.display=  "none";
+                  }
+                  if(CreateFolder){
+                    CreateFolder.style.display="block";
+                  }
+                  // if(CreateRoot){
+                  //   CreateRoot.style.display="none";
+                  // }
+                 }else {
+                    console.log(`User is not a member of the group: ${currentEntity}_Admin`);
+                    if(createFileButton){
+                      createFileButton.style.display="none";
+                    }
+                    if(CreateFolder){
+                      CreateFolder.style.display="none";
+                    }
+                  
+              
+                   }
+                } catch (error) {
+                  console.log(`User is not a member of the group: ${currentEntity}_Admin`);
+                  if(createFileButton){
+                    createFileButton.style.display="none";
+                  }
+                  if(CreateFolder){
+                    CreateFolder.style.display="none";
+                  }
+              
+                 
+                }
+                // const CreateFolder=document.getElementById("CreateFolder")
+                // const createFileButton=document.getElementById("createFileButton")
                 // if (createFolderButton) {
                 //     createFolderButton.style.display = "block";
                 // }
-                if (createFileButton) {
-                    createFileButton.style.display = "none";
-                }
-                if (createFileButton2) {
-                    createFileButton2.style.display = "block";
-                }
-                if (myButton) {
-                    myButton.textContent = `Create Library under ${entityTitle}`;
-                } else {
-                    console.error();
-                }
+                // if (createFileButton) {
+                //     createFileButton.style.display = "none";
+                // }
+                // if (CreateFolder) {
+                //   CreateFolder.style.display = "block";
+                // }
+                // if (myButton) {
+                //     myButton.textContent = `Create Library under ${entityTitle}`;
+                // } else {
+                //     console.error();
+                // }
                 // fetchData(currentEntityURL);
             }, 300); // Adjust the delay as needed
         });
@@ -1510,6 +1558,8 @@ const myrequestbuttonclick =()=>{
           
           setdisplayuploadfileandcreatefolder(true)
             event.stopPropagation();
+            const CreateFolder=document.getElementById("CreateFolder")
+            const createFileButton=document.getElementById("createFileButton")
             try {
               const currentUser = await sp.web.currentUser();
               const userGroups = await sp.web.siteUsers.getById(currentUser.Id).groups();
@@ -1523,16 +1573,16 @@ const myrequestbuttonclick =()=>{
               if(createFileButton){
                 createFileButton.style.display=  "none";
               }
-              if(createFileButton2){
-              createFileButton2.style.display="block";
+              if(CreateFolder){
+                CreateFolder.style.display="block";
               }
              }else {
                 console.log(`User is not a member of the group: ${currentEntity}_Admin`);
                 if(createFileButton){
                   createFileButton.style.display="none";
                 }
-                if(createFileButton2){
-                  createFileButton2.style.display="none";
+                if(CreateFolder){
+                  CreateFolder.style.display="none";
                 }
               
           
@@ -1542,8 +1592,8 @@ const myrequestbuttonclick =()=>{
               if(createFileButton){
                 createFileButton.style.display="none";
               }
-              if(createFileButton2){
-                createFileButton2.style.display="none";
+              if(CreateFolder){
+                CreateFolder.style.display="none";
               }
           
              
@@ -2077,28 +2127,28 @@ useEffect(() => {
 }, []);
 // end
   const getdoclibdata = async (FolderPath: any , siteID:any , docLibName:any) => {
-    setdisplayuploadfileandcreatefolder(true)
+    
     //  ismyrequordoclibforfilepreview = "getdoclibdata"
-     ismyrequordoclibforfilepreview = "getdoclibdata"
+    //  ismyrequordoclibforfilepreview = "getdoclibdata"
     console.log('path   ', FolderPath)
     console.log('SiteID :    ', siteID)
     console.log('docLibName :    ', docLibName);
     console.log('currentEntity :    ', currentEntity);
 
-    // Hide the list and grid view start
-    const hidegidvewlistviewbutton2=document.getElementById("hidegidvewlistviewbutton2")
-    const hidegidvewlistviewbutton = document.getElementById('hidegidvewlistviewbutton')
-    if (hidegidvewlistviewbutton2) {
-      console.log("enter here .....................")
-      hidegidvewlistviewbutton2.style.display = 'none'
+    // // Hide the list and grid view start
+    // const hidegidvewlistviewbutton2=document.getElementById("hidegidvewlistviewbutton2")
+    // const hidegidvewlistviewbutton = document.getElementById('hidegidvewlistviewbutton')
+    // if (hidegidvewlistviewbutton2) {
+    //   console.log("enter here .....................")
+    //   hidegidvewlistviewbutton2.style.display = 'none'
     
-    }
-    if (hidegidvewlistviewbutton) {
-    console.log("enter here .....................")
-    hidegidvewlistviewbutton.style.display = 'none'
+    // }
+    // if (hidegidvewlistviewbutton) {
+    // console.log("enter here .....................")
+    // hidegidvewlistviewbutton.style.display = 'none'
 
-    }
-    // End
+    // }
+    // // End
     // Extract the current entity from url
     const segments = FolderPath.split('/');
     const currentSubsite = segments[3]; 
@@ -2108,11 +2158,16 @@ useEffect(() => {
     console.log("Department",currentDepartment);
     // set current entity ,current document library and folder name
     const folName = segments[segments.length - 1];
+    const testidsub = await sp.site.openWebById(siteID);
+    let library;
     if(folName === docLibName){
       console.log("its document libray",folName)
+      library = testidsub.web.getList(`${FolderPath}`);
     }else{
       console.log("its folder",folName)
       currentFolder=folName
+      const library1 = testidsub.web.getFolderByServerRelativePath(`${FolderPath}`);
+      library=await library1.getItem()
     }
     currentEntity=currentSubsite;
     currentDocumentLibrary=docLibName;
@@ -2136,7 +2191,7 @@ useEffect(() => {
 
     routeToDiffSideBar="";
 
-    const testidsub = await sp.site.openWebById(siteID);
+    // const testidsub = await sp.site.openWebById(siteID);
     let files:any = [];
     let batchSize = 5000;
     let nextLink = null;
@@ -2173,7 +2228,7 @@ useEffect(() => {
       // Get the details of the users permission.
       // start
       // const library = testidsub.web.lists.getByTitle(docLibName);
-      const library = testidsub.web.getList(`${FolderPath}`);
+      // const library = testidsub.web.getList(`${FolderPath}`);
       const permissions = await library.getCurrentUserEffectivePermissions();
       // console.log("permissions",permissions);
        
@@ -2210,33 +2265,33 @@ useEffect(() => {
     // Belong to admin or not start
     // Toggle the createFile and createFolder button based on the permission
     // let permission:string;
-    const createFileButton=document.getElementById("createFileButton");
-    const createFileButton2=document.getElementById("createFileButton2");
-    if(userPermissions.hasFullControl){
-      console.log(`Current User has full control on the library/Folder`);
-      if(createFileButton){
-        createFileButton.style.display=  "block";
-      }
-      if(createFileButton2){
-      createFileButton2.style.display="block";
-      }
-    }else if(userPermissions.hasContribute || userPermissions.hasEdit){
-      console.log(`Current User has Contribute/Edit permission on the library/Folder`);
-      if(createFileButton){
-        createFileButton.style.display=  "block";
-      }
-      if(createFileButton2){
-      createFileButton2.style.display="none";
-      }
-    }else{
-      console.log(`Current User has no permission on the library/Folder`);
-      if(createFileButton){
-        createFileButton.style.display=  "none";
-      }
-      if(createFileButton2){
-      createFileButton2.style.display="none";
-      }
-    }
+    // const CreateFolder=document.getElementById("CreateFolder")
+    // const createFileButton=document.getElementById("createFileButton")
+    // if(userPermissions.hasFullControl){
+    //   console.log(`Current User has full control on the library/Folder`);
+    //   if(createFileButton){
+    //     createFileButton.style.display=  "block";
+    //   }
+    //   if(CreateFolder){
+    //     CreateFolder.style.display="block";
+    //   }
+    // }else if(userPermissions.hasContribute || userPermissions.hasEdit){
+    //   console.log(`Current User has Contribute/Edit permission on the library/Folder`);
+    //   if(createFileButton){
+    //     createFileButton.style.display=  "block";
+    //   }
+    //   if(CreateFolder){
+    //     CreateFolder.style.display="none";
+    //   }
+    // }else{
+    //   console.log(`Current User has no permission on the library/Folder`);
+    //   if(createFileButton){
+    //     createFileButton.style.display=  "none";
+    //   }
+    //   if(CreateFolder){
+    //     CreateFolder.style.display="none";
+    //   }
+    // }
     // Below code check the user belong to which group
     // try {
     //   const currentUser = await sp.web.currentUser();
@@ -2313,6 +2368,51 @@ useEffect(() => {
       // End
       const container = document.getElementById("files-container");
       container.innerHTML = "";
+      setdisplayuploadfileandcreatefolder(true)
+      // Hide the list and grid view start
+    const hidegidvewlistviewbutton2=document.getElementById("hidegidvewlistviewbutton2")
+    const hidegidvewlistviewbutton = document.getElementById('hidegidvewlistviewbutton')
+    if (hidegidvewlistviewbutton2) {
+      console.log("enter here .....................")
+      hidegidvewlistviewbutton2.style.display = 'none'
+    
+    }
+    if (hidegidvewlistviewbutton) {
+    console.log("enter here .....................")
+    hidegidvewlistviewbutton.style.display = 'none'
+
+    }
+    // End
+    const CreateFolder=document.getElementById("CreateFolder")
+    const createFileButton=document.getElementById("createFileButton")
+    if(userPermissions.hasFullControl){
+      console.log(`Current User has full control on the library/Folder`);
+      if(createFileButton){
+        createFileButton.style.display=  "block";
+      }
+      if(CreateFolder){
+        CreateFolder.style.display="block";
+      }
+    }else if(userPermissions.hasContribute || userPermissions.hasEdit){
+      console.log(`Current User has Contribute/Edit permission on the library/Folder`);
+      if(createFileButton){
+        createFileButton.style.display=  "block";
+      }
+      if(CreateFolder){
+        CreateFolder.style.display="none";
+      }
+    }else{
+      console.log(`Current User has no permission on the library/Folder`);
+      if(createFileButton){
+        createFileButton.style.display=  "none";
+      }
+      if(CreateFolder){
+        CreateFolder.style.display="none";
+      }
+    }
+    ismyrequordoclibforfilepreview = "getdoclibdata"
+      // const container = document.getElementById("files-container");
+      // container.innerHTML = "";
       files.forEach(async(file:any) => {
             const isFavourite = favouriteMap.get(file.UniqueId) || 0;
             const favouriteText = isFavourite ? "Unmark as Favourite" : "Mark as Favourite";
@@ -3925,7 +4025,7 @@ const createFileCardForDocumentLibrary=(file:any,fileIcon:any,siteID:string,IsHa
 
 //   };
 window.PreviewFile = function(path :any , SiteID:any , docLibName:any,flag:string , filepreviewurl){
-console.log(docLibName , "docLibName")
+// console.log(docLibName , "docLibName")
 console.log(filepreviewurl , "filepreviewurl")
 console.log("path",path);
 const segments = path.split('/');
@@ -3971,7 +4071,7 @@ const siteUrl = window.location.origin;
 console.log(siteUrl, "siteUrl");
 
 console.log(path , ".....path")
-if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepreview  === "sharewithme"){
+if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepreview  === "sharewithme" || ismyrequordoclibforfilepreview  === "sharewithothers"){
   const previewUrl = filepreviewurl
 
   console.log(previewUrl, "Generated preview URL");
@@ -3993,6 +4093,9 @@ if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepre
       if(ismyrequordoclibforfilepreview === "sharewithme"){
         ShareWithMe();
       }
+      if(ismyrequordoclibforfilepreview === "sharewithothers"){
+        ShareWithOther();
+      }
       // if(flag === "shareWithMe"){
       //     ShareWithMe(null,null);
       // }
@@ -4007,8 +4110,9 @@ if(ismyrequordoclibforfilepreview === "getdoclibdata"){
 // Generate the correct preview URL
 // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
 const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+// const previewUrl = `${siteUrl}/sites/AlRostmani/${currentSubsite}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
 // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-
+alert("Im in doclib")
 console.log(previewUrl, "Generated preview URL");
  
   console.log("Generated Preview URL:", previewUrl);
@@ -4324,6 +4428,7 @@ if (searchText !== "" ) {
 // }
 const ShareWithOther=async(event:React.MouseEvent<HTMLButtonElement>=null,searchText:HTMLInputElement=null)=>{
   setdisplayuploadfileandcreatefolder(false)
+  ismyrequordoclibforfilepreview  = "sharewithothers";
 if(event){
   event.preventDefault();
   event.stopPropagation();
@@ -4346,12 +4451,18 @@ if (hidegidvewlistviewbutton) {
    const newUrl = `${window.location.origin}${window.location.pathname}`;
    window.history.pushState(null, '', newUrl)
    // New code to hide the create file and folder button start
-   if(createFileButton2){
-     createFileButton2.style.display = 'none'
+   const CreateFolder=document.getElementById("CreateFolder")
+    const createFileButton=document.getElementById("createFileButton")
+    const CreateRoot=document.getElementById("CreateFolder1")
+   if(CreateFolder){
+    CreateFolder.style.display = 'none'
      }
      if(createFileButton){
      createFileButton.style.display = 'none'
      }
+     if(CreateRoot){
+      CreateRoot.style.display = 'none'
+      }
    //End 
    // end
    // New Code start
@@ -4372,6 +4483,9 @@ const groupedData =DMSShareWithOtherMaster.reduce((acc, item) => {
               FileVersion:item.FileVersion,
               SiteID:item.SiteID,
               FileSize:item.FileSize,
+              FilePreviewURL:item.FilePreviewURL,
+              CurrentFolderPath:item.CurrentFolderPath,
+              DocumentLibraryName:item.DocumentLibraryName,
               Users: []
           };
       }
@@ -4459,11 +4573,26 @@ filteredFileData.forEach((file)=>{
     <p class="p3rd">${file.FileSize} MB</p>
     </div>
     </div>
+<div id="three-dots" class="three-dots" onclick="toggleMenu2('${file.FileUID}','${file.SiteID}','${file.CurrentFolderPath}','${file.FileName}')">
+<span>...</span>
+</div>
 </div>
 <div class="sharedFile">
       ${sharedUsersHTML}
 </div>
   `;
+  
+  const menu = document.createElement("div");
+  menu.id = `menu-${file.FileUID}`;
+  menu.className = "popup-menu";
+  menu.innerHTML = `
+  <ul>
+    <li onclick="PreviewFile('${file.CurrentFolderPath}' , '${file.FileName}', '${file.SiteID}','${file.DocumentLibraryName}','${file.FilePreviewURL}')">
+      <img src=${ShareFile} alt="Share"/> File Preview
+    </li>
+  </ul>
+`;  
+  card.appendChild(menu);  
   container.appendChild(card);
 })
 // End
@@ -4823,11 +4952,17 @@ if (hidegidvewlistviewbutton) {
   const newUrl = `${window.location.origin}${window.location.pathname}`;
   window.history.pushState(null, '', newUrl)
   // New code to hide the create file and folder button start
-  if(createFileButton2){
-    createFileButton2.style.display = 'none'
+  const CreateFolder=document.getElementById("CreateFolder")
+  const createFileButton=document.getElementById("createFileButton")
+  const CreateRoot=document.getElementById("CreateFolder1")
+  if(CreateFolder){
+    CreateFolder.style.display = 'none'
     }
     if(createFileButton){
     createFileButton.style.display = 'none'
+    }
+    if(CreateRoot){
+      CreateRoot.style.display = 'none'
     }
   //End 
   // end
@@ -4908,8 +5043,10 @@ if(searchText !== null){
 }else{
   filteredFileData=uniqueItems;
 }
-filteredFileData.forEach((file)=>{
+filteredFileData.forEach(async(file)=>{
   const {fileIcon, fileExtension}= getFileIcon(file.FileName);
+  const user = await sp.web.siteUsers.getByEmail(file.CurrentUser)();
+  const userName=user.Title;
   // console.log("file-Details",file);
   const card = document.createElement("div");
   card.className = "card";
@@ -4940,7 +5077,10 @@ filteredFileData.forEach((file)=>{
     <p class="p1st">${file.FileName}</p>
     <div class="fileSizeAndVersion">
     <p class="p3rd">${file.FileSize} MB</p>
-    </div>  </div>  </div>
+    </div>
+    <p class="p3rd">${userName}</p>  
+    </div>  
+  </div>
     <div id="three-dots" class="three-dots" onclick="shareWithMePopUp('${file.FileUID}','${file.SiteID}','${file.CurrentFolderPath}','${file.FileName}')">
     <span>...</span>
     </div>
@@ -6939,8 +7079,8 @@ window.view=(message:string)=>{
 
 
 // My ctreated folder 
-const createFileButton2 = document.getElementById('createFileButton2')
-const createFileButton = document.getElementById('createFileButton')
+// const createFileButton2 = document.getElementById('createFileButton2')
+// const createFileButton = document.getElementById('createFileButton')
 // const mycreatedfolders = async (event:any=null, searchText:any=null )=>{
 //   const wait = document.getElementById('files-container')
 //   wait.classList.remove('hidemydatacards')
@@ -7585,11 +7725,17 @@ const mycreatedfolders = async (event:any=null, searchText:any=null )=>{
   setdisplayuploadfileandcreatefolder(false)
 const wait = document.getElementById('files-container')
 wait.classList.remove('hidemydatacards')
-if(createFileButton2){
-  createFileButton2.style.display = 'none'
+const CreateFolder=document.getElementById("CreateFolder")
+const createFileButton=document.getElementById("createFileButton")
+const CreateRoot=document.getElementById("CreateFolder1")
+if(CreateFolder){
+  CreateFolder.style.display = 'none'
   }
   if(createFileButton){
   createFileButton.style.display = 'none'
+  }
+  if(CreateRoot){
+    CreateRoot.style.display = 'none'
   }
 setlistorgriddata('')
 setlistorgriddata('')
@@ -7609,12 +7755,12 @@ window.history.pushState(null, '', newUrl)
 // call this function onClick of the myFolder Button
 // handleShowContent(event)
 // end
-if(createFileButton2){
-   createFileButton2.style.display = 'none'
-}
- if(createFileButton){
-createFileButton.style.display = 'none'
- }  
+// if(createFileButton2){
+//    createFileButton2.style.display = 'none'
+// }
+//  if(createFileButton){
+// createFileButton.style.display = 'none'
+//  }  
  const hidegidvewlistviewbutton = document.getElementById('hidegidvewlistviewbutton')
  const hidegidvewlistviewbutton2 = document.getElementById("hidegidvewlistviewbutton2");
  if (hidegidvewlistviewbutton) {
@@ -8189,12 +8335,18 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
     // clean the url start
     const newUrl = `${window.location.origin}${window.location.pathname}`;
     window.history.pushState(null, '', newUrl)
-    if(createFileButton2){
-      createFileButton2.style.display = 'none'
+    const CreateFolder=document.getElementById("CreateFolder")
+    const createFileButton=document.getElementById("createFileButton")
+    const CreateRoot=document.getElementById("CreateFolder1")
+    if(CreateFolder){
+      CreateFolder.style.display = 'none'
       }
       if(createFileButton){
       createFileButton.style.display = 'none'
       }
+      if(CreateRoot){
+        CreateRoot.style.display = 'none'
+        }
     // end
     setTimeout(() => {
       // alert("set timer")
@@ -9134,11 +9286,17 @@ const myRequest = async (event:React.MouseEvent<HTMLButtonElement>=null, siteIdT
     }
     cleanUrlInMyRequest=false;
     // end
-    if(createFileButton2){
-      createFileButton2.style.display = 'none'
+    const CreateFolder=document.getElementById("CreateFolder")
+    const createFileButton=document.getElementById("createFileButton")
+    const CreateRoot=document.getElementById("CreateFolder1")
+    if(CreateFolder){
+      CreateFolder.style.display = 'none'
       }
       if(createFileButton){
       createFileButton.style.display = 'none'
+      }
+      if(CreateRoot){
+        CreateRoot.style.display = 'none'
       }
     //End 
     
@@ -9186,12 +9344,12 @@ if(event){
 // handleShowContent(event)
 
 
-if(createFileButton2){
-createFileButton2.style.display = 'none'
-}
-if(createFileButton){
-createFileButton.style.display = 'none'
-}
+// if(createFileButton2){
+// createFileButton2.style.display = 'none'
+// }
+// if(createFileButton){
+// createFileButton.style.display = 'none'
+// }
  
 
 
@@ -9310,7 +9468,7 @@ FilesItems.forEach(async (fileItem, index) => {
         <div class="col-md-10"> 
          <div class="CardTextContainer">
       <p class="p1st">${file.FileName}</p>
-      <p class="p2nd"></p>
+      <p class="p2nd">${file.DocumentLibraryName}</p>
       <p class="p3rd ">${((file.FileSize as unknown as number) / (1024 * 1024)).toFixed(2)}MB</p>
       <p class="filestatus myrequestp3rd"> ${file.Status ? file.Status : ''}  </p>
       </div>
@@ -9504,7 +9662,7 @@ const fileNotFound=(fileName:any)=>{
   Swal.fire(`No results found`,`${fileName}`, "warning");
 }
 // end
-  const [activeComponent, setActiveComponent] = useState<string | 'MyRequest'>('');
+  const [activeComponent, setActiveComponent] = useState<string>('');
   const [listorgriddata, setlistorgriddata] = useState<string>('');
   const handleButtonClickShow = (componentName:any) => {
     setActiveComponent(componentName); // Set the active component based on the button clicked
@@ -11172,12 +11330,28 @@ librarydiv.appendChild(mainContainer)
        + Upload File
      </button>
      
-       <button
+       {/* <button
        className="mybutton2 mt-0"
        id="createFileButton2"
        onClick={() => handleButtonClickShow("CreateFolder")}
      >
        + Create Folder
+     </button> */}
+
+     <button
+       className="mybutton2 mt-0"
+       id="CreateFolder"
+       onClick={() => handleButtonClickShow("CreateFolder")}
+     >
+       + Create Folder
+     </button>
+
+     <button
+       className="mybutton2 mt-0"
+       id="CreateFolder1"
+       onClick={() => handleButtonClickShow("CreateFolder")}
+     >
+       + Create Root Folder
      </button>
      
      
