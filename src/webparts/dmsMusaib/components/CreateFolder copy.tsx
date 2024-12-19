@@ -48,13 +48,13 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
   
   // new code for permission.
-  const [permission, setPermission]=React.useState(false);
+  // const [permission, setPermission]=React.useState(false);
 
-  const handlePermissionToggle=(set:any)=>{
-    console.log("Set permission called");
-    console.log(set);
-    setPermission(set);
-  }
+  // const handlePermissionToggle=(set:any)=>{
+  //   console.log("Set permission called");
+  //   console.log(set);
+  //   setPermission(set);
+  // }
 
   const permissionArray:{value:string,label:string}[]=[
     {value:"Full Control",label:"Full Control"},
@@ -258,14 +258,14 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
     const newErrors: { [key: number]: { fieldName?: string; selectField?: string } } = {};
 
     formFields.forEach((field) => {
-      // if (!field.fieldName.trim()) {
-      //   newErrors[field.id] = { ...newErrors[field.id], fieldName: 'Field Name is required' };
-      //   isValid = false;
-      // }
-      // if (!field.selectField) {
-      //   newErrors[field.id] = { ...newErrors[field.id], selectField: 'Field Type is required' };
-      //   isValid = false;
-      // }
+      if (!field.fieldName.trim()) {
+        newErrors[field.id] = { ...newErrors[field.id], fieldName: 'Field Name is required' };
+        isValid = false;
+      }
+      if (!field.selectField) {
+        newErrors[field.id] = { ...newErrors[field.id], selectField: 'Field Type is required' };
+        isValid = false;
+      }
     });
 
     setErrors1(newErrors);
@@ -557,9 +557,9 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
       if(OthProps.DocumentLibrary === ""){
         (payloadForFolderMaster as any).DocumentLibraryName=folderName;
-        //  (payloadForFolderMaster as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
+         (payloadForFolderMaster as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
         //  (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmanispfx2/${OthProps.Entity}/${folderName}`;
-         (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
+        // (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
         (payloadForFolderMaster as any).IsLibrary=true;
 
       }else{
@@ -876,7 +876,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                               handlePrivacyChange(e);
                               // handleToggleApproval();
-                               handlePermissionToggle(true);
+                              // handlePermissionToggle(true);
                             }}
                             className="form-check-input"
                             type="radio"
@@ -894,7 +894,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                               handlePrivacyChange(e);
                               // handleToggleRemove();
-                               handlePermissionToggle(false);
+                              // handlePermissionToggle(false);
                             }}
                             className="form-check-input"
                             type="radio"
@@ -983,15 +983,8 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
                   )}
             </div>
 
-          </form>
-        </div>
-   
-      </div>
 
-      {/* dynamic fields */}
-      <div className="container mt-3">
-        <div className="card cardborder marginleftcard">
-        {toggleaddFieldsButton && ( 
+            {toggleaddFieldsButton && ( 
                 <div className="row mt-3" id="addFieldsButton">
                   <div className="col-md-6"></div>
                   <div className="col-md-5"></div>
@@ -1013,7 +1006,45 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
                     
                 </div>
             )}
-           
+            {/* <div className="row mt-3">
+              <div className="col-12 col-md-6">
+                <div className="form-group">
+                  <label htmlFor="fieldName" className="headerfont">
+                    Field Name
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control fieldmargin"
+                    id="fieldName"
+                    placeholder="Enter field name"
+                    value={fieldName}
+                    onChange={(e) => setFieldName(e.target.value)}
+                  />
+                    <span className="text-danger">{errors.fieldName}</span>
+                </div>
+            </div>
+
+            <div className="col-12 col-md-6">
+                <div className="form-group">
+                  <label htmlFor="selectField" className="headerfont">
+                    Select Field Type
+                  </label>
+                  <select
+                    className="form-control"
+                    value={selectField}
+                    onChange={(e) => setSelectField(e.target.value)}
+                  >
+                    <option value="">Open this select menu</option>
+                    <option value="Single Line of Text">Single Line of Text</option>
+                    <option value="Multiple Line of Text">Multiple Line of Text</option>
+                    <option value="Yes or No">Yes or No</option>
+                    <option value="Date & Time">Date & Time</option>
+                    <option value="Number">Number</option>
+                  </select>
+                  <span className="text-danger">{errors.selectField}</span>
+                </div>
+            </div>
+            </div> */}
     
     {togglecolumneDetails && formFields.map((formField) => (
         <div className="row mt-3" key={formField.id} id="columnDetail">
@@ -1088,13 +1119,10 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
         </div>
         
       ))}
-        </div>
 
+          </form>
+        </div>
       </div>
-        <div  >
-     
-        </div>
-
       {toggleApproval ? (
         <div className="container mt-3">
           <div className="card cardborder marginleftcard" style={{
@@ -1235,7 +1263,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
         <h1></h1>
       )}
       
-      {permission && (
+      {/* {permission && ( */}
         <div className="container mt-3">
                 <div className="card cardborder marginleftcard" style={{
                
@@ -1336,13 +1364,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
                             </div>
 
                       </div> */}
-      
-                </div>
-               
-        </div>
-      )
-     }
-      <div className="d-flex mt-3 justify-content-center buttonstyle">
+                      <div className="d-flex mt-3 justify-content-center buttonstyle">
         <button
           className="btn btn-create me-2 mt-0 btncolorCreate"
           onClick={handleCreate}
@@ -1362,7 +1384,11 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
           />
           Cancel
         </button>
-               </div>
+      </div>
+                </div>
+        </div>
+      {/* ) */}
+      {/* } */}
       <br/>
       
     </>

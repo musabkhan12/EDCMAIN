@@ -700,6 +700,7 @@ const myrequestbuttonclick =()=>{
 
             // Handle click to toggle the visibility of the folder list
             docLibElement.addEventListener("click", (event:any) => {
+              const createFileButton =document.getElementById("createFileButton");
               event.preventDefault()
               event.stopPropagation();
               // setlistorgriddata('')
@@ -1339,6 +1340,7 @@ const myrequestbuttonclick =()=>{
 
         let clickTimer:any;
         titleElement.addEventListener("click" , async (event)=>{
+          
           const breadcrumbElement=document.getElementById("breadcrumb");
           if(breadcrumbElement){
             breadcrumbElement.style.display="none";
@@ -6726,25 +6728,6 @@ popup.remove();
                           console.log("Calling deleteFile from confirm delete");
                           await window.deleteFile(fileId, siteID,IsHardDelete,ListToUpdate);
 
-                          // console.log("Updating List inside the confirem Delete");
-                          // if(ListToUpdate){       
-                          //         const items999 = await sp.web.lists
-                          //         .getByTitle(ListToUpdate).items.filter(`FileUID eq '${fileId}'`).top(1)();
-                          //         alert(items999)
-                                  
-                          //         if (items999.length > 0) {
-                          //         const itemId = items999[0].ID;
-                          //         console.log(itemId , "itemId")
-                          //         console.log(items999 , "item9999")
-                          //         // Delete the item by ID
-                          //         const mylist = ListToUpdate
-                          //         console.log(mylist, "mylist")
-                          //         await sp.web.lists.getByTitle(mylist).items.getById(itemId).delete();
-                      
-                          //         console.log(`Item with FileUid ${fileId} has been deleted.`);
-                          //         }
-                                 
-                      // }
                       confirmationText.innerHTML = 'Your file was deleted successfully.';
                     
                       } catch (error) {
@@ -6994,9 +6977,9 @@ window.deleteFile = async(fileId:string, siteID:string, IsHardDelete:any, ListTo
       
           const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
           const siteUrl = window.location.origin;
-          // const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-          //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-          const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+           const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+            //const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+          // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
           console.log("previewUrl",previewUrl);
           payload.FilePreviewURL=previewUrl
 
@@ -7929,20 +7912,20 @@ menu.innerHTML = `
   </li>
   <li onclick="editFile('${files.SiteTitle}','${files.DocumentLibraryName}')">
     <img src=${editIcon} alt="Edit"/>
-    Edit
+    Add Meta Data
   </li>
   ${superAdmin === true ? 
     `<li onclick="deleteFolder('${files.SiteTitle}','${folderName}','${files.ID}','${files.SiteID}','${files.FolderPath}','${files.IsLibrary}')">
     <img src=${deleteIcon} alt="Edit"/>
-    Delete
+    Delete Folder
     </li>
     <li onclick="renameFolder('${files.SiteTitle}','${folderName}','${files.ID}','${files.SiteID}')">
       <img src=${editIcon} alt="Edit"/>
-      Rename
+      Rename Folder
     </li>
     ${files.IsLibrary === true ? `<li onclick="renameColumn('${files.SiteTitle}','${files.DocumentLibraryName}')">
       <img src=${editIcon} alt="Edit"/>
-      Rename Column
+      Rename Meta Data
     </li>`: ''}
     `
     : ''}
@@ -8609,8 +8592,8 @@ window.toggleFavourite=async (fileId,siteId)=> {
             const encodedFilePath = encodeURIComponent(file.ServerRelativeUrl);
             const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
             const siteUrl = window.location.origin;
-            // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-            const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+             const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+            //  const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             console.log("previewUrl",previewUrl);
 
@@ -8783,9 +8766,9 @@ window.toggleFavourite=async (fileId,siteId)=> {
             const encodedFilePath = encodeURIComponent(file.ServerRelativeUrl);
             const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
             const siteUrl = window.location.origin;
-             const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-            //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-            // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+              // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+             // const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+             const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             console.log("previewUrl",previewUrl);
 
             payload.FilePreviewURL=previewUrl               
@@ -9486,9 +9469,6 @@ FilesItems.forEach(async (fileItem, index) => {
     const showaudit = <FontAwesomeIcon style={{color: "black"}} icon={faListSquares}/>
     menu.innerHTML = `
      <ul>
-    <li onclick="confirmDeleteFile('${file.FileUID}','${file.SiteID}','${false}','${fileItem.FileMasterList}')">
-      <img src=${deleteIcon} alt="Delete"/> Delete
-    </li>
     <li onclick="auditHistory('${file.FileUID}', '${file.SiteID}','${file?.DocumentLibraryName}','${file?.SiteName}')">
           <img src=${editIcon} alt="Edit"/>
                       Audit History
@@ -9502,12 +9482,55 @@ FilesItems.forEach(async (fileItem, index) => {
        <li onclick="Download('${file.FileUID}','${file.SiteID}','${file.ID}' , '${file.FileMasterList}', '${file.FilePreviewURL}')">
          <img src=${downloadicon} alt="Download File"/> Download File
        </li>
-    ${file.Status === "Rework" ? `
-      <li onclick="Download('${file.FileUID}','${file.SiteID}','${file.ID}' , '${file.FileMasterList}', '${file.FilePreviewURL}')">
-          <img src=${editIcon} alt="Edit File"/> Edit File
-      </li>` : ''}
+
   </ul>
     `;
+  //   menu.innerHTML = `
+  //    <ul>
+  //   <li onclick="confirmDeleteFile('${file.FileUID}','${file.SiteID}','${false}','${fileItem.FileMasterList}')">
+  //     <img src=${deleteIcon} alt="Delete"/> Delete
+  //   </li>
+  //   <li onclick="auditHistory('${file.FileUID}', '${file.SiteID}','${file?.DocumentLibraryName}','${file?.SiteName}')">
+  //         <img src=${editIcon} alt="Edit"/>
+  //                     Audit History
+  //   </li>
+  //   <li onclick="shareFile('${file.FileUID}', '${file.SiteID}','${file.CurrentFolderPath}','${file.FileName}','MyRequest','${file.FileVersion}','${file.FileSize}','${file.Status}','${file.FilePreviewURL}','${file.DocumentLibraryName}')">
+  //     <img src=${ShareFile} alt="Share"/> Share
+  //   </li>
+  //    <li onclick="PreviewFile('${file.FileUID}','${file.SiteID}','${file.ID}' , '${file.FileMasterList}', '${file.FilePreviewURL}')">
+  //        <img src=${viewIcon} alt="Preview File"/> Preview File
+  //      </li>
+  //      <li onclick="Download('${file.FileUID}','${file.SiteID}','${file.ID}' , '${file.FileMasterList}', '${file.FilePreviewURL}')">
+  //        <img src=${downloadicon} alt="Download File"/> Download File
+  //      </li>
+
+  // </ul>
+  //   `;
+  //   menu.innerHTML = `
+  //    <ul>
+  //   <li onclick="confirmDeleteFile('${file.FileUID}','${file.SiteID}','${false}','${fileItem.FileMasterList}')">
+  //     <img src=${deleteIcon} alt="Delete"/> Delete
+  //   </li>
+  //   <li onclick="auditHistory('${file.FileUID}', '${file.SiteID}','${file?.DocumentLibraryName}','${file?.SiteName}')">
+  //         <img src=${editIcon} alt="Edit"/>
+  //                     Audit History
+  //   </li>
+  //   <li onclick="shareFile('${file.FileUID}', '${file.SiteID}','${file.CurrentFolderPath}','${file.FileName}','MyRequest','${file.FileVersion}','${file.FileSize}','${file.Status}','${file.FilePreviewURL}','${file.DocumentLibraryName}')">
+  //     <img src=${ShareFile} alt="Share"/> Share
+  //   </li>
+  //    <li onclick="PreviewFile('${file.FileUID}','${file.SiteID}','${file.ID}' , '${file.FileMasterList}', '${file.FilePreviewURL}')">
+  //        <img src=${viewIcon} alt="Preview File"/> Preview File
+  //      </li>
+  //      <li onclick="Download('${file.FileUID}','${file.SiteID}','${file.ID}' , '${file.FileMasterList}', '${file.FilePreviewURL}')">
+  //        <img src=${downloadicon} alt="Download File"/> Download File
+  //      </li>
+  //   ${file.Status === "Rework" ? `
+  //    <li onclick="rework('${file.FileUID}', '${file.SiteID}','${file?.DocumentLibraryName}','${file?.SiteName}','${file.CurrentFolderPath}/${file.FileName}')">
+
+  //         <img src=${editIcon} alt="Edit File"/> Edit File
+  //     </li>` : ''}
+  // </ul>
+  //   `;
     
 
     
@@ -9754,7 +9777,7 @@ const fileNotFound=(fileName:any)=>{
           setDynamicContent('All the files and folder which is marked as Favourite.');
           break;
         case 'My Folder':
-          setDynamicContent('All the folder Created by me.');
+          setDynamicContent('Manage All Folder Created By Me.');
           break;
         case 'Shared with Others':
           setDynamicContent('My files shared with other users.');
@@ -11510,12 +11533,15 @@ librarydiv.appendChild(mainContainer)
                           <p className="sub-header font-14" style={{ color: "#6c757d" }}>{dynamicContent}</p>
                         )}
                       </div>  
-                      <div
+                      
+                        <div
                         id="breadcrumb"
                         style={{
                           display: "none",
                         }}
                       ></div>
+                      
+                      
 </div>
 <div className="col-xl-5">
 <div className="search-container position-relative">

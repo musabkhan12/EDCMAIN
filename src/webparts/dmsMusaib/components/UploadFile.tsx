@@ -110,8 +110,8 @@ console.log("documentLibraryName" , documentLibraryName)
     const siteUrl = window.location.origin;
 
     // const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-    // const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-    const previewUrl = `${siteUrl}/sites/IntranetUAT/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+     //const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+     const previewUrl = `${siteUrl}/sites/IntranetUAT/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
     console.log("Generated Preview URL:", previewUrl);
    if(previewUrl){
     console.log("enter herr")
@@ -402,7 +402,7 @@ const handleSubmit = async (event: any) => {
       console.log(encodedFilePath , "encodedFilePath")
       // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentfolderpath.Entity}/${currentfolderpath.DocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
       //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentfolderpath.Entity}/${currentfolderpath.DocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-       const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentfolderpath.Entity}/${currentfolderpath.DocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+        const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentfolderpath.Entity}/${currentfolderpath.DocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
       
       console.log("Generated Preview URL:", previewUrl);
       if (!listItem) throw new Error("List item not found for the uploaded file.");
@@ -446,7 +446,7 @@ const handleSubmit = async (event: any) => {
            RequestedBy  : String(currentUserEmailRef.current),
            FileName: String(uploadResult.data.Name),
            FileUID: String(uploadResult.data.UniqueId),
-          //  FilePreviewUrl: String(previewUrl),
+           FilePreviewUrl: String(previewUrl),
            Status: String('Pending'),
            FolderPath : String(currentfolderpath.folderpath),
            ApproveAction : String('Submitted'),
