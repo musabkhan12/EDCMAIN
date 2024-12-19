@@ -702,8 +702,24 @@
   
   
   }
+  .popup-modal{    position: fixed;
+    z-index: 9999999;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+    top: 0;
+}
+.popup-content{    background: #fff;
+  width: 32%;
+  margin: auto;
+  top: 5%;
+  position: relative;
+  padding: 20px;
+  border-radius: 5px;}
+  #confirmation-text{margin: 0px; font-size: 14px;}
   .content-page {
-    top: -3px !important;
+    top: -5px !important;
 }
   #showfolderpermission h5{    margin: inherit;
     margin-bottom: 3px !important;}
