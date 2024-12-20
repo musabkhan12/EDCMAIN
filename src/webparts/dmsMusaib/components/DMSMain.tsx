@@ -12,7 +12,7 @@ declare global {
     undo:(fileId:any,siteId:any,FileMasterList:any,documentLibraryName:any,ID:any,folderPath:any,fileName:any)=>void;
     confirmUndo:(fileId:any, siteId:any, FileMasterList:any, documentLibraryName:any, ID:any,folderPath:any,fileName:any) =>void;
     hideSharePopUp : ()=>void;
-    revokeAccess : (UserArray:string,FileName:string)=>void
+    revokeAccess :  (UserArray:string,FileName:string,fileId:any,siteId:any,folderpath:any)=>void
   }
 
 }
@@ -451,7 +451,7 @@ const myrequestbuttonclick =()=>{
 
       // Fetch data from DMSFolderMaster
       const folderItems = await sp.web.lists
-        .getByTitle("DMSFolderMaster").items.filter("IsActive eq 1").getAll();
+        .getByTitle("DMSFolderMaster").items.getAll();
        console.log("folderItems", folderItems);
 
       // const myButton = document.getElementById("mybutton");
@@ -469,7 +469,8 @@ const myrequestbuttonclick =()=>{
           FolderName,
           ParentFolderId,
           FolderPath,
-          IsRename
+          IsRename,
+          IsActive
         } = folderItem;
         if (SiteTitle) {
           const key = `${SiteTitle.trim()}::${Devision?.trim() || ""}::${
@@ -486,6 +487,7 @@ const myrequestbuttonclick =()=>{
                 FolderPath,
                 ParentFolderId,
                 DocumentLibraryName,
+                IsActive,
                 FolderName: Array.isArray(FolderName)
                   ? FolderName
                   : [FolderName],
@@ -678,10 +680,12 @@ const myrequestbuttonclick =()=>{
 
           // Iterate over document libraries and populate the map with unique DocumentLibraryNames
           documentLibraries.forEach((item: any) => {
+            // alert(`item : ${item.IsActive}`);
             if (!uniqueDocLibs.has(item.DocumentLibraryName)) {
               uniqueDocLibs.set(item.DocumentLibraryName, {
                 folders: [],
                 folderPath: item.FolderPath, // Store FolderPath with other details
+                isActive: item.IsActive,
               });
             }
             uniqueDocLibs.get(item.DocumentLibraryName).folders.push(item);
@@ -690,6 +694,7 @@ const myrequestbuttonclick =()=>{
           // Now render each unique DocumentLibraryName and its associated folders
           uniqueDocLibs.forEach((data, docLibName) => {
             const docLibElement = document.createElement("li");
+         
             // New code to check the Document library name is Rename or not start
             const checkIsRename = data.folders.filter((item:any) => 
               item.FolderName.length === 1 && item.FolderName[0] === null
@@ -732,6 +737,15 @@ const myrequestbuttonclick =()=>{
               }else if(toggleButton.textContent){
                 toggleButton.textContent = "+";
               }
+              if(data.isActive === false){
+                Swal.fire({
+                 icon: 'warning',
+                 title: 'Warning',
+                 text: 'We are setting up This Newly Created Folder Please Check after few Seconds',
+                 showConfirmButton: true,
+                 confirmButtonText: 'OK',   
+               });
+             }  
               // setlistorgriddata('')
               // setShowMyrequButtons(false)
               // setShowMyfavButtons(false)
@@ -746,7 +760,7 @@ const myrequestbuttonclick =()=>{
               currentDevision = ''
               currentDepartment = ''
               currentFolder = ''
-     
+              
               console.log(currentEntityURL , "currentEntityURL")
               console.log(currentsiteID , "currentsiteID")
               console.log(currentEntity , "currentEntity")
@@ -2211,6 +2225,9 @@ useEffect(() => {
 // end
   const getdoclibdata = async (FolderPath: any , siteID:any , docLibName:any) => {
     setlistorgriddata('');
+    
+    const noFileMessage = document.createElement("p");
+    
     //  ismyrequordoclibforfilepreview = "getdoclibdata"
     //  ismyrequordoclibforfilepreview = "getdoclibdata"
     console.log('path   ', FolderPath)
@@ -2292,12 +2309,36 @@ useEffect(() => {
         if (nextLink) {
           response = await sp.web(nextLink);
         } else {
-          response = await testidsub.web
-            .getFolderByServerRelativePath(FolderPath)
-            .files.select("Name", "Length", "ServerRelativeUrl", "UniqueId","MajorVersion","ListItemAllFields/Status","ListItemAllFields/IsDeleted").expand("ListItemAllFields").orderBy("ListItemAllFields/Modified", false).filter(`ListItemAllFields/IsDeleted eq ${null}`)
-            .top(batchSize)();
+          try {
+            response = await testidsub.web
+              .getFolderByServerRelativePath(FolderPath)
+              .files.select(
+                "Name",
+                "Length",
+                "ServerRelativeUrl",
+                "UniqueId",
+                "MajorVersion",
+                "ListItemAllFields/Status",
+                "ListItemAllFields/IsDeleted"
+              )
+              .expand("ListItemAllFields")
+              .orderBy("ListItemAllFields/Modified", false)
+              .filter(`ListItemAllFields/IsDeleted eq ${null} and ListItemAllFields/Status ne 'Pending'`)
+              .top(batchSize)();
             myfolderdata = response
             console.log(response , "response")
+          } catch (error) {
+            const container = document.getElementById("files-container");
+            noFileMessage.textContent = "No files found.";
+            noFileMessage.style.color = "gray"; 
+            noFileMessage.style.fontSize = "16px"; 
+            noFileMessage.style.textAlign = "center";
+    
+            // Append the message to the container
+            container.appendChild(noFileMessage);
+            console.error("Error fetching files:", error);
+          }
+         
         }
         // Add the current batch of files to the files array
         files = [...files, ...response as IFileInfo[]];
@@ -2451,7 +2492,7 @@ useEffect(() => {
       // Add breadCrumb start
       handleNavigation(currentSubsite,currentDevision , currentDepartment ,  currentDocumentLibrary, currentFolder);
       // End
-      const container = document.getElementById("files-container");
+  
       container.innerHTML = "";
       setdisplayuploadfileandcreatefolder(true)
       // Hide the list and grid view start
@@ -2504,7 +2545,7 @@ useEffect(() => {
         container.innerHTML = "";
         
         // Create a message element
-        const noFileMessage = document.createElement("p");
+        
         noFileMessage.textContent = "No files found.";
         noFileMessage.style.color = "gray"; 
         noFileMessage.style.fontSize = "16px"; 
@@ -4692,7 +4733,7 @@ filteredFileData.forEach((file)=>{
     <li onclick="PreviewFile('${file.CurrentFolderPath}' , '${file.FileName}', '${file.SiteID}','${file.DocumentLibraryName}','${file.FilePreviewURL}')">
       <img src=${ShareFile} alt="Share"/> File Preview
     </li>
-     <li onclick="revokeAccess('${encodeURIComponent(JSON.stringify(file.Users))}' , '${file.FileName}')">
+    <li onclick="revokeAccess('${encodeURIComponent(JSON.stringify(file.Users))}' , '${file.FileName}','${file.FileUID}','${file.SiteID}','${file.CurrentFolderPath}')">
       <img src=${ShareFile} alt="Share"/> Revoke Access
     </li>
   </ul>
@@ -4797,12 +4838,12 @@ filteredFileData.forEach((file)=>{
 }
 // This function is called when we click on Revoke Access in the ShareWithOthers popup
 // @ts-ignore
-window.revokeAccess=(UserArray:string,FileName:string)=>{
+window.revokeAccess=(UserArray:string,FileName:string,fileId:any,siteId:any,folderpath:any)=>{
   // const users = JSON.parse(UserArray);
   const users = JSON.parse(decodeURIComponent(UserArray));
   console.log("users",users);
   console.log("FileName",FileName);
-
+ const filePath=`${folderpath}/${FileName}`
    // Create the popup container
    const popup = document.createElement("div");
    popup.style.position = "fixed";
@@ -4872,9 +4913,9 @@ window.revokeAccess=(UserArray:string,FileName:string)=>{
        <td style="border: 1px solid #ddd; padding: 8px;">${user.User}</td>
        <td style="border: 1px solid #ddd; padding: 8px;">${user.PermissionType}</td>
        <td style="border: 1px solid #ddd; padding: 8px;">
-         <button 
-           style="background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;" 
-           onclick="deleteUser(${user.itemID},${index})">
+        <button
+           style="background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;"
+           onclick="deleteUser(${user.itemID},${index},'${user.UserID}','${user.PermissionType}')">
            Delete
          </button>
        </td>
@@ -4885,7 +4926,7 @@ window.revokeAccess=(UserArray:string,FileName:string)=>{
  
    // Add event listener for deleting users
   //  @ts-ignore
-   window.deleteUser =async(itemId,index) => {
+  window.deleteUser =async(itemId,index,userId,permission) => {
     // console.log("itemId",itemId)
     // console.log("index",index)
     // Remove the user from the DMSShareWithOtherMaster list
@@ -4902,7 +4943,7 @@ window.revokeAccess=(UserArray:string,FileName:string)=>{
     //     if (result.isConfirmed) {
     //       const removedUser=await sp.web.lists.getByTitle('DMSShareWithOtherMaster').items.getById(itemId).delete();
     //       // Close the popup
-    //       document.body.removeChild(popup);   
+    //       document.body.removeChild(popup);  
     //       Swal.fire({
     //         title: "Deleted!",
     //         text: "Your file has been deleted.",
@@ -4910,13 +4951,37 @@ window.revokeAccess=(UserArray:string,FileName:string)=>{
     //       });
     //     }
     //   });
-      
+     
     // } catch (error) {
     //   console.log("Error in removing he user",error)
     // }
-
+    let roleType:number;
+    if(permission === "Full Control"){
+      // roleType=5;
+      roleType=1073741829;
+    }else if(permission === "Contribute"){
+      // roleType=3;
+      roleType=1073741827;
+    }else if(permission === "Edit"){
+      // roleType=6;
+      roleType=1073741830;
+    }else if(permission === "Read"){
+      // roleType=2;
+      roleType=1073741826;
+    }else{
+      roleType=0;
+    }
+    console.log("roleType",roleType);
     try {
-        const removedUser=await sp.web.lists.getByTitle('DMSShareWithOtherMaster').items.getById(itemId).delete();
+        const {web}=await sp.site.openWebById(siteId);
+        const fileServerRelativePath = await web.getFileByServerRelativePath(filePath);
+        // Retrieve the list item associated with the file
+        const item = await fileServerRelativePath.getItem();
+        // Remove permissions for the user
+        const id=Number(userId);
+        await item.roleAssignments.remove(id,roleType);
+        await sp.web.lists.getByTitle('DMSShareWithOtherMaster').items.getById(itemId).delete();
+       
         // Close the popup
         document.body.removeChild(popup);
         Swal.fire({
@@ -4926,16 +4991,15 @@ window.revokeAccess=(UserArray:string,FileName:string)=>{
         });
         ShareWithOther();
         // Remove the user from the array
-        //  users.splice(index, 1); 
-        // Reopen with updated data 
-        // window.revokeAccess(encodeURIComponent(JSON.stringify(users)), FileName); 
+        //  users.splice(index, 1);
+        // Reopen with updated data
+        // window.revokeAccess(encodeURIComponent(JSON.stringify(users)), FileName);
     } catch (error) {
         console.log("Error in removing he user",error)
     }
      
      
    };
- 
    // Append elements to the content box
    content.appendChild(closeButton);
    content.appendChild(heading);
