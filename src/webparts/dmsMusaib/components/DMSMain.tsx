@@ -12,6 +12,7 @@ declare global {
     undo:(fileId:any,siteId:any,FileMasterList:any,documentLibraryName:any,ID:any,folderPath:any,fileName:any)=>void;
     confirmUndo:(fileId:any, siteId:any, FileMasterList:any, documentLibraryName:any, ID:any,folderPath:any,fileName:any) =>void;
     hideSharePopUp : ()=>void;
+    revokeAccess : (UserArray:string,FileName:string)=>void
   }
 
 }
@@ -610,6 +611,18 @@ const myrequestbuttonclick =()=>{
       link.style.cursor = "pointer";
       link.style.textDecoration = "none";
      
+      // Add background image
+      link.style.backgroundImage = `url('${require('../assets/Toggle-Button-plus-minus.png')}')`; 
+      link.style.backgroundRepeat = "no-repeat";
+      link.style.backgroundPosition = "center"; 
+      link.style.backgroundSize = "contain"; 
+
+      // Optionally adjust dimensions if needed
+      // link.style.width = "20px"; 
+      // link.style.height = "20px"; 
+      // link.style.display = "inline-block";
+      link.style.border='none';
+      link.style.borderRadius='0px'
       // link.addEventListener("click", (e) => {
       //     e.preventDefault()
       //     console.log("Button clicked +/-");
@@ -622,6 +635,16 @@ const myrequestbuttonclick =()=>{
  
       return link;
   };
+  const createToggleButtonEntity = () => {
+    const link = document.createElement("a");
+    link.id="toggle-plus/minus-Entity";
+    link.textContent = "+"; // Initial text
+    link.className="toggle-button"
+    link.style.cursor = "pointer";
+    link.style.textDecoration = "none";
+   
+    return link;
+};
       entitiesMap.forEach((value:any, entityTitle:any) => {
         const titleElement = document.createElement("p");
 
@@ -632,8 +655,8 @@ const myrequestbuttonclick =()=>{
         //   "icons/entity-icon.png",
         //   "Entity Icon"
         // );
-        const toggleButton=createToggleButton();
-        titleElement.appendChild(toggleButton);
+        const toggleButton1=createToggleButtonEntity();
+        titleElement.appendChild(toggleButton1);
         titleElement.appendChild(document.createTextNode(entityTitle));
 
         if (container) {
@@ -690,11 +713,13 @@ const myrequestbuttonclick =()=>{
             const folderList = document.createElement("ul");
             folderList.style.display = "none";
             folderList.style.width = "240px";
-            const entityImage = createImageElement(
-              "icons/entity-icon.png",
-              "Entity Icon"
-            );
-            docLibElement.appendChild(entityImage);
+            // const entityImage = createImageElement(
+            //   "icons/entity-icon.png",
+            //   "Entity Icon"
+            // );
+            // docLibElement.appendChild(entityImage);
+            const toggleButton=createToggleButton();
+            docLibElement.appendChild(toggleButton);
             docLibElement.appendChild(folderList);
 
             // Handle click to toggle the visibility of the folder list
@@ -702,6 +727,11 @@ const myrequestbuttonclick =()=>{
               const createFileButton =document.getElementById("createFileButton");
               event.preventDefault()
               event.stopPropagation();
+              if(toggleButton.textContent === "+") {
+                toggleButton.textContent = "-";
+              }else if(toggleButton.textContent){
+                toggleButton.textContent = "+";
+              }
               // setlistorgriddata('')
               // setShowMyrequButtons(false)
               // setShowMyfavButtons(false)
@@ -773,11 +803,13 @@ const myrequestbuttonclick =()=>{
                     // folderElement.textContent = folderName;
                     folderElement.textContent = folderRenameText;
                     parentElement.appendChild(folderElement);
-                    const entityImage = createImageElement(
-                      "icons/entity-icon.png",
-                      "Entity Icon"
-                    );
-                    folderElement.appendChild(entityImage);
+                    // const entityImage = createImageElement(
+                    //   "icons/entity-icon.png",
+                    //   "Entity Icon"
+                    // );
+                    // folderElement.appendChild(entityImage);
+                    const toggleButton=createToggleButton();
+                    folderElement.appendChild(toggleButton);
                     const subFolderList = document.createElement("ul");
                     subFolderList.style.display = "none";
                     subFolderList.style.width = "240px";
@@ -811,7 +843,11 @@ const myrequestbuttonclick =()=>{
                       // } else {
                       //   console.error();
                       // }
-
+                      if(toggleButton.textContent === "+") {
+                        toggleButton.textContent = "-";
+                      }else if(toggleButton.textContent){
+                        toggleButton.textContent = "+";
+                      }
         
                       toggleVisibility(subFolderList);
 
@@ -844,11 +880,13 @@ const myrequestbuttonclick =()=>{
 
           const docLibList = document.createElement("ul");
           docLibList.style.display = "none";
-          const entityImage = createImageElement(
-            "icons/entity-icon.png",
-            "Entity Icon"
-          );
-          devisionElement.appendChild(entityImage);
+          // const entityImage = createImageElement(
+          //   "icons/entity-icon.png",
+          //   "Entity Icon"
+          // );
+          // devisionElement.appendChild(entityImage);
+          const toggleButton=createToggleButton();
+          devisionElement.appendChild(toggleButton);
           devisionElement.appendChild(docLibList);
 
           // Display unique DocumentLibraryName under Devision
@@ -895,7 +933,11 @@ const myrequestbuttonclick =()=>{
               // } else {
               //   console.error();
               // }
-
+              if(toggleButton.textContent === "+") {
+                toggleButton.textContent = "-";
+              }else if(toggleButton.textContent){
+                toggleButton.textContent = "+";
+              }
               toggleVisibility(folderList);
             });
 
@@ -920,11 +962,13 @@ const myrequestbuttonclick =()=>{
             const documentList = document.createElement("ul");
             documentList.style.display = "none";
             documentList.style.width = "300px";
-            const entityImage = createImageElement(
-              "icons/entity-icon.png",
-              "Entity Icon"
-            );
-            departmentElement.appendChild(entityImage);
+            // const entityImage = createImageElement(
+            //   "icons/entity-icon.png",
+            //   "Entity Icon"
+            // );
+            // departmentElement.appendChild(entityImage);
+            const toggleButton=createToggleButton();
+            departmentElement.appendChild(toggleButton);
             departmentElement.appendChild(documentList);
 
             departmentElement.addEventListener("click", (event) => {
@@ -948,7 +992,11 @@ const myrequestbuttonclick =()=>{
               // } else {
               //   console.error();
               // }
-
+              if(toggleButton.textContent === "+") {
+                toggleButton.textContent = "-";
+              }else if(toggleButton.textContent){
+                toggleButton.textContent = "+";
+              }
               // Prevent toggling visibility before the list is populated
               if (documentList.innerHTML === "") {
                 const key = `${entityTitle.trim()}::${devisionTitle.trim()}::${departmentTitle.trim()}`;
@@ -983,11 +1031,13 @@ const myrequestbuttonclick =()=>{
                   const folderList = document.createElement("ul");
                   folderList.style.display = "none";
                   folderList.style.width = "351px";
-                  const entityImage = createImageElement(
-                    "icons/entity-icon.png",
-                    "Entity Icon"
-                  );
-                  docLibElement.appendChild(entityImage);
+                  // const entityImage = createImageElement(
+                  //   "icons/entity-icon.png",
+                  //   "Entity Icon"
+                  // );
+                  // docLibElement.appendChild(entityImage);
+                  const toggleButton=createToggleButton();
+                  docLibElement.appendChild(toggleButton);
                   docLibElement.appendChild(folderList);
 
                   docLibElement.addEventListener("click", (event) => {
@@ -1025,6 +1075,11 @@ const myrequestbuttonclick =()=>{
                     // } else {
                     //   console.error();
                     // }
+                    if(toggleButton.textContent === "+") {
+                      toggleButton.textContent = "-";
+                    }else if(toggleButton.textContent){
+                      toggleButton.textContent = "+";
+                    }
                   });
 
                   docLibElement.addEventListener("dblclick", (event) => {
@@ -1050,11 +1105,13 @@ const myrequestbuttonclick =()=>{
                           const folderElement = document.createElement("li");
                           folderElement.textContent = folderName;
                           parentElement.appendChild(folderElement);
-                          const entityImage = createImageElement(
-                            "icons/entity-icon.png",
-                            "Entity Icon"
-                          );
-                          folderElement.appendChild(entityImage);
+                          // const entityImage = createImageElement(
+                          //   "icons/entity-icon.png",
+                          //   "Entity Icon"
+                          // );
+                          // folderElement.appendChild(entityImage);
+                          const toggleButton=createToggleButton();
+                          folderElement.appendChild(toggleButton);
                           const subFolderList = document.createElement("ul");
                           subFolderList.style.display = "none";
                           folderElement.appendChild(subFolderList);
@@ -1087,6 +1144,11 @@ const myrequestbuttonclick =()=>{
                           //   } else {
                           //     console.error();
                           //   }
+                          if(toggleButton.textContent === "+") {
+                            toggleButton.textContent = "-";
+                          }else if(toggleButton.textContent){
+                            toggleButton.textContent = "+";
+                          }
                             event.stopPropagation();
                             toggleVisibility(subFolderList);
                             subFolderList.innerHTML = "";
@@ -1143,12 +1205,13 @@ const myrequestbuttonclick =()=>{
 
                 const folderList = document.createElement("ul");
                 folderList.style.display = "none";
-                const entityImage = createImageElement(
-                  "icons/entity-icon.png",
-                  "Entity Icon"
-                );
-                docLibElement.appendChild(entityImage);
-
+                // const entityImage = createImageElement(
+                //   "icons/entity-icon.png",
+                //   "Entity Icon"
+                // );
+                // docLibElement.appendChild(entityImage);
+                const toggleButton=createToggleButton();
+                docLibElement.appendChild(toggleButton);
                 docLibElement.appendChild(folderList);
 
                 docLibElement.addEventListener("click", (event) => {
@@ -1179,6 +1242,11 @@ const myrequestbuttonclick =()=>{
                   // } else {
                   //   console.error();
                   // }
+                  if(toggleButton.textContent === "+") {
+                    toggleButton.textContent = "-";
+                  }else if(toggleButton.textContent){
+                    toggleButton.textContent = "+";
+                  }
                   toggleVisibility(folderList);
                   folderList.innerHTML = "";
                   const buildFolderStructure = (
@@ -1218,17 +1286,21 @@ const myrequestbuttonclick =()=>{
                             folderElement2.textContent = folderName;
                             parentElement.appendChild(folderElement2);
                             const folderPath = libItem.FolderPath; 
-                            const entityImage = createImageElement(
-                              "icons/entity-icon.png",
-                              "Entity Icon"
-                            );
-                            folderElement2.appendChild(entityImage);
+                            // const entityImage = createImageElement(
+                            //   "icons/entity-icon.png",
+                            //   "Entity Icon"
+                            // );
+                            // folderElement2.appendChild(entityImage);
+                            const toggleButton=createToggleButton();
+                            folderElement2.appendChild(toggleButton);
                             const subFolderList2 = document.createElement("ul");
                             subFolderList2.style.display = "none";
 
                             // const entityImage = createImageElement('icons/entity-icon.png', 'Entity Icon')
-                            folderElement2.appendChild(entityImage);
-                            subFolderList2.appendChild(entityImage);
+                            // folderElement2.appendChild(entityImage);
+                            // subFolderList2.appendChild(entityImage);
+                            folderElement2.appendChild(toggleButton)
+                            subFolderList2.appendChild(toggleButton)
                             folderElement2.appendChild(subFolderList2);
 
                             folderElement2.addEventListener(
@@ -1270,7 +1342,11 @@ const myrequestbuttonclick =()=>{
                                 // } else {
                                 //   console.error();
                                 // }
-
+                                if(toggleButton.textContent === "+") {
+                                  toggleButton.textContent = "-";
+                                }else if(toggleButton.textContent){
+                                  toggleButton.textContent = "+";
+                                }
                                 // Clear existing sub-folder list to avoid duplications
                                 subFolderList2.innerHTML = "";
 
@@ -1328,6 +1404,11 @@ const myrequestbuttonclick =()=>{
             // } else {
             //   console.error();
             // }
+            if(toggleButton.textContent === "+") {
+              toggleButton.textContent = "-";
+            }else if(toggleButton.textContent){
+              toggleButton.textContent = "+";
+            }
           });
 
           devisionElement.addEventListener("dblclick", (event) => {
@@ -1406,10 +1487,10 @@ const myrequestbuttonclick =()=>{
           // alert("in second")
           // Toggle +/- button
                 // const plusMinus = document.getElementById("toggle-plus/minus");
-                if(toggleButton.textContent === "+") {
-                  toggleButton.textContent = "-";
-                }else if(toggleButton.textContent){
-                  toggleButton.textContent = "+";
+                if(toggleButton1.textContent === "+") {
+                  toggleButton1.textContent = "-";
+                }else if(toggleButton1.textContent){
+                  toggleButton1.textContent = "+";
                 }
                 const CreateFolder=document.getElementById("CreateFolder")
                 const CreateRoot=document.getElementById("CreateFolder1")
@@ -2152,7 +2233,7 @@ useEffect(() => {
     // }
     // // End
     // Extract the current entity from url
-    const segments = FolderPath.split('/');
+    const segments = FolderPath?.split('/');
     const currentSubsite = segments[3]; 
     console.log("segments",segments);
     console.log(currentSubsite);
@@ -2213,7 +2294,7 @@ useEffect(() => {
         } else {
           response = await testidsub.web
             .getFolderByServerRelativePath(FolderPath)
-            .files.select("Name", "Length", "ServerRelativeUrl", "UniqueId","MajorVersion","ListItemAllFields/Status","ListItemAllFields/IsDeleted").expand("ListItemAllFields")
+            .files.select("Name", "Length", "ServerRelativeUrl", "UniqueId","MajorVersion","ListItemAllFields/Status","ListItemAllFields/IsDeleted").expand("ListItemAllFields").orderBy("ListItemAllFields/Modified", false).filter(`ListItemAllFields/IsDeleted eq ${null}`)
             .top(batchSize)();
             myfolderdata = response
             console.log(response , "response")
@@ -2417,6 +2498,22 @@ useEffect(() => {
     ismyrequordoclibforfilepreview = "getdoclibdata"
       // const container = document.getElementById("files-container");
       // container.innerHTML = "";
+      if(files.length === 0){
+        // console.log("no file found");
+        const container = document.getElementById("files-container");
+        container.innerHTML = "";
+        
+        // Create a message element
+        const noFileMessage = document.createElement("p");
+        noFileMessage.textContent = "No files found.";
+        noFileMessage.style.color = "gray"; 
+        noFileMessage.style.fontSize = "16px"; 
+        noFileMessage.style.textAlign = "center";
+
+        // Append the message to the container
+        container.appendChild(noFileMessage);
+
+      }
       files.forEach(async(file:any) => {
             const isFavourite = favouriteMap.get(file.UniqueId) || 0;
             const favouriteText = isFavourite ? "Unmark as Favourite" : "Mark as Favourite";
@@ -4472,9 +4569,9 @@ if (hidegidvewlistviewbutton) {
    // New Code start
    const DMSShareWithOtherMaster= await sp.web.lists
    .getByTitle("DMSShareWithOtherMaster")
-   .items.select("FileName", "FileUID", "FileVersion", "FileSize","CurrentUser","DocumentLibraryName","CurrentFolderPath","ShareWithOthers","Status","SiteID","SiteName","FilePreviewURL","ShareAt","UserID","PermissionType")
+   .items.select("FileName", "FileUID", "FileVersion", "FileSize","CurrentUser","DocumentLibraryName","CurrentFolderPath","ShareWithOthers","Status","SiteID","SiteName","FilePreviewURL","ShareAt","UserID","PermissionType","ID")
    .filter(`CurrentUser eq '${currentUserEmailRef.current}'`).orderBy("Created", false)();
-
+  
    // Mapped the file with the users
 // Mapped the file with the users
 const groupedData =DMSShareWithOtherMaster.reduce((acc, item) => {
@@ -4498,7 +4595,8 @@ const groupedData =DMSShareWithOtherMaster.reduce((acc, item) => {
           User: item.ShareWithOthers,
           UserID: item.UserID,
           PermissionType:item.PermissionType,
-          ShareAt:item.ShareAt
+          ShareAt:item.ShareAt,
+          itemID:item.ID
       });
 
       return acc;
@@ -4593,6 +4691,9 @@ filteredFileData.forEach((file)=>{
   <ul>
     <li onclick="PreviewFile('${file.CurrentFolderPath}' , '${file.FileName}', '${file.SiteID}','${file.DocumentLibraryName}','${file.FilePreviewURL}')">
       <img src=${ShareFile} alt="Share"/> File Preview
+    </li>
+     <li onclick="revokeAccess('${encodeURIComponent(JSON.stringify(file.Users))}' , '${file.FileName}')">
+      <img src=${ShareFile} alt="Share"/> Revoke Access
     </li>
   </ul>
 `;  
@@ -4693,6 +4794,158 @@ filteredFileData.forEach((file)=>{
 //   }        
 // })
 
+}
+// This function is called when we click on Revoke Access in the ShareWithOthers popup
+// @ts-ignore
+window.revokeAccess=(UserArray:string,FileName:string)=>{
+  // const users = JSON.parse(UserArray);
+  const users = JSON.parse(decodeURIComponent(UserArray));
+  console.log("users",users);
+  console.log("FileName",FileName);
+
+   // Create the popup container
+   const popup = document.createElement("div");
+   popup.style.position = "fixed";
+   popup.style.top = "0";
+   popup.style.left = "0";
+   popup.style.width = "100%";
+   popup.style.height = "100%";
+   popup.style.backgroundColor = "rgba(0,0,0,0.5)";
+   popup.style.display = "flex";
+   popup.style.justifyContent = "center";
+   popup.style.alignItems = "center";
+   popup.style.zIndex = "9999";
+ 
+  // Create the popup content box
+  const content = document.createElement("div");
+  content.style.position = "relative"; 
+  content.style.backgroundColor = "#fff";
+  content.style.padding = "20px";
+  content.style.borderRadius = "8px";
+  content.style.boxShadow = "0px 4px 6px rgba(0, 0, 0, 0.1)";
+  content.style.width = "400px";
+  content.style.textAlign = "center";
+ 
+   // Create the heading
+   const heading = document.createElement("h2");
+   heading.innerText = "Shared Users List";
+   heading.style.margin = "0 0 20px 0";
+   heading.style.color = "#333";
+ 
+  // Create the close button
+  const closeButton = document.createElement("button");
+  closeButton.innerText = "X";
+  closeButton.style.position = "absolute";
+  closeButton.style.top = "10px";
+  closeButton.style.right = "10px";
+  closeButton.style.backgroundColor = "white";
+  closeButton.style.color = "black";
+  closeButton.style.border = "none";
+  closeButton.style.borderRadius = "4px";
+  closeButton.style.cursor = "pointer";
+  closeButton.style.padding = "5px 10px";
+  closeButton.onclick = () => {
+    document.body.removeChild(popup);
+  };
+ 
+   // Create the table
+   const table = document.createElement("table");
+   table.style.width = "100%";
+   table.style.borderCollapse = "collapse";
+ 
+   // Create table header
+   const thead = document.createElement("thead");
+   thead.innerHTML = `
+     <tr>
+       <th style="border: 1px solid #ddd; padding: 8px;">User</th>
+       <th style="border: 1px solid #ddd; padding: 8px;">Permission</th>
+       <th style="border: 1px solid #ddd; padding: 8px;">Action</th>
+     </tr>
+   `;
+   table.appendChild(thead);
+ 
+   // Create table body
+   const tbody = document.createElement("tbody");
+   users.forEach((user:any, index:any) => {
+     const row = document.createElement("tr");
+     row.innerHTML = `
+       <td style="border: 1px solid #ddd; padding: 8px;">${user.User}</td>
+       <td style="border: 1px solid #ddd; padding: 8px;">${user.PermissionType}</td>
+       <td style="border: 1px solid #ddd; padding: 8px;">
+         <button 
+           style="background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;" 
+           onclick="deleteUser(${user.itemID},${index})">
+           Delete
+         </button>
+       </td>
+     `;
+     tbody.appendChild(row);
+   });
+   table.appendChild(tbody);
+ 
+   // Add event listener for deleting users
+  //  @ts-ignore
+   window.deleteUser =async(itemId,index) => {
+    // console.log("itemId",itemId)
+    // console.log("index",index)
+    // Remove the user from the DMSShareWithOtherMaster list
+    // try {
+    //   Swal.fire({
+    //     title: "Are you sure?",
+    //     text: "You won't be able to revert this!",
+    //     icon: "warning",
+    //     showCancelButton: true,
+    //     confirmButtonColor: "#3085d6",
+    //     cancelButtonColor: "#d33",
+    //     confirmButtonText: "Yes, delete it!"
+    //   }).then(async(result) => {
+    //     if (result.isConfirmed) {
+    //       const removedUser=await sp.web.lists.getByTitle('DMSShareWithOtherMaster').items.getById(itemId).delete();
+    //       // Close the popup
+    //       document.body.removeChild(popup);   
+    //       Swal.fire({
+    //         title: "Deleted!",
+    //         text: "Your file has been deleted.",
+    //         icon: "success"
+    //       });
+    //     }
+    //   });
+      
+    // } catch (error) {
+    //   console.log("Error in removing he user",error)
+    // }
+
+    try {
+        const removedUser=await sp.web.lists.getByTitle('DMSShareWithOtherMaster').items.getById(itemId).delete();
+        // Close the popup
+        document.body.removeChild(popup);
+        Swal.fire({
+                  title: "Removed!",
+                  text: "User remove successfully.",
+                  icon: "success"
+        });
+        ShareWithOther();
+        // Remove the user from the array
+        //  users.splice(index, 1); 
+        // Reopen with updated data 
+        // window.revokeAccess(encodeURIComponent(JSON.stringify(users)), FileName); 
+    } catch (error) {
+        console.log("Error in removing he user",error)
+    }
+     
+     
+   };
+ 
+   // Append elements to the content box
+   content.appendChild(closeButton);
+   content.appendChild(heading);
+   content.appendChild(table);
+ 
+   // Append content box to the popup
+   popup.appendChild(content);
+ 
+   // Append popup to the body
+   document.body.appendChild(popup);
 }
 // const ShareWithMe=async(event:React.MouseEvent<HTMLButtonElement>=null,searchText:HTMLInputElement=null)=>{
 //   if(event){
@@ -7856,6 +8109,22 @@ if(filteredFileData.length === 0 && searchText !== null){
   console.log("filteredFileData",filteredFileData)
 }
 // end
+if(filteredFileData.length === 0){
+  // console.log("no file found");
+  const container = document.getElementById("files-container");
+  container.innerHTML = "";
+  
+  // Create a message element
+  const noFileMessage = document.createElement("p");
+  noFileMessage.textContent = "No folders found.";
+  noFileMessage.style.color = "gray"; 
+  noFileMessage.style.fontSize = "16px"; 
+  noFileMessage.style.textAlign = "center";
+
+  // Append the message to the container
+  container.appendChild(noFileMessage);
+
+}
 // change the array name in the for loop
 for(const files of filteredFileData){
   // console.log("FolderName",files.FolderName);
