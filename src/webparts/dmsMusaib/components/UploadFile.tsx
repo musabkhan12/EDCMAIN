@@ -12,6 +12,7 @@ import './uploadfilecss'
 import Swal from 'sweetalert2';
 let IsApproval : any
 let status :any;
+let buttontext :any = 'Submit'
 interface UploadFileProps {
   currentfolderpath: { [key: string]: string };
   onReturnToMain: () => void;
@@ -19,6 +20,17 @@ interface UploadFileProps {
 }
 
 let previewURLN;
+const submitButton=document.createElement('button');
+submitButton.textContent= buttontext
+submitButton.id="submitBtn";
+submitButton.type="submit";
+
+
+// const submitBtn = document.getElementById("submitBtn") as HTMLButtonElement;
+// if(submitBtn){
+//   alert(true)
+//   submitBtn.disabled = true;
+// }
 
 const UploadFile: React.FC<UploadFileProps> = ({ currentfolderpath , onReturnToMain  }) => {
   const sp: SPFI = getSP();
@@ -93,7 +105,10 @@ console.log("documentLibraryName" , documentLibraryName)
 
       // Generate the preview URL dynamically
       const previewUrl = await generatePreviewUrl(uploadResult.data.ServerRelativeUrl);
-      
+      const submitBtn = document.getElementById("submitBtn") as HTMLButtonElement;
+      submitButton.disabled = false; // Disable the button
+     
+    
       previewFile(previewUrl);
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -109,9 +124,9 @@ console.log("documentLibraryName" , documentLibraryName)
     const parentFolder = serverRelativeUrl.substring(0, serverRelativeUrl.lastIndexOf('/'));
     const siteUrl = window.location.origin;
 
-    // const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+     const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
      //const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-     const previewUrl = `${siteUrl}/sites/IntranetUAT/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+      // const previewUrl = `${siteUrl}/sites/IntranetUAT/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
     console.log("Generated Preview URL:", previewUrl);
    if(previewUrl){
     console.log("enter herr")
@@ -152,11 +167,11 @@ const previewFile = async (previewUrl: string) => {
                 console.log("Hiding the OneUpCommandBar element");
                 button.style.display = "none";
   
-                // Hide the spinner and show the iframe after the button is hidden
+
                 spinner.style.display = "none";
                 iframe.style.display = "block"; 
 
-               // Exit the loop once the button is found and hidden
+
               } else {
                 console.log("OneUpCommandBar not found, rechecking...");
               }
@@ -170,11 +185,11 @@ const previewFile = async (previewUrl: string) => {
             console.error("Error accessing iframe content:", error);
           }
   
-          // Re-check after a short delay if the button wasn't found
+
           setTimeout(checkAndHideButton, 100);
         };
   
-        // Start checking for the button
+
         checkAndHideButton();
       };
     } catch (error) {
@@ -215,7 +230,7 @@ React.useEffect(()=>{
       // end
 
       const formSelector = document.getElementById("formSelector");
-      const submitButton=document.createElement('button');
+     
       const uploadFileDiv=document.createElement('div');
 
       const createElement=(fieldName:string,type:string,required:boolean,IsRename:string)=>{
@@ -306,9 +321,9 @@ React.useEffect(()=>{
       formSelector.appendChild(uploadFileDiv);
 
       // Submit Button property
-      submitButton.type="submit";
+      
       submitButton.addEventListener('click',handleSubmit)
-      submitButton.textContent="Submit"
+  
       formSelector.appendChild(submitButton);
       
     } catch (error) {
@@ -322,6 +337,7 @@ React.useEffect(()=>{
 
 
 const handleSubmit = async (event: any) => {
+
   event.preventDefault();
   console.log("Button clicked");
 
@@ -392,7 +408,10 @@ const handleSubmit = async (event: any) => {
       
       const uploadResult = await documentLibraryInWhichWeUploadTheFile.files.addChunked(selectedFile.name, selectedFile);
       console.log("File uploaded successfully", uploadResult.data.Name);
-
+      const submitBtn = document.getElementById("submitBtn") as HTMLButtonElement;
+      submitBtn.disabled = true; 
+      submitBtn.innerText = "Submitting..."; // Optional: Change button text to indicate progress
+    
       const listItem = await uploadResult.file.getItem();
       console.log("ListItems ",listItem);
       
@@ -400,9 +419,9 @@ const handleSubmit = async (event: any) => {
       const siteUrl = window.location.origin;
       const encodedFilePath = encodeURIComponent(uploadResult.data.ServerRelativeUrl);
       console.log(encodedFilePath , "encodedFilePath")
-      // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentfolderpath.Entity}/${currentfolderpath.DocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+        const previewUrl = `${siteUrl}/sites/AlRostmani/${currentfolderpath.Entity}/${currentfolderpath.DocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
       //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentfolderpath.Entity}/${currentfolderpath.DocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-        const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentfolderpath.Entity}/${currentfolderpath.DocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+        //  const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentfolderpath.Entity}/${currentfolderpath.DocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
       
       console.log("Generated Preview URL:", previewUrl);
       if (!listItem) throw new Error("List item not found for the uploaded file.");

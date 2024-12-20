@@ -359,7 +359,7 @@ getdata()
      
 }, []);
 const getdata = async () => {
-  debugger
+
  const ids = window.location.search;
  //  alert(ids)
  const originalString = ids;
@@ -450,8 +450,7 @@ const myrequestbuttonclick =()=>{
 
       // Fetch data from DMSFolderMaster
       const folderItems = await sp.web.lists
-        .getByTitle("DMSFolderMaster")
-        .items.getAll();
+        .getByTitle("DMSFolderMaster").items.filter("IsActive eq 1").getAll();
        console.log("folderItems", folderItems);
 
       // const myButton = document.getElementById("mybutton");
@@ -1061,6 +1060,7 @@ const myrequestbuttonclick =()=>{
                           folderElement.appendChild(subFolderList);
 
                           folderElement.addEventListener("click", (event) => {
+                            
                             currentEntityURL = value.siteURL;
                             currentEntity = value.entityTitle;
                             currentsiteID = value.siteID
@@ -1487,7 +1487,7 @@ const myrequestbuttonclick =()=>{
                     console.log("enter here .....................");
                     hidegidvewlistviewbutton2.style.display = 'none';
                 }
-                handleNavigation(value.entityTitle, null, null, null, null);
+                // handleNavigation(value.entityTitle, null, null, null, null);
                 // Toggle plus/minus icon
                 titleElement.classList.toggle("expanded");
                 console.log(value, "value");
@@ -2129,7 +2129,7 @@ useEffect(() => {
 }, []);
 // end
   const getdoclibdata = async (FolderPath: any , siteID:any , docLibName:any) => {
-    
+    setlistorgriddata('');
     //  ismyrequordoclibforfilepreview = "getdoclibdata"
     //  ismyrequordoclibforfilepreview = "getdoclibdata"
     console.log('path   ', FolderPath)
@@ -2201,6 +2201,8 @@ useEffect(() => {
     currentsiteID=siteID;
     currentfolderpath=FolderPath;
     const container = document.getElementById("files-container");
+ 
+    container.classList.remove('hidemydatacards')
     container.innerHTML = "";
     console.log("folderpath:", FolderPath);
     try {
@@ -4111,8 +4113,8 @@ if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepre
 if(ismyrequordoclibforfilepreview === "getdoclibdata"){
 // Generate the correct preview URL
 // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-// const previewUrl = `${siteUrl}/sites/AlRostmani/${currentSubsite}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+//  const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+  const previewUrl = `${siteUrl}/sites/AlRostmani/${currentSubsite}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
 // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
 alert("Im in doclib")
 console.log(previewUrl, "Generated preview URL");
@@ -6977,9 +6979,9 @@ window.deleteFile = async(fileId:string, siteID:string, IsHardDelete:any, ListTo
       
           const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
           const siteUrl = window.location.origin;
-           const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+            const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             //const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-          // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+          //  const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
           console.log("previewUrl",previewUrl);
           payload.FilePreviewURL=previewUrl
 
@@ -8494,11 +8496,21 @@ const createFileCard = (file:any, fileIcon:any, siteId:any,listToUpdate:any,file
   const menu = document.createElement("div");
   menu.id = `menu-${file.FileUID}`;
   menu.className = "popup-menu";
+  // menu.innerHTML = `
+  //   <ul>
+  //     <li onclick="confirmDeleteFile('${file.FileUID}', '${siteId}','${false}','${listToUpdate}' )">
+  //       <img src=${deleteIcon} alt="Delete"/> Delete
+  //     </li>
+  //     <li onclick="unMarkAsFavorite('${file.FileUID}', '${siteId}','${listToUpdate}')">
+  //       <img src=${FillFavouriteFile} alt="Unmark as Favorite"/> Unmark as Favorite
+  //     </li>
+  //     <li onclick="shareFile('${file.FileUID}', '${file.SiteID}','${file.CurrentFolderPath}','${file.FileName}','MyFavourite','${file.FileVersion}','${file.FileSize}','${file.Status}','${file.FilePreviewURL}','${file.DocumentLibraryName}')">
+  //       <img src=${ShareFile} alt="Share"/> Share
+  //     </li>
+  //   </ul>
+  // `;
   menu.innerHTML = `
     <ul>
-      <li onclick="confirmDeleteFile('${file.FileUID}', '${siteId}','${false}','${listToUpdate}' )">
-        <img src=${deleteIcon} alt="Delete"/> Delete
-      </li>
       <li onclick="unMarkAsFavorite('${file.FileUID}', '${siteId}','${listToUpdate}')">
         <img src=${FillFavouriteFile} alt="Unmark as Favorite"/> Unmark as Favorite
       </li>
@@ -8592,7 +8604,7 @@ window.toggleFavourite=async (fileId,siteId)=> {
             const encodedFilePath = encodeURIComponent(file.ServerRelativeUrl);
             const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
             const siteUrl = window.location.origin;
-             const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+              const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             //  const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             console.log("previewUrl",previewUrl);
@@ -8768,7 +8780,8 @@ window.toggleFavourite=async (fileId,siteId)=> {
             const siteUrl = window.location.origin;
               // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
              // const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-             const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+               const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+            //  const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             console.log("previewUrl",previewUrl);
 
             payload.FilePreviewURL=previewUrl               
@@ -11293,7 +11306,7 @@ librarydiv.appendChild(mainContainer)
       <VerticalSideBar _context={sp} />
     </div>
     <div className="content-page">
-      <HorizontalNavbar/>
+      <HorizontalNavbar _context={sp}/>
       <div className="content" style={{marginLeft: `${!useHide ? '240px' : '80px'}`,marginTop:'0.8rem'}}>
        
       <div className="container-fluid  paddb">

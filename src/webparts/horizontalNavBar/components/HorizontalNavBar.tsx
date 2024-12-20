@@ -176,7 +176,7 @@ const HorizontalNavbar = ({ _context, siteUrl }: any) => {
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
   const handleSidebarToggle = (bol: boolean) => {
-    debugger
+
     setIsSidebarOpen(prevState => !prevState);
     setHide(!bol);
     document.querySelector(".sidebar")?.classList.toggle("close");

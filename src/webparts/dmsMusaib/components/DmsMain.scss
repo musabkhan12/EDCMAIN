@@ -768,3 +768,12 @@
   #createFileButton{
     display: none;
   }
+
+  #files-container .card{
+    width: 32.1%; margin: 5px; float: left;
+  } 
+ #files-container .card {
+    border: 1px solid #54ade0 !important;
+    border-radius: 6px !important;
+    height: 107px; padding: 0.75rem; position: relative !important;
+}

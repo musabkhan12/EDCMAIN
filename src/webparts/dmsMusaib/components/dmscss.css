@@ -794,7 +794,7 @@ a:hover
  #files-container .card {
     border: 1px solid #54ade0 !important;
     border-radius: 6px !important;
-    height: 92px; padding: 0.75rem; position: relative;
+    height: 107px; padding: 0.75rem; position: relative !important;
 }
 .three-dots{position: absolute;
   right: 16px;
