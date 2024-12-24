@@ -122,6 +122,14 @@ let Txticon = require("../assets/TXT.png");
 let Pdficon = require("../assets/PDF.png");
 let Xlsicon = require("../assets/XLS.png");
 let Zipicon = require("../assets/ZIP.png");
+let AddMetaData = require("../assets/Add-Meta-Data.svg");
+let DeleteFolder = require("../assets/Delete-Folder.svg");
+let FilePreview = require("../assets/File-Preview.svg");
+let ManagePermissionFolder = require("../assets/Manage-Permission.svg");
+let ManageWorkflowFolder = require("../assets/Manage-Workflow.svg");
+let RenameFolder = require("../assets/Rename-Folder.svg");
+let RenameMetaData = require("../assets/Rename-Meta-Data.svg");
+let RevokeAccess= require("../assets/Rvoke-Access.svg");
 let MainRounteVariable = 'MyRequest'
 
 let managePermissionIcon =  require('../assets/ManagePermission.svg') 
@@ -2492,7 +2500,7 @@ useEffect(() => {
       // Add breadCrumb start
       handleNavigation(currentSubsite,currentDevision , currentDepartment ,  currentDocumentLibrary, currentFolder);
       // End
-  
+      const container = document.getElementById("files-container");
       container.innerHTML = "";
       setdisplayuploadfileandcreatefolder(true)
       // Hide the list and grid view start
@@ -2545,7 +2553,7 @@ useEffect(() => {
         container.innerHTML = "";
         
         // Create a message element
-        
+        const noFileMessage = document.createElement("p");
         noFileMessage.textContent = "No files found.";
         noFileMessage.style.color = "gray"; 
         noFileMessage.style.fontSize = "16px"; 
@@ -3645,7 +3653,7 @@ const createFileCardForDocumentLibrary=(file:any,fileIcon:any,siteID:string,IsHa
                       Audit History
           </li>
           <li onclick="PreviewFile('${file.ServerRelativeUrl}', '${siteID}' , '${docLibName}')">
-          <img src=${editIcon} alt="Preview"/>
+          <img src=${FilePreview} alt="Preview"/>
                       Preview File
           </li>
           <li id="favouriteToggle-${file.UniqueId}" onclick="toggleFavourite('${file.UniqueId}', '${siteID}')">
@@ -4400,7 +4408,7 @@ if (searchText !== "" ) {
                       Audit History
                     </li>
                     <li onclick="PreviewFile('${file.ServerRelativeUrl}', '${currentsiteID}' , '${currentDocumentLibrary}')">
-                      <img src=${editIcon} alt="Preview"/>
+                      <img src=${FilePreview} alt="Preview"/>
                       Preview File
                     </li>
                     <li id="favouriteToggle-${file.UniqueId}" onclick="toggleFavourite('${file.UniqueId}', '${currentsiteID}')">
@@ -4731,10 +4739,10 @@ filteredFileData.forEach((file)=>{
   menu.innerHTML = `
   <ul>
     <li onclick="PreviewFile('${file.CurrentFolderPath}' , '${file.FileName}', '${file.SiteID}','${file.DocumentLibraryName}','${file.FilePreviewURL}')">
-      <img src=${ShareFile} alt="Share"/> File Preview
+      <img src=${FilePreview} alt="Share"/> File Preview
     </li>
     <li onclick="revokeAccess('${encodeURIComponent(JSON.stringify(file.Users))}' , '${file.FileName}','${file.FileUID}','${file.SiteID}','${file.CurrentFolderPath}')">
-      <img src=${ShareFile} alt="Share"/> Revoke Access
+      <img src=${RevokeAccess} alt="Share"/> Revoke Access
     </li>
   </ul>
 `;  
@@ -5436,7 +5444,7 @@ filteredFileData.forEach(async(file)=>{
   menu.innerHTML = `
   <ul>
     <li onclick="PreviewFile('${file.CurrentFolderPath}' , '${file.FileName}', '${file.SiteID}','${file.DocumentLibraryName}','${file.FilePreviewURL}')">
-      <img src=${ShareFile} alt="Share"/> File Preview
+      <img src=${FilePreview} alt="Share"/> File Preview
     </li>
 
     <li onclick="Download('${file.FileUID}', '${file.SiteID}')">
@@ -8238,28 +8246,28 @@ menu.className = "popup-menu";
 menu.innerHTML = `
 <ul>
      <li onclick="managePermission('${files.DocumentLibraryName}','${files.SiteTitle}','${files.SiteID}','${files.FolderName}','${files.FolderPath}')">
-      <img src=${managePermissionIcon} alt="ManagePermission"/>
+      <img src=${ManagePermissionFolder} alt="ManagePermission"/>
       Manage Permission
   </li>
   <li onclick="manageWorkflow('${files.DocumentLibraryName}','${files.SiteTitle}','${files.SiteID}')">
-    <img src=${manageWorkFlowIcon} alt="ManageWorkFlow"/>
+    <img src=${ManageWorkflowFolder} alt="ManageWorkFlow"/>
     Manage Workflow
   </li>
   <li onclick="editFile('${files.SiteTitle}','${files.DocumentLibraryName}')">
-    <img src=${editIcon} alt="Edit"/>
+    <img src=${AddMetaData} alt="Edit"/>
     Add Meta Data
   </li>
   ${superAdmin === true ? 
     `<li onclick="deleteFolder('${files.SiteTitle}','${folderName}','${files.ID}','${files.SiteID}','${files.FolderPath}','${files.IsLibrary}')">
-    <img src=${deleteIcon} alt="Edit"/>
+    <img src=${DeleteFolder} alt="Edit"/>
     Delete Folder
     </li>
     <li onclick="renameFolder('${files.SiteTitle}','${folderName}','${files.ID}','${files.SiteID}')">
-      <img src=${editIcon} alt="Edit"/>
+      <img src=${RenameFolder} alt="Edit"/>
       Rename Folder
     </li>
     ${files.IsLibrary === true ? `<li onclick="renameColumn('${files.SiteTitle}','${files.DocumentLibraryName}')">
-      <img src=${editIcon} alt="Edit"/>
+      <img src=${RenameMetaData} alt="Edit"/>
       Rename Meta Data
     </li>`: ''}
     `
@@ -8471,6 +8479,7 @@ window.renameFolder=(siteName:any,folderName:any,itemId:any,siteId:any)=>{
           console.log("Folder Rename successfully");
           mycreatedfolders()
           popup.remove();
+          Swal.fire('Successfull','Folder rename successfully','success');
         } catch (error) {
           console.log("Error in rename the folders ",error)
         }
@@ -8492,7 +8501,7 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
   console.log("documentLibraryName",documentLibraryName)
 
     // Fetch the existing columns and types from the list
-    const existingColumns = await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName", "ColumnType","ID","IsRename").filter(`SiteName eq '${siteName}' and DocumentLibraryName eq '${documentLibraryName}' and IsDocumentLibrary eq 0`)();
+    const existingColumns = await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName", "ColumnType","ID","IsRename").filter(`SiteName eq '${siteName}' and DocumentLibraryName eq '${documentLibraryName}' and IsDocumentLibrary eq 0 and IsInProgress eq 0`)();
 
     console.log("existingColumns",existingColumns);
 
@@ -9823,7 +9832,7 @@ FilesItems.forEach(async (fileItem, index) => {
       <img src=${ShareFile} alt="Share"/> Share
     </li>
      <li onclick="PreviewFile('${file.FileUID}','${file.SiteID}','${file.ID}' , '${file.FileMasterList}', '${file.FilePreviewURL}')">
-         <img src=${viewIcon} alt="Preview File"/> Preview File
+         <img src=${FilePreview} alt="Preview File"/> Preview File
        </li>
        <li onclick="Download('${file.FileUID}','${file.SiteID}','${file.ID}' , '${file.FileMasterList}', '${file.FilePreviewURL}')">
          <img src=${downloadicon} alt="Download File"/> Download File
@@ -10195,7 +10204,7 @@ window.editFile = async (siteName: string, documentLibraryName:string ) => {
   console.log("Inside the editFile");
 
   // Fetch the existing columns and types from the list
-  const existingColumns = await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName", "ColumnType","ID","IsRename").filter(`SiteName eq '${siteName}' and DocumentLibraryName eq '${documentLibraryName}' and IsDocumentLibrary eq 0`)();
+  const existingColumns = await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.select("ColumnName", "ColumnType","ID","IsRename").filter(`SiteName eq '${siteName}' and DocumentLibraryName eq '${documentLibraryName}' and IsDocumentLibrary eq 0  and IsInProgress eq 0`)();
 
   console.log("existingColumns",existingColumns);
 
@@ -10259,7 +10268,7 @@ window.editFile = async (siteName: string, documentLibraryName:string ) => {
           <select class="form-control">
             <option value="" disabled selected>Select Type</option>
             <option value="Single Line of Text">Single Line of Text</option>
-            <option value="Mulitple Line of Text">Multiple Line of Text</option>
+            <option value="Multiple Line of Text">Multiple Line of Text</option>
             <option value="Yes or No">Yes or No</option>
             <option value="Date & Time">Date & Time</option>
             <option value="Number">Number</option>
@@ -10279,7 +10288,7 @@ window.editFile = async (siteName: string, documentLibraryName:string ) => {
   popupContainer.appendChild(saveButton);
 
   saveButton.addEventListener('click', () => {
-    debugger
+    // debugger
      // Collect data from newly added fields
      console.log(formContent , "formContent")
     const newFields = Array.from(formContent.querySelectorAll('.form-group.row')).map((group) => {
@@ -10294,14 +10303,27 @@ window.editFile = async (siteName: string, documentLibraryName:string ) => {
   });
 
   console.log("New Fields:", newFields);
-
+    // Validation for forbidden column names
+    const forbiddenNames = ["Status", "IsDeleted"];
+    const invalidFields = newFields.filter((field) => forbiddenNames.includes(field.columnName));
+  
+    if (invalidFields.length > 0) {
+      popupContainer.style.display = 'none';
+      Swal.fire(
+        'Validation Error',
+        `The column names "${invalidFields.map(f => f.columnName).join(', ')}" are not allowed. Please choose different names.`,
+        'error'
+      );
+      return; 
+    }
   try {
     const payloadForPreviewFormMaster={
       SiteName:siteName,
       DocumentLibraryName:documentLibraryName,
       IsRequired:true,
       AddorRemoveThisColumn:"Add To Library",
-      IsModified:true
+      IsModified:true,
+      IsInProgress:true
     }
 
   // existingColumns.forEach(async(column)=>{
@@ -10314,14 +10336,49 @@ window.editFile = async (siteName: string, documentLibraryName:string ) => {
   //       }
   //   });
 
-    newFields.forEach(async(column)=>{
-      (payloadForPreviewFormMaster as any).ColumnName=column.columnName.replace(/\s+/g,'');;
-      (payloadForPreviewFormMaster as any).ColumnType=column.columnType;
+    // newFields.forEach(async(column)=>{
+    //   (payloadForPreviewFormMaster as any).ColumnName=column.columnName.replace(/\s+/g,'');;
+    //   (payloadForPreviewFormMaster as any).ColumnType=column.columnType;
      
+    //   const addedItem = await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.add(payloadForPreviewFormMaster);
+    //   console.log("Item added successfully in the DMSPreviewFormField", addedItem);
+
+    // })
+
+    // Create an array of promises for all columns
+    const addColumnPromises = newFields.map(async (column) => {
+      (payloadForPreviewFormMaster as any).ColumnName = column.columnName.replace(/\s+/g, '');
+      (payloadForPreviewFormMaster as any).ColumnType = column.columnType;
+
       const addedItem = await sp.web.lists.getByTitle("DMSPreviewFormMaster").items.add(payloadForPreviewFormMaster);
       console.log("Item added successfully in the DMSPreviewFormField", addedItem);
+    });
 
-    })
+    // Wait for all promises to resolve
+    Promise.all(addColumnPromises)
+      .then(() => {
+        popupContainer.style.display = 'none';
+        Swal.fire(
+          'Columns Added Successfully',
+          'All columns have been added successfully. It will reflect after a few seconds as we set up everything for the column.',
+          'success'
+        );
+      })
+      .catch((error) => {
+        console.error("Error adding columns:", error);
+        popupContainer.style.display = 'none';
+        Swal.fire(
+          'Error',
+          'An error occurred while adding the columns. Please try again.',
+          'error'
+        );
+      });
+     // Show a success message using Swal
+    //  Swal.fire(
+    //   'Columns Added Successfully',
+    //   'All columns have been added successfully. It will reflect after a few seconds as we set up everything for the column.',
+    //   'success'
+    // );
   } catch (error) {
     console.log("Error in adding columns in the DMSPreviewFormMaster inside the editFile onclick of the save button",error)
   }

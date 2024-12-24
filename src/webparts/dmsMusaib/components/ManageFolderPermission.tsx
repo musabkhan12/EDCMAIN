@@ -4,6 +4,7 @@ import { getSP } from "../loc/pnpjsConfig";
 import { SPFI } from "@pnp/sp";
 import Select from "react-select";
 import styles from './Form.module.scss'
+import Swal from "sweetalert2";
 interface ManageFolderPermissionProps {
     OthProps: { [key: string]: string };
     onReturnToMain: () => void;
@@ -553,6 +554,7 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
      
         defaultValue("Create")
         setRowsForPermission([{ id: 0, selectedUserForPermission: [],selectedPermission:"" }]);
+        Swal.fire('Added','Users Added Successfully','success');
     } catch (error) {
         console.log("error creating data inside the handle create function",error);
     }
@@ -613,47 +615,105 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
     console.log("userId",userId);
     console.log("itemId",itemId);
     // remove the user from list 
-    try {
-      await sp.web.lists.getByTitle(`DMSFolderPrivacy`).items.getById(itemId).delete();
-      console.log(`file has been deleted successfully.`);
-      defaultValue("Delete")
-    } catch (error) {
-      console.log("error in deleting the user from the dmsfolderprivacy",error)
-    }
-    // remove the user directly from library/folder
-    try {
-      const { web } = await sp.site.openWebById(`${OthProps.SiteID}`);
-      let securableObject: any;
-
-      if (OthProps.FolderName !== "null") {
-          // For folder
-          const folder =await web.getFolderByServerRelativePath(`${OthProps.FolderPath}`).getItem();
-          securableObject=folder;
-          const itemData = await folder.select("HasUniqueRoleAssignments")();
-          const breaKRole=itemData.HasUniqueRoleAssignments;
-          if (!breaKRole) {
-            // Break role inheritance, keeping current permissions
-            await folder.breakRoleInheritance(true);
-            console.log("Inheritance broken, retaining previous permissions.");
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        try {
+          await sp.web.lists.getByTitle(`DMSFolderPrivacy`).items.getById(itemId).delete();
+          console.log(`file has been deleted successfully.`);
+          defaultValue("Delete")
+        } catch (error) {
+          console.log("error in deleting the user from the dmsfolderprivacy",error)
+        }
+        // remove the user directly from library/folder
+        try {
+          const { web } = await sp.site.openWebById(`${OthProps.SiteID}`);
+          let securableObject: any;
+    
+          if (OthProps.FolderName !== "null") {
+              // For folder
+              const folder =await web.getFolderByServerRelativePath(`${OthProps.FolderPath}`).getItem();
+              securableObject=folder;
+              const itemData = await folder.select("HasUniqueRoleAssignments")();
+              const breaKRole=itemData.HasUniqueRoleAssignments;
+              if (!breaKRole) {
+                // Break role inheritance, keeping current permissions
+                await folder.breakRoleInheritance(true);
+                console.log("Inheritance broken, retaining previous permissions.");
+              }
+              console.log("securableObject",securableObject);
+          } else {
+              // For document library
+              securableObject =await web.lists.getByTitle(`${OthProps.DocumentLibraryName}`);
+              console.log("securableObject",securableObject);
+              // Break inheritance if needed (optional)
+              const hasUniquePermissions = await securableObject.hasUniqueRoleAssignments;
+              if (!hasUniquePermissions) {
+                  await securableObject.breakRoleInheritance(true); // First `true` copies permissions, second `true` clears unique assignments
+              }
           }
-          console.log("securableObject",securableObject);
-      } else {
-          // For document library
-          securableObject =await web.lists.getByTitle(`${OthProps.DocumentLibraryName}`);
-          console.log("securableObject",securableObject);
-          // Break inheritance if needed (optional)
-          const hasUniquePermissions = await securableObject.hasUniqueRoleAssignments;
-          if (!hasUniquePermissions) {
-              await securableObject.breakRoleInheritance(true); // First `true` copies permissions, second `true` clears unique assignments
-          }
+          // Get the role definition for the specified role
+          const roleDefinition = await web.roleDefinitions.getByName(permission)();
+          const roleDefinitionId = roleDefinition.Id;
+          await securableObject.roleAssignments.remove(userId,roleDefinitionId);
+        } catch (error) {
+          console.log("Error in deleting permission to the document/folder directly",error)
+        }
+        Swal.fire({
+          title: "Deleted!",
+          text: "User removed Successfully.",
+          icon: "success"
+        });
       }
-      // Get the role definition for the specified role
-      const roleDefinition = await web.roleDefinitions.getByName(permission)();
-      const roleDefinitionId = roleDefinition.Id;
-      await securableObject.roleAssignments.remove(userId,roleDefinitionId);
-    } catch (error) {
-      console.log("Error in deleting permission to the document/folder directly",error)
-    }
+    });
+    // try {
+    //   await sp.web.lists.getByTitle(`DMSFolderPrivacy`).items.getById(itemId).delete();
+    //   console.log(`file has been deleted successfully.`);
+    //   defaultValue("Delete")
+    // } catch (error) {
+    //   console.log("error in deleting the user from the dmsfolderprivacy",error)
+    // }
+    // // remove the user directly from library/folder
+    // try {
+    //   const { web } = await sp.site.openWebById(`${OthProps.SiteID}`);
+    //   let securableObject: any;
+
+    //   if (OthProps.FolderName !== "null") {
+    //       // For folder
+    //       const folder =await web.getFolderByServerRelativePath(`${OthProps.FolderPath}`).getItem();
+    //       securableObject=folder;
+    //       const itemData = await folder.select("HasUniqueRoleAssignments")();
+    //       const breaKRole=itemData.HasUniqueRoleAssignments;
+    //       if (!breaKRole) {
+    //         // Break role inheritance, keeping current permissions
+    //         await folder.breakRoleInheritance(true);
+    //         console.log("Inheritance broken, retaining previous permissions.");
+    //       }
+    //       console.log("securableObject",securableObject);
+    //   } else {
+    //       // For document library
+    //       securableObject =await web.lists.getByTitle(`${OthProps.DocumentLibraryName}`);
+    //       console.log("securableObject",securableObject);
+    //       // Break inheritance if needed (optional)
+    //       const hasUniquePermissions = await securableObject.hasUniqueRoleAssignments;
+    //       if (!hasUniquePermissions) {
+    //           await securableObject.breakRoleInheritance(true); // First `true` copies permissions, second `true` clears unique assignments
+    //       }
+    //   }
+    //   // Get the role definition for the specified role
+    //   const roleDefinition = await web.roleDefinitions.getByName(permission)();
+    //   const roleDefinitionId = roleDefinition.Id;
+    //   await securableObject.roleAssignments.remove(userId,roleDefinitionId);
+    // } catch (error) {
+    //   console.log("Error in deleting permission to the document/folder directly",error)
+    // }
   }
 
    // Code for filter and search start

@@ -4,6 +4,7 @@ import Select from "react-select";
 import { useRef, useState } from "react";
 import { getSP } from "../loc/pnpjsConfig";
 import { SPFI } from "@pnp/sp";
+import Swal from "sweetalert2";
 
 
 interface CreateFolderProps {
@@ -307,6 +308,7 @@ const handleCreate = async(e: any) => {
             })
 
         })
+        Swal.fire('Added','Users Added Successfully','success');
     } catch (error) {
         console.log("Erroe in LibraryApproverDdetails",error);
     }

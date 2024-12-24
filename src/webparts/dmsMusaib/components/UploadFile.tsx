@@ -224,7 +224,7 @@ React.useEffect(()=>{
       .filter(
             `SiteName eq '${currentfolderpath.Entity}' 
             and DocumentLibraryName eq '${currentfolderpath.DocumentLibrary}' 
-            and AddorRemoveThisColumn eq  'Add To Library' `)();
+            and AddorRemoveThisColumn eq  'Add To Library' and IsInProgress eq 0`)();
 
       console.log("Document Library Fields",documentLibraryFields);
       // end

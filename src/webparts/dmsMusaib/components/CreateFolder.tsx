@@ -1875,6 +1875,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
     let validateColumns=false;
     let validateUser=false;
+    let formFieldValidation=false;
     // console.log("Handcreate called");
 
     // Validate the form
@@ -1913,7 +1914,13 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
       }
     }
     
-
+    // Validation for forbidden column names
+    const forbiddenNames = ["Status", "IsDeleted"];
+    const invalidFields = formFields.filter((field) => forbiddenNames.includes(field.fieldName));
+    if (invalidFields.length > 0) {
+      formFieldValidation=true;
+          // return;
+    }
     // If errors exist, set them to the state and prevent submission
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -1921,6 +1928,12 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
         // alert("Add Columns Fields and Type");
     }else if(validateUser){
         // alert("Please select at least one user");
+    }else if(formFieldValidation){
+      Swal.fire(
+        'Validation Error',
+        `The column names "${invalidFields.map(f => f.fieldName).join(', ')}" are not allowed. Please choose different names.`,
+        'error'
+      );
     }
     else {
       
@@ -1931,11 +1944,16 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
       if(OthProps.DocumentLibrary === ""){
         (payloadForFolderMaster as any).DocumentLibraryName=folderName;
-        //  (payloadForFolderMaster as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
+         (payloadForFolderMaster as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
         //  (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmanispfx2/${OthProps.Entity}/${folderName}`;
-        (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
+         (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
         (payloadForFolderMaster as any).IsLibrary=true;
         (payloadForFolderMaster as any).IsActive=false;
+        if(folderPrivacy === "private"){
+          (payloadForFolderMaster as any).IsPrivate=true;
+        }else if(folderPrivacy === "public"){
+          (payloadForFolderMaster as any).IsPrivate=false;
+        }
 
       }else{
         (payloadForFolderMaster as any).DocumentLibraryName=OthProps.DocumentLibrary;
@@ -2056,7 +2074,8 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
             SiteName:OthProps.Entity,
             DocumentLibraryName:folderName,
             IsRequired:true,
-            AddorRemoveThisColumn:"Add To Library"
+            AddorRemoveThisColumn:"Add To Library",
+            IsInProgress:true
           }
 
           // console.log("payloadForPreviewFormMaster",payloadForPreviewFormMaster)
