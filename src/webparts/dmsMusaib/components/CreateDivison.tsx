@@ -63,8 +63,7 @@ const CreateDevision2: React.FC<BasicFormProps> = ({
     //         // Insert data into SharePoint list
     //         const data=await sp.web.lists.getByTitle(listTitle).items.add(newItem);
     //         console.log(data)
-    //         alert('Item added successfully');
-
+    //       
     //     } catch (error) {
     //         console.error('Error adding item:', error);
     //         alert('Error adding item');

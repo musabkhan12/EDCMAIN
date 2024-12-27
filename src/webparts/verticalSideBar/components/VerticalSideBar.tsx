@@ -315,7 +315,7 @@ const VerticalContext = ({ _context }: any) => {
       localStorage.setItem("NavId", ""); // Clear the NavId if no match is found
   }
 } else {
-    alert("No matches found in the URL");
+    // alert("No matches found in the URL");
 }
 
 }

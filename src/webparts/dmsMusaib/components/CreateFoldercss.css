@@ -16,8 +16,8 @@
     float: right;
     margin: 0;
     position: relative;
-    padding: 6px 20px !important;
-    height: 34px;
+    padding: 4px 20px !important;
+    height: 34px; font-size: 14px;
 }
 .marginleftcard{
     width: 100%;
@@ -99,9 +99,10 @@ text-decoration: none;
 height: 38px;border:0px;
 min-width: 104px;
 } 
-.btncolorcancel{background: #f3f7f9; height: 38x; border:0px; margin-top:0px;
+.paddb{    padding: 0px 29px 0px 20px;}
+.btncolorcancel{background: #6f757c; color: #fff; height: 38x; border:0px; margin-top:0px;
 min-width: 104px;}
-.btncolorCreate:hover{
+.btncolorCreate:hover,.btncolorcancel:hover{
 background-color: #008751;
 color: #fff;
 text-decoration: none;

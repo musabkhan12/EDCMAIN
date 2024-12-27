@@ -8,7 +8,7 @@
   height: 100%;
   width: 100%;
 }
-
+.main-containeruploadfile #submitBtn{float: right;}
 .content-page{
   
    display: -webkit-box;

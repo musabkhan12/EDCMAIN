@@ -178,7 +178,7 @@ const Table: React.FC<CreateFolderProps> = ({Currentbuttonclick , onReturnToMain
   if (Currentbuttonclick.buttonclickis === 'Myrequest') {
     console.log(Currentbuttonclick , "Currentbuttonclick")
     console.log(typeof Currentbuttonclick , "typeof Currentbuttonclick")
-    // alert(Currentbuttonclick.buttonclickis)
+
     // do something
         // Fetch the list of active lists
         const FilesItems = await sp.web.lists
@@ -207,7 +207,7 @@ const Table: React.FC<CreateFolderProps> = ({Currentbuttonclick , onReturnToMain
   } else {
     console.log(Currentbuttonclick , "Currentbuttonclick")
     console.log(typeof Currentbuttonclick , "typeof Currentbuttonclick")
-    // alert(Currentbuttonclick)
+
     // do something else
         // Fetch the list of active lists
         const FilesItems = await sp.web.lists
@@ -553,7 +553,7 @@ const Pagination = ( { currentPage, totalPages, handlePageChange }: PaginationPr
                                       </a></span>
                                       
                                       </div> */}
-                                    <td>{((item.FileSize as unknown as number) / (1024 * 1024)).toFixed(2)} MB</td> 
+                                   {((item.FileSize as unknown as number) / (1024 * 1024)).toFixed(2)} MB
                                 </td> 
                               </tr>
                             )

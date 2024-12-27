@@ -57,7 +57,7 @@ import { SPFI } from "@pnp/sp";
 import "bootstrap/dist/css/bootstrap.min.css";
 // import "bootstrap//dist/"
 
-
+import {SharingRole} from "@pnp/sp/sharing";
 import "../../verticalSideBar/components/VerticalSidebar2.scss";
 import VerticalSideBar from "../../verticalSideBar/components/VerticalSideBar";
 import UserContext from "../../../GlobalContext/context";
@@ -109,6 +109,12 @@ import ManageWorkFlow from "./ManageWorkFlow";
 import ManageFolderPermission from "./ManageFolderPermission";
 import { folderFromPath } from "@pnp/sp/folders";
 import Swal from "sweetalert2";
+import DmsMusaibWebPart from "../DmsMusaibWebPart";
+import DMSEntitySearch from "./DMSSearch/DMSEntitySearch";
+import { BaseWebPartContext } from "@microsoft/sp-webpart-base";
+import { GraphSearchHelper } from "../../../Shared/SearchHelper1";
+import { IDocumentDisplayFields } from "./DMSSearch/Interfaces";
+import { ISearchHitResource } from "../../../Shared/SearchHelperInterfaces";
 let Undo = require('../assets/Undo.svg');
 let sharewithmeicon = require('../assets/nodes.png')
 let recyclebin = require('../assets/recycle-bin.png')
@@ -131,7 +137,7 @@ let RenameFolder = require("../assets/Rename-Folder.svg");
 let RenameMetaData = require("../assets/Rename-Meta-Data.svg");
 let RevokeAccess= require("../assets/Rvoke-Access.svg");
 let MainRounteVariable = 'MyRequest'
-
+let entityclicktext = ''
 let managePermissionIcon =  require('../assets/ManagePermission.svg') 
 // import managePermissionIcon from '../assets/ManagePermission.svg';
 let manageWorkFlowIcon =  require('../assets/ManageWorkflow.svg')
@@ -287,7 +293,7 @@ useEffect(() => {
   // const matches = url.match(/\/([^\/]+)\.aspx/);
   let extractedPart = url.split('.aspx')[1]; 
   let parameters = extractedPart.split('?')
-  // alert( parameters);
+  
   console.log("parameters",parameters);
   let path="";
   let siteId="";
@@ -359,6 +365,12 @@ const [showMyrequButtons, setShowMyrequButtons] = useState(true); // Initially h
 const [showMyfavButtons, setShowMyfavButtons] = useState(false); // Initially hidden
 const [displayuploadfileandcreatefolder, setdisplayuploadfileandcreatefolder] = useState(false); // Initially hidden
 const [Myreqormyfav, setMyreqormyfav] = useState(''); // Initially hidden
+const [showEntitySearch, setshowEntitySearch] = useState(false); // Initially hidden
+const [currentSearchPath, setcurrentSearchPath] = useState((props.context as BaseWebPartContext).pageContext.site.absoluteUrl); // Initially hidden
+const [currentFilters, setcurrentFilters] = useState(""); // Initially hidden
+const [currentSearchText, setcurrentSearchText] = useState(""); // Initially hidden
+const [RootsiteUrl, setRootsiteUrl] = useState(location.origin); // Initially hidden
+
 // console.log(Myreqormyfav , "Myreqormyfav")
   // console.log("This is current side ID",currentsiteID)
   const currentUserEmailRef = useRef('');
@@ -370,11 +382,11 @@ getdata()
 const getdata = async () => {
 
  const ids = window.location.search;
- //  alert(ids)
+
  const originalString = ids;
- // alert(originalString)
+
  const idNum2 :any = originalString.substring(1);
- // alert(idNum2)
+
  const getgroup =   await sp.web.lists
  .getByTitle("ARGGroupandTeam")
  .items.select("*,InviteMemebers/Id,InviteMemebers/Title,InviteMemebers/EMail,GroupType").expand("InviteMemebers")()
@@ -393,9 +405,9 @@ const getdata = async () => {
 const myrequestbuttonclick =()=>{
   const musa = document.getElementById('Myrequestbutton')
     if(musa){
-      // alert("enter")
+
       musa.click();
-      // alert("click")
+ 
     }
 
  }
@@ -688,7 +700,7 @@ const myrequestbuttonclick =()=>{
 
           // Iterate over document libraries and populate the map with unique DocumentLibraryNames
           documentLibraries.forEach((item: any) => {
-            // alert(`item : ${item.IsActive}`);
+           
             if (!uniqueDocLibs.has(item.DocumentLibraryName)) {
               uniqueDocLibs.set(item.DocumentLibraryName, {
                 folders: [],
@@ -754,7 +766,7 @@ const myrequestbuttonclick =()=>{
                  confirmButtonText: 'OK',   
                });
              }  
-              // setlistorgriddata('')
+
               // setShowMyrequButtons(false)
               // setShowMyfavButtons(false)
               handleNavigation(value.entityTitle, null , null , docLibName , null )
@@ -768,7 +780,7 @@ const myrequestbuttonclick =()=>{
               currentDevision = ''
               currentDepartment = ''
               currentFolder = ''
-              
+              setcurrentSearchPath(RootsiteUrl + data.folderPath);
               console.log(currentEntityURL , "currentEntityURL")
               console.log(currentsiteID , "currentsiteID")
               console.log(currentEntity , "currentEntity")
@@ -850,6 +862,7 @@ const myrequestbuttonclick =()=>{
                       currentfolderpath = item.FolderPath;
                       currentDevision = ''
                       currentDepartment = ''
+                      setcurrentSearchPath(RootsiteUrl + data.folderPath);
                       console.log(currentEntityURL , "currentEntityURL")
                       console.log(currentsiteID , "currentsiteID")
                       console.log(currentEntity , "currentEntity")
@@ -1071,6 +1084,7 @@ const myrequestbuttonclick =()=>{
                     currentDocumentLibrary = docLibName;
                     currentDepartment = departmentTitle;
                     currentfolderpath = data.folderPath,
+                    setcurrentSearchPath(RootsiteUrl + data.folderPath);
                     currentFolder =''
                     console.log(data, data  ,"data")
                   console.log("currentEntityURL", currentEntityURL);
@@ -1246,6 +1260,8 @@ const myrequestbuttonclick =()=>{
                   currentFolder=''
                   currentDocumentLibrary = item.DocumentLibraryName;
                   currentfolderpath = item.FolderPath;
+                  
+                  setcurrentSearchPath(RootsiteUrl + item.folderPath);
                   console.log("currentEntityURL", currentEntityURL);
                   console.log("currentsiteID", currentsiteID);
                   console.log("currentEntity", currentEntity);
@@ -1443,14 +1459,23 @@ const myrequestbuttonclick =()=>{
 
         let clickTimer:any;
         titleElement.addEventListener("click" , async (event)=>{
-          
-          const breadcrumbElement=document.getElementById("breadcrumb");
-          if(breadcrumbElement){
-            breadcrumbElement.style.display="none";
+          if(entityclicktext !== ''){
+     
+            const breadcrumbElement=document.getElementById("breadcrumb");
+            if(breadcrumbElement){
+              breadcrumbElement.style.display="block";
+              breadcrumbElement.textContent = entityclicktext;
+            }
+          }else{
+  
+            const breadcrumbElement=document.getElementById("breadcrumb");
+            if(breadcrumbElement){
+              breadcrumbElement.style.display="none";
+            }
+           
           }
           // setdisplayuploadfileandcreatefolder(true)
 
-          // alert("in first")
           // new code added.
                 // toggle createfolder button based on the permission
                 // Get the users in the group
@@ -1501,12 +1526,25 @@ const myrequestbuttonclick =()=>{
                 // }
         })
         titleElement.addEventListener("click", async(event) => {
-          const breadcrumbElement=document.getElementById("breadcrumb");
-          if(breadcrumbElement){
-            breadcrumbElement.style.display="none";
+          if(entityclicktext !== ''){
+       
+            const breadcrumbElement=document.getElementById("breadcrumb");
+            if(breadcrumbElement){
+              breadcrumbElement.style.display="block";
+              breadcrumbElement.textContent = entityclicktext;
+            }
+          }else{
+      
+            const breadcrumbElement=document.getElementById("breadcrumb");
+            if(breadcrumbElement){
+              breadcrumbElement.style.display="none";
+            }
+           
           }
+       
+         
           setdisplayuploadfileandcreatefolder(true)
-          // alert("in second")
+  
           // Toggle +/- button
                 // const plusMinus = document.getElementById("toggle-plus/minus");
                 if(toggleButton1.textContent === "+") {
@@ -1576,6 +1614,7 @@ const myrequestbuttonclick =()=>{
                 console.log(value.entityTitle, "value");
                 console.log(currentsiteID, "currentsiteID");
                 console.log("currentEntityURL", currentEntityURL);
+                setcurrentSearchPath(currentEntityURL);
                 mydata.push(value.siteURL);
                 console.log(mydata, "my mydata");
                 toggleVisibility(devisionList);
@@ -1726,7 +1765,7 @@ const myrequestbuttonclick =()=>{
   // const getdoclibdata = async (FolderPath: any , siteID:any , docLibName:any) => {
   //   // event.preventDefault()
   //   // event.stopPropagation()
-  //   // setlistorgriddata('')
+
   //   // setShowMyrequButtons(false)
   //   // setShowMyfavButtons(false)
   //   console.log('path   ', FolderPath)
@@ -2156,80 +2195,80 @@ const myrequestbuttonclick =()=>{
   // };
   
 // code to route to different document library and folder start
-useEffect(() => {
-  // const params = new URLSearchParams(window.location.search);
-  const url = window.location.href;
-  // const matches = url.match(/\/([^\/]+)\.aspx/);
-  let extractedPart = url.split('.aspx')[1]; 
-  let parameters = extractedPart.split('?')
-  // alert( parameters);
-  console.log("parameters",parameters);
-  let path="";
-  let siteId="";
-  let folderName="";
-  let devision="";
-  let department="";
-  if(parameters.length>1){
-  parameters.forEach((items,index)=>{
-    console.log(`items[${index}]`,items)
+// useEffect(() => {
+//   // const params = new URLSearchParams(window.location.search);
+//   const url = window.location.href;
+//   // const matches = url.match(/\/([^\/]+)\.aspx/);
+//   let extractedPart = url.split('.aspx')[1]; 
+//   let parameters = extractedPart.split('?')
+ 
+//   console.log("parameters",parameters);
+//   let path="";
+//   let siteId="";
+//   let folderName="";
+//   let devision="";
+//   let department="";
+//   if(parameters.length>1){
+//   parameters.forEach((items,index)=>{
+//     console.log(`items[${index}]`,items)
 
-    if(index ==1){
-      if(items.includes('%20')){
-        console.log("Clean Url")
-        const cleanUrl = items.replace(/%20/g, ' '); 
-        path=cleanUrl;
-      }else{
-        path=items;
-      } 
+//     if(index ==1){
+//       if(items.includes('%20')){
+//         console.log("Clean Url")
+//         const cleanUrl = items.replace(/%20/g, ' '); 
+//         path=cleanUrl;
+//       }else{
+//         path=items;
+//       } 
       
-    }
-    if(index ==2){
-      if(items.includes('%20')){
-        console.log("Clean path")
-        const cleanUrl = items.replace(/%20/g, ' '); 
-        folderName=cleanUrl;
-      }else{
-        folderName=items;
-      } 
-      // folderName=items;
-    }
-    if(index ==3){
-      siteId=items;
-    }
-    if(index == 4){
-      if(items.includes('%20')){
-        console.log("Clean devision")
-        const cleanDevision = items.replace(/%20/g, ' '); 
-        devision=cleanDevision;
-      }else{
-        devision=items;
-      } 
-    }
-    if(index == 5){
-      if(items.includes('%20')){
-        console.log("Clean deaprtment")
-        const cleanDepartment = items.replace(/%20/g, ' '); 
-        department=cleanDepartment;
-      }else{
-        department=items;
-      } 
-    }
-  })
-  console.log("path",path)
-  console.log("siteId",siteId)
-  console.log("folderName",folderName)
-  console.log("department",department)
-  console.log("devision",devision)
-  currentDepartment=department;
-  currentDevision=devision;
-  cleanUrlInMyRequest=true;
-  getdoclibdata(path,siteId,folderName);
-  }
-  const hidegidvewlistviewbutton = document.getElementById('hidegidvewlistviewbutton')
-  if (hidegidvewlistviewbutton) {
-     hidegidvewlistviewbutton.style.display = 'none'
-  }
-}, []);
+//     }
+//     if(index ==2){
+//       if(items.includes('%20')){
+//         console.log("Clean path")
+//         const cleanUrl = items.replace(/%20/g, ' '); 
+//         folderName=cleanUrl;
+//       }else{
+//         folderName=items;
+//       } 
+//       // folderName=items;
+//     }
+//     if(index ==3){
+//       siteId=items;
+//     }
+//     if(index == 4){
+//       if(items.includes('%20')){
+//         console.log("Clean devision")
+//         const cleanDevision = items.replace(/%20/g, ' '); 
+//         devision=cleanDevision;
+//       }else{
+//         devision=items;
+//       } 
+//     }
+//     if(index == 5){
+//       if(items.includes('%20')){
+//         console.log("Clean deaprtment")
+//         const cleanDepartment = items.replace(/%20/g, ' '); 
+//         department=cleanDepartment;
+//       }else{
+//         department=items;
+//       } 
+//     }
+//   })
+//   console.log("path",path)
+//   console.log("siteId",siteId)
+//   console.log("folderName",folderName)
+//   console.log("department",department)
+//   console.log("devision",devision)
+//   currentDepartment=department;
+//   currentDevision=devision;
+//   cleanUrlInMyRequest=true;
+//   getdoclibdata(path,siteId,folderName);
+//   }
+//   const hidegidvewlistviewbutton = document.getElementById('hidegidvewlistviewbutton')
+//   if (hidegidvewlistviewbutton) {
+//      hidegidvewlistviewbutton.style.display = 'none'
+//   }
+// }, []);
 // end
   const getdoclibdata = async (FolderPath: any , siteID:any , docLibName:any) => {
     setlistorgriddata('');
@@ -2341,7 +2380,14 @@ useEffect(() => {
             noFileMessage.style.color = "gray"; 
             noFileMessage.style.fontSize = "16px"; 
             noFileMessage.style.textAlign = "center";
-    
+            const CreateFolder=document.getElementById("CreateFolder")
+            const createFileButton=document.getElementById("createFileButton")
+            if(createFileButton){
+              createFileButton.style.display=  "none";
+            }
+            if(CreateFolder){
+              CreateFolder.style.display="none";
+            }
             // Append the message to the container
             container.appendChild(noFileMessage);
             console.error("Error fetching files:", error);
@@ -2581,6 +2627,14 @@ useEffect(() => {
               }
       });
     } catch (error) {
+      const CreateFolder=document.getElementById("CreateFolder")
+      const createFileButton=document.getElementById("createFileButton")
+      if(createFileButton){
+        createFileButton.style.display=  "none";
+      }
+      if(CreateFolder){
+        CreateFolder.style.display="none";
+      }  
       console.error("Error fetching Doclib data:", error);
     }
     
@@ -3145,7 +3199,7 @@ useEffect(() => {
   // const getdoclibdata = async (FolderPath: any , siteID:any , docLibName:any) => {
   //   // event.preventDefault()
   //   // event.stopPropagation()
-  //   // setlistorgriddata('')
+
   //   // setShowMyrequButtons(false)
   //   // setShowMyfavButtons(false)
   //   console.log('path   ', FolderPath)
@@ -3724,7 +3778,7 @@ const createFileCardForDocumentLibrary=(file:any,fileIcon:any,siteID:string,IsHa
 // window.PreviewFile = function(path :any , SiteID:any , docLibName:any , filemasterlist:any , filepreview:any){
   
 //   if(filepreview !== undefined || null ){
-//     alert(filepreview)
+
 //     const createpreviewdiv = document.createElement('div')
 //   createpreviewdiv.style.display = 'grid'
 //   const previewfileframe = document.createElement('iframe') 
@@ -3765,7 +3819,7 @@ const createFileCardForDocumentLibrary=(file:any,fileIcon:any,siteID:string,IsHa
 //     createbutton.addEventListener('click', function() {
 //       event.preventDefault()
 //       event.stopPropagation()
-//       alert('Button was clicked!');
+
 //       myRequest()
 //   });
   
@@ -3832,7 +3886,7 @@ const createFileCardForDocumentLibrary=(file:any,fileIcon:any,siteID:string,IsHa
 //       createbutton.addEventListener('click', function() {
 //         event.preventDefault()
 //         event.stopPropagation()
-//         alert('Button was clicked!');
+
 //         getdoclibdata(currentfolderpath , currentsiteID , currentDocumentLibrary)
 //     });
 //     }
@@ -4204,7 +4258,7 @@ previewfileframe.style.width = '930px'
 previewfileframe.style.height = '500px'
 const librarydiv= document.getElementById('files-container')
 const createbutton = document.createElement('button')
-createbutton.textContent = 'Back To DMS';
+createbutton.textContent = 'Close File preivew';
 console.log("enter here in preview : ",path)
 const encodedFilePath = encodeURIComponent(path);
 console.log(encodedFilePath, "encodedFilePath");
@@ -4236,7 +4290,7 @@ if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepre
     createbutton.addEventListener('click', function() {
       event.preventDefault()
       event.stopPropagation()
-      // alert('Button was clicked!');
+ 
       if(ismyrequordoclibforfilepreview === "myRequest"){
         myRequest();
       }
@@ -4258,11 +4312,11 @@ if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepre
 }
 if(ismyrequordoclibforfilepreview === "getdoclibdata"){
 // Generate the correct preview URL
-// const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-//  const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-  const previewUrl = `${siteUrl}/sites/AlRostmani/${currentSubsite}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+//  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+  // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentSubsite}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
 // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-alert("Im in doclib")
+
 console.log(previewUrl, "Generated preview URL");
  
   console.log("Generated Preview URL:", previewUrl);
@@ -4275,7 +4329,7 @@ console.log(previewUrl, "Generated preview URL");
     createbutton.addEventListener('click', function() {
       event.preventDefault()
       event.stopPropagation()
-      // alert('Button was clicked!');
+
       // if(flag === "shareWithMe"){
       //     ShareWithMe(null,null);
       // }
@@ -4287,296 +4341,296 @@ console.log(previewUrl, "Generated preview URL");
   }
 }
 
-// else{
-// // Generate the correct preview URL
-// // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-// const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-// // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-
-// console.log(previewUrl, "Generated preview URL");
- 
-//   console.log("Generated Preview URL:", previewUrl);
-//   if(previewUrl){
-//     librarydiv.innerHTML = "";
-//     previewfileframe.src = previewUrl;
-//     createpreviewdiv.appendChild(createbutton)
-//     createpreviewdiv.appendChild(previewfileframe);
-//     librarydiv.appendChild(createpreviewdiv)
-//     createbutton.addEventListener('click', function() {
-//       event.preventDefault()
-//       event.stopPropagation()
-//       // alert('Button was clicked!');
-//       // if(flag === "shareWithMe"){
-//       //     ShareWithMe(null,null);
-//       // }
-//       // if(flag === "documentLibrary"){
-//       //   getdoclibdata(currentfolderpath , currentsiteID , currentDocumentLibrary)
-//       // }
-//       getdoclibdata(currentfolderpath , currentsiteID , currentDocumentLibrary)
-//   });
-//   }
-// }
 }
-const searchFiles = async (event: React.FormEvent ) => {
-event.preventDefault();
-event.stopPropagation();
+const searchFiles = async (event: React.FormEvent) => {
+  event.preventDefault();
+  event.stopPropagation();
 
-const searchInput = document.getElementById('searchinput') as HTMLInputElement;
-const searchText = searchInput.value;
-console.log(searchText , "searchText")
+  const searchInput = document.getElementById('searchinput') as HTMLInputElement;
+  const searchText = searchInput.value;
+  console.log(searchText, "searchText")
+  setcurrentSearchText(searchText);
 
-
-// if(currentFolder === ""){
-//   console.log("currentFolder --->",currentFolder);
-//   console.log("currentDocumentLibrary --->",currentDocumentLibrary)
-// }else{
-//   console.log("Inside else");
-//   console.log("currentFolder --->",currentFolder);
-//   console.log("currentDocumentLibrary --->",currentDocumentLibrary)
-// }
-// const testidsub = await sp.site.openWebById(currentsiteID);
-// const library = await testidsub.web.lists.getByTitle(currentDocumentLibrary).select("Id")();
-// console.log("Library",library);
-// console.log(`Document Library ID: ${library.Id}`);
-
-// const folder = await testidsub.web.getFolderByServerRelativePath(`${currentfolderpath}`).select("UniqueId")();
-// console.log(`Folder ID: ${folder.UniqueId}`);
-// console.log("Folder",folder);
-
-
-if (searchText !== "" ) {
+  if (searchText !== "") {
     try {
       console.log(currentfolderpath, "currentfolderpath")
-        const searchQuery = {
-             Querytext:`${searchText} AND Path:"https://officeindia.sharepoint.com${currentfolderpath}"`,
-            // Querytext: `"${searchText}"`,
-            RowLimit: 500,
-            SelectProperties: ["Title", "Path", "FileExtension", "UniqueId", "Size", "Created", "Modified"], 
-            // Additional file properties
-            // Refiners: 'FileExtension',
-            // RefinementFilters: ['FileExtension:equals("docx")',
-            //                     'FileExtension:equals("pdf")',
-            //                     'FileExtension:equals("pptx")',
-            //                   ],  
-            // TrimDuplicates: false
-        };
-        // Performing the search
-        const searchResults = await sp.search(searchQuery);
-        const files = searchResults.PrimarySearchResults;
-       
-       
-        // console.log("routeToDiffSideBar",routeToDiffSideBar);
+      // const searchQuery = {
+      //   Querytext: `${searchText} AND Path:"https://officeindia.sharepoint.com${currentfolderpath}"`,
+      //   // Querytext: `"${searchText}"`,
+      //   RowLimit: 500,
+      //   SelectProperties: ["Title", "Path", "FileExtension", "UniqueId", "Size", "Created", "Modified"],
+      //   // Additional file properties
+      //   // Refiners: 'FileExtension',
+      //   // RefinementFilters: ['FileExtension:equals("docx")',
+      //   //                     'FileExtension:equals("pdf")',
+      //   //                     'FileExtension:equals("pptx")',
+      //   //                   ],  
+      //   // TrimDuplicates: false
+      // };
+      // Performing the search
 
-        console.log(files, "files");
-        // Clear the previous results
-        const container = document.getElementById("files-container");
-        container.innerHTML = "";
+      let wildcardquery=searchText+'*';
+      let qyerytext=`${wildcardquery} IsDocument:True Path:"${currentSearchPath}"`;
+      let graphcl=await (props.context as BaseWebPartContext).msGraphClientFactory.getClient("3");
+      let mssearch=new GraphSearchHelper(graphcl);
+      // let searchres=await mssearch.searchFiles("IsDocument:True Path:https://officeindia.sharepoint.com/sites/AlRostmani/TestHub",100);
+      let searchres=await mssearch.searchFiles(qyerytext,500);
+  
+      let files: IDocumentDisplayFields[] = searchres.map(filehit => {
+        
+        let file:Partial<ISearchHitResource>=filehit.resource;
+        
+        let tRes: IDocumentDisplayFields = {
+          Title: file.name,
+          Size: file.size,
+          Extension: file.name.split('.').pop(),
+          Path:file.webUrl,
+          Summary:filehit.summary,
+          UniqueId:file.id,
+          Modified:new Date(file.lastModifiedDateTime),
+          CreatedBy:file.createdBy.user.displayName
+        }
+        return tRes;
+      })
+      // const searchResults = await sp.search(searchQuery);
+      // const files = searchResults.PrimarySearchResults;
 
-        // Display the search results
-        // start
-      if( routeToDiffSideBar === "" ){
-            files.forEach((file: any) => {
-                const card = document.createElement("div");
-                const {fileIcon} = getFileIcon(file.Title);  
-                card.className = "card";
-                card.dataset.fileId = file.UniqueId;
-                // console.log(file.UniqueId , "file.UniqueId")
-                card.innerHTML = `
-                   <div class="row">
-          <div class="col-md-2 pe-0">
-                    <img class="filextension" src=${fileIcon} alt="File icon"/>
-                   </div>
-                    <div class="col-md-10 pe-0">
-                   <p class="p1st">${file.Title}</p>
-                    <p class="p3rd">${((file.Size as unknown as number) / (1024 * 1024)).toFixed(2)} MB</p>
-                   </div></div>
-                    <div id="three-dots" class="three-dots" onclick="toggleMenu2('${file.UniqueId}', '${currentsiteID}')">
-                      <span>...</span>
-                    </div>
-                `;
-                const menu = document.createElement("div");
-                menu.id = `menu-${file.UniqueId}`;
-                menu.className = "popup-menu";
-                menu.innerHTML = `
-                  <ul>
-                    <li onclick="confirmDeleteFile('${file.UniqueId}', '${currentsiteID}')">
-                      <img src=${deleteIcon} alt="Delete"/>
-                      Delete
-                    </li>
-                    <li onclick="auditHistory('${file.UniqueId}', '${currentsiteID}','${file.Title}')">
-                      <img src=${editIcon} alt="Edit"/>
-                      Audit History
-                    </li>
-                    <li onclick="PreviewFile('${file.ServerRelativeUrl}', '${currentsiteID}' , '${currentDocumentLibrary}')">
-                      <img src=${FilePreview} alt="Preview"/>
-                      Preview File
-                    </li>
-                    <li id="favouriteToggle-${file.UniqueId}" onclick="toggleFavourite('${file.UniqueId}', '${currentsiteID}')">
-                      <img src=${UnFillFavouriteFile} alt="Mark as Favourite" class="mark-as-favourite"/>
-                      <img src=${FillFavouriteFile} alt="Unmark as Favourite" class="unmark-as-favourite" style="display:none;"/>
-                      <span class="favourite-text">Mark as Favourite</span>
-                    </li>  
-                  </ul>
-                `;
-         
-                card.appendChild(menu);
-                container.appendChild(card);
-            });
-      }else{
-          if( routeToDiffSideBar === "myRequest" ){
-              myRequest(null,null,searchInput);
-          }
-         
-          else if( routeToDiffSideBar === "myFavourite" ){
 
-                // console.log("myFavourite");
-                myFavorite(null,null,searchInput);
-               
-          }
-          else if( routeToDiffSideBar === "myFolder"){
-                // console.log("Inside search => myFolder");
-                mycreatedfolders(event,searchInput);
-          }
-          else if(routeToDiffSideBar === "shareWithOthers"){
-              ShareWithOther(null,searchInput);
-          }
-          else if(routeToDiffSideBar === "shareWithMe"){
-              ShareWithMe(null,searchInput);
-          }
+      // console.log("routeToDiffSideBar",routeToDiffSideBar);
+
+      console.log(files, "files");
+      // Clear the previous results
+      const container = document.getElementById("files-container");
+      container.innerHTML = "";
+
+      // Display the search results
+      // start
+
+      if (routeToDiffSideBar === "") {
+        files.forEach((file: IDocumentDisplayFields) => {
+          const card = document.createElement("div");
+          const { fileIcon } = getFileIcon(file.Title);
+          card.className = "card";
+          card.dataset.fileId = file.UniqueId;
+          let fileserverrelativeurl=file.Path.substring(RootsiteUrl.length)
+          // console.log(file.UniqueId , "file.UniqueId")
+          let foldernamesplit=fileserverrelativeurl.split('/');
+          let filefoldername=foldernamesplit?.slice(-2, -1)[0];
+          card.innerHTML = `
+                 <div class="row">
+        <div class="col-md-2 pe-0">
+                  <img class="filextension" src=${fileIcon} alt="File icon"/>
+                 </div>
+                  <div class="col-md-10 pe-0">
+                 <p class="p1st"><a href="#" onclick="PreviewFile('${fileserverrelativeurl}', '${currentsiteID}' , '${currentDocumentLibrary}')" >${file.Title} (${filefoldername})</a></p>
+                  <p class="p3rd">${((file.Size as unknown as number) / (1024 * 1024)).toFixed(2)} MB</p>
+                   <p class="p3rd"></p>
+                  <p class="p3rd">Uploaded by: ${file.CreatedBy}</p>
+                  <p class="p3rd">Published on: ${file.Modified?.toLocaleDateString()}</p>
+                  <p class="p3rd">${file.Summary}</p>
+                 </div></div>
+                  <div id="three-dots" class="three-dots" onclick="toggleMenu2('${file.UniqueId}', '${currentsiteID}')">
+                    <span>...</span>
+                  </div>
+              `;
+          const menu = document.createElement("div");
+          menu.id = `menu-${file.UniqueId}`;
+          menu.className = "popup-menu";
+          menu.innerHTML = `
+                <ul>
+                  <li onclick="confirmDeleteFile('${file.UniqueId}', '${currentsiteID}')">
+                    <img src=${deleteIcon} alt="Delete"/>
+                    Delete
+                  </li>
+                  <li onclick="auditHistory('${file.UniqueId}', '${currentsiteID}','${file.Title}')">
+                    <img src=${editIcon} alt="Edit"/>
+                    Audit History
+                  </li>
+                  <li onclick="PreviewFile('${fileserverrelativeurl}', '${currentsiteID}' , '${currentDocumentLibrary}')">
+                    <img src=${editIcon} alt="Preview"/>
+                    Preview File
+                  </li>
+                  <li id="favouriteToggle-${file.UniqueId}" onclick="toggleFavourite('${file.UniqueId}', '${currentsiteID}')">
+                    <img src=${UnFillFavouriteFile} alt="Mark as Favourite" class="mark-as-favourite"/>
+                    <img src=${FillFavouriteFile} alt="Unmark as Favourite" class="unmark-as-favourite" style="display:none;"/>
+                    <span class="favourite-text">Mark as Favourite</span>
+                  </li>  
+                </ul>
+              `;
+
+          card.appendChild(menu);
+          container.appendChild(card);
+        });
+      } else {
+        if (routeToDiffSideBar === "myRequest") {
+          myRequest(null, null, searchInput);
+        }
+
+        else if (routeToDiffSideBar === "myFavourite") {
+
+          // console.log("myFavourite");
+          myFavorite(null, null, searchInput);
+
+        }
+        else if (routeToDiffSideBar === "myFolder") {
+          // console.log("Inside search => myFolder");
+          mycreatedfolders(event, searchInput);
+        }
+        else if (routeToDiffSideBar === "shareWithOthers") {
+          ShareWithOther(null, searchInput);
+        }
+        else if (routeToDiffSideBar === "shareWithMe") {
+          ShareWithMe(null, searchInput);
+        }else if(routeToDiffSideBar === "recyclebin"){
+          Recyclebin(null,null,searchInput);
+      }
       }
       // end
     } catch (error) {
-        console.error("Error searching files: ", error);
+      console.error("Error searching files: ", error);
     }
+  }
+
 }
+// const searchFiles = async (event: React.FormEvent ) => {
+// event.preventDefault();
+// event.stopPropagation();
+
+// const searchInput = document.getElementById('searchinput') as HTMLInputElement;
+// const searchText = searchInput.value;
+// console.log(searchText , "searchText")
 
 
-};
+// // if(currentFolder === ""){
+// //   console.log("currentFolder --->",currentFolder);
+// //   console.log("currentDocumentLibrary --->",currentDocumentLibrary)
+// // }else{
+// //   console.log("Inside else");
+// //   console.log("currentFolder --->",currentFolder);
+// //   console.log("currentDocumentLibrary --->",currentDocumentLibrary)
+// // }
+// // const testidsub = await sp.site.openWebById(currentsiteID);
+// // const library = await testidsub.web.lists.getByTitle(currentDocumentLibrary).select("Id")();
+// // console.log("Library",library);
+// // console.log(`Document Library ID: ${library.Id}`);
 
-// Share With ME & Share With Others ///
-// const ShareWithOther=async(event:React.MouseEvent<HTMLButtonElement>=null,searchText:HTMLInputElement=null)=>{
-//   const wait = document.getElementById('files-container')
-//   wait.classList.remove('hidemydatacards')
-//   const hidegidvewlistviewbutton = document.getElementById('hidegidvewlistviewbutton')
-//   if (hidegidvewlistviewbutton) {
-//    console.log("enter here .....................")
-//    hidegidvewlistviewbutton.style.display = 'none'
+// // const folder = await testidsub.web.getFolderByServerRelativePath(`${currentfolderpath}`).select("UniqueId")();
+// // console.log(`Folder ID: ${folder.UniqueId}`);
+// // console.log("Folder",folder);
 
-//  }
-//   if(createFileButton2){
-//     createFileButton2.style.display = 'none'
-//     }
-//     if(createFileButton){
-//     createFileButton.style.display = 'none'
-//     }
-//   if(event){
-//     event.preventDefault();
-//     event.stopPropagation();
-//   }
-//   console.log("Share with others called");
-//   console.log("searchInput",searchText);
 
-//   const container = document.getElementById("files-container");
-//   container.innerHTML="";
+// if (searchText !== "" ) {
+//     try {
+//       console.log(currentfolderpath, "currentfolderpath")
+//         const searchQuery = {
+//              Querytext:`${searchText} AND Path:"https://officeindia.sharepoint.com${currentfolderpath}"`,
+//             // Querytext: `"${searchText}"`,
+//             RowLimit: 500,
+//             SelectProperties: ["Title", "Path", "FileExtension", "UniqueId", "Size", "Created", "Modified"], 
+//             // Additional file properties
+//             // Refiners: 'FileExtension',
+//             // RefinementFilters: ['FileExtension:equals("docx")',
+//             //                     'FileExtension:equals("pdf")',
+//             //                     'FileExtension:equals("pptx")',
+//             //                   ],  
+//             // TrimDuplicates: false
+//         };
+//         // Performing the search
+//         const searchResults = await sp.search(searchQuery);
+//         const files = searchResults.PrimarySearchResults;
+       
+       
+//         // console.log("routeToDiffSideBar",routeToDiffSideBar);
 
-//   const FilesItems = await sp.web.lists
-//   .getByTitle("MasterSiteURL")
-//   .items.select("Title", "SiteID", "FileMasterList", "Active")
-//   .filter(`Active eq 'Yes'`)();
+//         console.log(files, "files");
+//         // Clear the previous results
+//         const container = document.getElementById("files-container");
+//         container.innerHTML = "";
 
-//   // console.log("Files items", FilesItems);
-//   FilesItems.forEach(async(fileItem)=>{
-//     if(fileItem.FileMasterList !== null){
-//       // console.log(files.FileMasterList);
-
-//       const filesData = await sp.web.lists
-//       .getByTitle(`${fileItem.FileMasterList}`)
-//       .items.select("FileName", "FileUID", "FileSize", "FileVersion","ShareWithOthers")
-//       .filter(
-//         `CurrentUser eq '${currentUserEmailRef.current}'`
-//       )();
-
-   
-//       console.log("Files Data ",filesData);
-//       routeToDiffSideBar="shareWithOthers"
-//       let filteredFileData=[];
-//       if(searchText !== null){
-//             filteredFileData=filesData.filter((file: any) => file?.FileName?.toLowerCase().includes(searchText?.value?.toLowerCase()))
+//         // Display the search results
+//         // start
+//       if( routeToDiffSideBar === "" ){
+//             files.forEach((file: any) => {
+//                 const card = document.createElement("div");
+//                 const {fileIcon} = getFileIcon(file.Title);  
+//                 card.className = "card";
+//                 card.dataset.fileId = file.UniqueId;
+//                 // console.log(file.UniqueId , "file.UniqueId")
+//                 card.innerHTML = `
+//                    <div class="row">
+//           <div class="col-md-2 pe-0">
+//                     <img class="filextension" src=${fileIcon} alt="File icon"/>
+//                    </div>
+//                     <div class="col-md-10 pe-0">
+//                    <p class="p1st">${file.Title}</p>
+//                     <p class="p3rd">${((file.Size as unknown as number) / (1024 * 1024)).toFixed(2)} MB</p>
+//                    </div></div>
+//                     <div id="three-dots" class="three-dots" onclick="toggleMenu2('${file.UniqueId}', '${currentsiteID}')">
+//                       <span>...</span>
+//                     </div>
+//                 `;
+//                 const menu = document.createElement("div");
+//                 menu.id = `menu-${file.UniqueId}`;
+//                 menu.className = "popup-menu";
+//                 menu.innerHTML = `
+//                   <ul>
+//                     <li onclick="confirmDeleteFile('${file.UniqueId}', '${currentsiteID}')">
+//                       <img src=${deleteIcon} alt="Delete"/>
+//                       Delete
+//                     </li>
+//                     <li onclick="auditHistory('${file.UniqueId}', '${currentsiteID}','${file.Title}')">
+//                       <img src=${editIcon} alt="Edit"/>
+//                       Audit History
+//                     </li>
+//                     <li onclick="PreviewFile('${file.ServerRelativeUrl}', '${currentsiteID}' , '${currentDocumentLibrary}')">
+//                       <img src=${FilePreview} alt="Preview"/>
+//                       Preview File
+//                     </li>
+//                     <li id="favouriteToggle-${file.UniqueId}" onclick="toggleFavourite('${file.UniqueId}', '${currentsiteID}')">
+//                       <img src=${UnFillFavouriteFile} alt="Mark as Favourite" class="mark-as-favourite"/>
+//                       <img src=${FillFavouriteFile} alt="Unmark as Favourite" class="unmark-as-favourite" style="display:none;"/>
+//                       <span class="favourite-text">Mark as Favourite</span>
+//                     </li>  
+//                   </ul>
+//                 `;
+         
+//                 card.appendChild(menu);
+//                 container.appendChild(card);
+//             });
 //       }else{
-//         filteredFileData=filesData;
+//           if( routeToDiffSideBar === "myRequest" ){
+//               myRequest(null,null,searchInput);
+//           }
+         
+//           else if( routeToDiffSideBar === "myFavourite" ){
+
+//                 // console.log("myFavourite");
+//                 myFavorite(null,null,searchInput);
+               
+//           }
+//           else if( routeToDiffSideBar === "myFolder"){
+//                 // console.log("Inside search => myFolder");
+//                 mycreatedfolders(event,searchInput);
+//           }
+//           else if(routeToDiffSideBar === "shareWithOthers"){
+//               ShareWithOther(null,searchInput);
+//           }
+//           else if(routeToDiffSideBar === "shareWithMe"){
+//               ShareWithMe(null,searchInput);
+//           }
 //       }
-//       filteredFileData.forEach((file) => {
-
-//         if( file.ShareWithOthers !== null ){
-       
-//           const sharedUserInTheFormOFstring = file.ShareWithOthers;
-      
-//           let sharedUsers = JSON.parse(sharedUserInTheFormOFstring);
-//           console.log(sharedUsers , " here is shared users")
-//           if(sharedUsers.length === 0){
-//               return;
-//           }
-       
-//           // Get the first two users
-//           const firstTwoUsers = sharedUsers.slice(0, 2);
-
-//           // Remaining users count
-//           const moreUsersCount = sharedUsers.length - 2;
-
-//           // Create shared users HTML for the first two users
-//           let sharedUsersHTML = firstTwoUsers
-//               .map((user:any) => {
-//                   let firstNameInitial;
-//                   console.log(user , "sharewith me users")
-//                   console.log("user firstnamw", user.SharedWith)
-//                   console.log("user lastnamw",user.LastName)
-//                   let lastNameInitial=""
-//                   if(user.FirstName !== null){
-//                         firstNameInitial = user.FirstName.charAt(0).toUpperCase();
-//                   }
-//                   if(user.LastName !== null){
-//                         lastNameInitial=user.LastName.charAt(0).toUpperCase();
-//                   }
-
-//                   return `<span  flow="down" tooltip='${user.FirstName }' class="shared-user">${firstNameInitial}${lastNameInitial}</span>`;
-//                   })
-//                   .join("");
-
-//                let array = ["test1" , "test2" , "test3" , "test4"]
-//                console.log(array , "array")
-//           // If there are more users, add "+more"
-//           if (moreUsersCount > 0) {
-//                 sharedUsersHTML += `<span class="more-users" flow="down" tooltip='${array }'>+${moreUsersCount} more</span>`;
-//           }
-       
-//           const {fileIcon, fileExtension}= getFileIcon(file.FileName);
-//           // const card = createFileCard(file, fileIcon, fileItem.SiteID,fileItem.FileMasterList,fileExtension);
-//           const card = document.createElement("div");
-//           card.className = "card";
-//           card.dataset.fileId = file.FileUID; // Store file ID in the card element
-//           card.dataset.listId = fileItem.SiteID; // Store site ID
-     
-//           card.innerHTML = `        
-//             <img class="filextension" src=${fileIcon} alt="${fileExtension} icon"/>
-//             <p class="p1st">${file.FileName}</p>
-//             <div class="fileSizeAndVersion">
-//               <p class="p3rd">${file.FileSize} MB</p>
-//               <p class="p2nd">${file.FileVersion}</p>
-//             </div>
-//              <div class="sharedFile">
-//               ${sharedUsersHTML}
-//             </div>
-//           `;
-//           container.appendChild(card);
-
-//         }
-//       });
-   
-//     }        
-//   })
-
+//       // end
+//     } catch (error) {
+//         console.error("Error searching files: ", error);
+//     }
 // }
+
+
+// };
+
+
 const ShareWithOther=async(event:React.MouseEvent<HTMLButtonElement>=null,searchText:HTMLInputElement=null)=>{
+   entityclicktext = ''
   setdisplayuploadfileandcreatefolder(false)
   ismyrequordoclibforfilepreview  = "sharewithothers";
 if(event){
@@ -4880,19 +4934,25 @@ window.revokeAccess=(UserArray:string,FileName:string,fileId:any,siteId:any,fold
    heading.innerText = "Shared Users List";
    heading.style.margin = "0 0 20px 0";
    heading.style.color = "#333";
+   heading.style.textAlign = "left";
+   heading.style.fontSize = "18px";
  
   // Create the close button
   const closeButton = document.createElement("button");
   closeButton.innerText = "X";
   closeButton.style.position = "absolute";
-  closeButton.style.top = "10px";
+  closeButton.style.top = "0px";
   closeButton.style.right = "10px";
   closeButton.style.backgroundColor = "white";
-  closeButton.style.color = "black";
-  closeButton.style.border = "none";
-  closeButton.style.borderRadius = "4px";
+  closeButton.style.color = "#333";
+  closeButton.style.border = "1px solid #ccc";
+  closeButton.style.borderRadius = "1000px";
+  closeButton.style.lineHeight = "30px";
+  closeButton.style.minWidth = "30px";
+  closeButton.style.height = "30px";
   closeButton.style.cursor = "pointer";
-  closeButton.style.padding = "5px 10px";
+  closeButton.style.padding = "0px";
+   
   closeButton.onclick = () => {
     document.body.removeChild(popup);
   };
@@ -4906,9 +4966,9 @@ window.revokeAccess=(UserArray:string,FileName:string,fileId:any,siteId:any,fold
    const thead = document.createElement("thead");
    thead.innerHTML = `
      <tr>
-       <th style="border: 1px solid #ddd; padding: 8px;">User</th>
-       <th style="border: 1px solid #ddd; padding: 8px;">Permission</th>
-       <th style="border: 1px solid #ddd; padding: 8px;">Action</th>
+       <th style="border: 0px solid #ddd; background:#f3f7f9; padding: 8px;">User</th>
+       <th style="border: 0px solid #ddd;background:#f3f7f9; padding: 8px;">Permission</th>
+       <th style="border: 0px solid #ddd;background:#f3f7f9; padding: 8px;">Action</th>
      </tr>
    `;
    table.appendChild(thead);
@@ -4918,11 +4978,11 @@ window.revokeAccess=(UserArray:string,FileName:string,fileId:any,siteId:any,fold
    users.forEach((user:any, index:any) => {
      const row = document.createElement("tr");
      row.innerHTML = `
-       <td style="border: 1px solid #ddd; padding: 8px;">${user.User}</td>
-       <td style="border: 1px solid #ddd; padding: 8px;">${user.PermissionType}</td>
-       <td style="border: 1px solid #ddd; padding: 8px;">
+       <td style="border: 1px solid #ddd; padding: 6px 8px;">${user.User}</td>
+       <td style="border: 1px solid #ddd; padding:6px 8px;">${user.PermissionType}</td>
+       <td style="border: 1px solid #ddd; padding: 6px 8px;">
         <button
-           style="background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;"
+           style="background-color: #6c757d; margin-top:0px; color: white; border: none; font-size:14px; padding: 3px 8px; border-radius: 4px; cursor: pointer;"
            onclick="deleteUser(${user.itemID},${index},'${user.UserID}','${user.PermissionType}')">
            Delete
          </button>
@@ -5254,6 +5314,7 @@ window.revokeAccess=(UserArray:string,FileName:string,fileId:any,siteId:any,fold
 //Toggle the menu card for share with me
 // @ts-ignore
 const ShareWithMe=async(event:React.MouseEvent<HTMLButtonElement>=null,searchText:HTMLInputElement=null)=>{
+   entityclicktext = ''
   setdisplayuploadfileandcreatefolder(false)
    ismyrequordoclibforfilepreview = "sharewithme"
 
@@ -5867,6 +5928,7 @@ if (!isClickInsideMenu && !isClickInsideThreeDots) {
 
 
 const Recyclebin=async (event:React.MouseEvent<HTMLButtonElement>=null, siteIdToUpdate: string = null,    searchText:any = null)=>{
+  entityclicktext = ''
   setdisplayuploadfileandcreatefolder(false)
 if(event){
   event.preventDefault();
@@ -5919,14 +5981,19 @@ FilesItems.forEach(async (fileItem) => {
       console.log("ListElemet To update",listElements)
       listElements.forEach((el) => el.remove());
     
-    console.log("files",filesData);
-
+      console.log("files",filesData);
+      // new code to filter only the unique files start
+      const uniqueFiles = filesData.filter((file, index, self) => 
+        self.findIndex(f => f.FileUID === file.FileUID) === index
+      );
+      console.log(uniqueFiles,"uniqueFiles.....");
+      // end
      routeToDiffSideBar="recyclebin";
      let filteredFileData;
      if(searchText !== null){
-       filteredFileData=filesData.filter((file: any) => file.FileName.toLowerCase().includes(searchText.value.toLowerCase()))
+       filteredFileData=uniqueFiles.filter((file: any) => file.FileName.toLowerCase().includes(searchText.value.toLowerCase()))
      }else{
-       filteredFileData=filesData;
+       filteredFileData=uniqueFiles;
      }
 
      filteredFileData.forEach((file)=>{
@@ -6443,367 +6510,367 @@ function closePopup() {
 
 
 // }
-window.shareFile=async(fileID:string,siteId:string,currentFolderPathForFile:string,fileName:string,flag:string,FileVersion:any,FileSize:any,Status:any,FilePreviewURL:any,DocumentLibraryName:any)=>{
-console.log("Share File called");
-console.log("flag",flag);
-console.log("file Id",fileID);
-console.log("site Id",siteId);
-console.log("FileName",fileName);
-console.log("currentFolderPath",currentFolderPathForFile);
+// window.shareFile=async(fileID:string,siteId:string,currentFolderPathForFile:string,fileName:string,flag:string,FileVersion:any,FileSize:any,Status:any,FilePreviewURL:any,DocumentLibraryName:any)=>{
+// console.log("Share File called");
+// console.log("flag",flag);
+// console.log("file Id",fileID);
+// console.log("site Id",siteId);
+// console.log("FileName",fileName);
+// console.log("currentFolderPath",currentFolderPathForFile);
 
-// Check permission of file when it come from the myrequest start
-const testidsub =await sp.site.openWebById(siteId)  
+// // Check permission of file when it come from the myrequest start
+// const testidsub =await sp.site.openWebById(siteId)  
 
-let filePath=`${currentFolderPathForFile}/${fileName}`;
-console.log("filePath",filePath);
-const fileServerRelativePath = testidsub.web.getFileByServerRelativePath(filePath);
-// Retrieve the list item associated with the file
-const item = await fileServerRelativePath.getItem();
-console.log("items",item);
-// Get current user permissions on the item (file)
-const filePermissions = await item.getCurrentUserEffectivePermissions(); 
-console.log("File permissions:", filePermissions);
-// console.log("file listItems All field",file.ListItemAllFields);
+// let filePath=`${currentFolderPathForFile}/${fileName}`;
+// console.log("filePath",filePath);
+// const fileServerRelativePath = testidsub.web.getFileByServerRelativePath(filePath);
+// // Retrieve the list item associated with the file
+// const item = await fileServerRelativePath.getItem();
+// console.log("items",item);
+// // Get current user permissions on the item (file)
+// const filePermissions = await item.getCurrentUserEffectivePermissions(); 
+// console.log("File permissions:", filePermissions);
+// // console.log("file listItems All field",file.ListItemAllFields);
 
-const hasFullControl = testidsub.web.hasPermissions(filePermissions, PermissionKind.ManageWeb);
-const hasEdit = testidsub.web.hasPermissions(filePermissions, PermissionKind.EditListItems);
-const hasContribute = testidsub.web.hasPermissions(filePermissions, PermissionKind.AddListItems) && testidsub.web.hasPermissions(filePermissions, PermissionKind.EditListItems);
-const hasRead = testidsub.web.hasPermissions(filePermissions, PermissionKind.ViewListItems);
-console.log(hasFullControl , "hasFullControl")
-console.log(hasEdit , "hasEdit")
-console.log(hasContribute , "hasContribute")
-console.log(hasRead , "hasRead")
-let filePermission:string;
-if (hasFullControl) {
-  filePermission ="Full Control";
-} else if (hasEdit) {
-  filePermission ="Edit";
-} else if (hasContribute) {
-  filePermission = "Contribute";
-} else if (hasRead) {
-  filePermission = "Read";
-} else {
-  filePermission = "No Access";
-}
+// const hasFullControl = testidsub.web.hasPermissions(filePermissions, PermissionKind.ManageWeb);
+// const hasEdit = testidsub.web.hasPermissions(filePermissions, PermissionKind.EditListItems);
+// const hasContribute = testidsub.web.hasPermissions(filePermissions, PermissionKind.AddListItems) && testidsub.web.hasPermissions(filePermissions, PermissionKind.EditListItems);
+// const hasRead = testidsub.web.hasPermissions(filePermissions, PermissionKind.ViewListItems);
+// console.log(hasFullControl , "hasFullControl")
+// console.log(hasEdit , "hasEdit")
+// console.log(hasContribute , "hasContribute")
+// console.log(hasRead , "hasRead")
+// let filePermission:string;
+// if (hasFullControl) {
+//   filePermission ="Full Control";
+// } else if (hasEdit) {
+//   filePermission ="Edit";
+// } else if (hasContribute) {
+//   filePermission = "Contribute";
+// } else if (hasRead) {
+//   filePermission = "Read";
+// } else {
+//   filePermission = "No Access";
+// }
 
-console.log("filePermission",filePermission);
+// console.log("filePermission",filePermission);
 
-// exreact the Entity from folder path
-const parts = currentFolderPathForFile.split("/");  
-const entity = parts[3]; 
-console.log(entity); 
+// // exreact the Entity from folder path
+// const parts = currentFolderPathForFile.split("/");  
+// const entity = parts[3]; 
+// console.log(entity); 
 
-const fetchUser=async(entity:any)=>{
-  // const [
-  //   users,
-  //   users1,
-  //   users2,
-  //   users3,
-  //   users4,
-  // ] = await Promise.all([
-  //   sp.web.siteGroups.getByName(`${entity}_Read`).users(),
-  //   sp.web.siteGroups.getByName(`${entity}_Initiator`).users(),
-  //   sp.web.siteGroups.getByName(`${entity}_Contribute`).users(),
-  //   sp.web.siteGroups.getByName(`${entity}_Admin`).users(),
-  //   sp.web.siteGroups.getByName(`${entity}_View`).users(),
-  // ]);
-  // console.log(users, "users ", users1,users2,users3,users4);
-  // const combineArray = [
-  //   ...(users || []),
-  //   ...(users1 || []),
-  //   ...(users2 || []),
-  //   ...(users3 || []),
-  //   ...(users4 || []),
-  // ];
+// const fetchUser=async(entity:any)=>{
+//   // const [
+//   //   users,
+//   //   users1,
+//   //   users2,
+//   //   users3,
+//   //   users4,
+//   // ] = await Promise.all([
+//   //   sp.web.siteGroups.getByName(`${entity}_Read`).users(),
+//   //   sp.web.siteGroups.getByName(`${entity}_Initiator`).users(),
+//   //   sp.web.siteGroups.getByName(`${entity}_Contribute`).users(),
+//   //   sp.web.siteGroups.getByName(`${entity}_Admin`).users(),
+//   //   sp.web.siteGroups.getByName(`${entity}_View`).users(),
+//   // ]);
+//   // console.log(users, "users ", users1,users2,users3,users4);
+//   // const combineArray = [
+//   //   ...(users || []),
+//   //   ...(users1 || []),
+//   //   ...(users2 || []),
+//   //   ...(users3 || []),
+//   //   ...(users4 || []),
+//   // ];
 
-  // const siteContext = await sp.site.openWebById(OthProps.siteID);
-  const user0 = await sp.web.siteUsers();
-  const combineUsersArray=user0.map((user)=>(
-        {
-          id:String(user.Id),
-          value: user.Title,
-          email: user.Email,
-        }
-  ))
-  console.log("Sub site users",combineUsersArray);
+//   // const siteContext = await sp.site.openWebById(OthProps.siteID);
+//   const user0 = await sp.web.siteUsers();
+//   const combineUsersArray=user0.map((user)=>(
+//         {
+//           id:String(user.Id),
+//           value: user.Title,
+//           email: user.Email,
+//         }
+//   ))
+//   console.log("Sub site users",combineUsersArray);
     
-  // const resultArray=combineUsersArray.map((user) => ( 
-  //   {
-  //     id:String(user.Id),
-  //     value: user.Title,
-  //     email: user.Email
-  //   }
-  // ))
-  // console.log("combineArray", combineArray);
-  // console.log("resultArray",resultArray)
+//   // const resultArray=combineUsersArray.map((user) => ( 
+//   //   {
+//   //     id:String(user.Id),
+//   //     value: user.Title,
+//   //     email: user.Email
+//   //   }
+//   // ))
+//   // console.log("combineArray", combineArray);
+//   // console.log("resultArray",resultArray)
 
-  return combineUsersArray;
-}
+//   return combineUsersArray;
+// }
 
-const users=await fetchUser(entity);
-console.log("UserArray",users);
-
-
-// Check if a popup already exists, if so, remove it before creating a new one
-const existingPopup = document.getElementById('share-popup');
-if (existingPopup) {
-existingPopup.remove();
-}
-
-// Dummy data
-// const users = [
-//   { value: 'Test1', id: '14',email:"User1@officeindia.onmicrosoft.com" },
-//   { value: 'Test2', id: '31',email:"User2@officeindia.onmicrosoft.com" },
-//   { value: 'Test3', id: '137',email:"User3@officeindia.onmicrosoft.com"},
-//   { value: 'Test4', id: '33',email:"User4@officeindia.onmicrosoft.com" },
-//   { value: 'Test5', id: '32',email:"User5@officeindia.onmicrosoft.com" },
-//   { value: 'Test6', id: '34',email:"User6@officeindia.onmicrosoft.com" },
-//   { value: 'Test User1', id: '39',email:"User7@officeindia.onmicrosoft.com" },
-//   ];
+// const users=await fetchUser(entity);
+// console.log("UserArray",users);
 
 
-// Declare selectedUsers with an explicit type, assuming user IDs are of type string for selecting the user for share
-let selectedUsers: { id: string; value: string; email:string }[] = [];
-// Create the pop-up element
-const popup = document.createElement("div");
-popup.id = 'share-popup';
-popup.className = "share-popup";
+// // Check if a popup already exists, if so, remove it before creating a new one
+// const existingPopup = document.getElementById('share-popup');
+// if (existingPopup) {
+// existingPopup.remove();
+// }
 
-// Show permissions options.
-let options=''
-if(filePermission === "Full Control"){
-options=`
-  <option value="Full Control">Full Control</option>
-  <option value="Contribute">Contribute</option>
-  <option value="Edit">Edit</option>
-  <option value="Read">Read</option>
-`
-}else if(filePermission === "Contribute" || filePermission === "Edit"){
-options=`
-<option value="Contribute">Contribute</option>
-<option value="Edit">Edit</option>
-<option value="Read">Read</option>
-`
-}else if(filePermission === "Read"){
-options=`
-<option value="Read">Read</option>
-` 
-}
+// // Dummy data
+// // const users = [
+// //   { value: 'Test1', id: '14',email:"User1@officeindia.onmicrosoft.com" },
+// //   { value: 'Test2', id: '31',email:"User2@officeindia.onmicrosoft.com" },
+// //   { value: 'Test3', id: '137',email:"User3@officeindia.onmicrosoft.com"},
+// //   { value: 'Test4', id: '33',email:"User4@officeindia.onmicrosoft.com" },
+// //   { value: 'Test5', id: '32',email:"User5@officeindia.onmicrosoft.com" },
+// //   { value: 'Test6', id: '34',email:"User6@officeindia.onmicrosoft.com" },
+// //   { value: 'Test User1', id: '39',email:"User7@officeindia.onmicrosoft.com" },
+// //   ];
 
 
-// Add HTML structure for the pop-up with a dropdown and a close "X" button
-popup.innerHTML = `
-<div class="share-popup-content">
-<div class="share-popup-header">
-<h4>Share</h4>
-<span class="share-close-popup" onClick="hideSharePopUp()">x</span>
-</div>
-<div class="share-popup-body">
-<div id="share-reactSelect">
-    <input type="text" id="userInput" placeholder="Add a Name, Group, or Email" style="
-    width: 100%; 
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-  "/>
-  <div id="userDropdown" class="user-dropdown" style="
-    display: none;
-    position: absolute;
-    width: 29.8%;
-    max-height: 150px;
-    overflow-y: auto;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    z-index: 1000;
-  ">
-  </div>
-</div>
- <div>
-  <select id="permissionSelect" style="
-    margin-bottom:10px;
-    width: 100%; 
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    margin-top: 10px;
-  ">
-    <option value="" disabled selected>Permission</option>
-    ${options}
-  </select>
-</div>
-<textarea id="share-message" placeholder="Write a message..." >
-</textarea>
-</div>
-<div class="share-popup-footer">
-<button id="share-shareFileButton">Share</button>
-</div>
-</div>
-`;
+// // Declare selectedUsers with an explicit type, assuming user IDs are of type string for selecting the user for share
+// let selectedUsers: { id: string; value: string; email:string }[] = [];
+// // Create the pop-up element
+// const popup = document.createElement("div");
+// popup.id = 'share-popup';
+// popup.className = "share-popup";
 
-// Append the  popup to the body
-document.body.appendChild(popup);
+// // Show permissions options.
+// let options=''
+// if(filePermission === "Full Control"){
+// options=`
+//   <option value="Full Control">Full Control</option>
+//   <option value="Contribute">Contribute</option>
+//   <option value="Edit">Edit</option>
+//   <option value="Read">Read</option>
+// `
+// }else if(filePermission === "Contribute" || filePermission === "Edit"){
+// options=`
+// <option value="Contribute">Contribute</option>
+// <option value="Edit">Edit</option>
+// <option value="Read">Read</option>
+// `
+// }else if(filePermission === "Read"){
+// options=`
+// <option value="Read">Read</option>
+// ` 
+// }
 
-// Get references to the input box and dropdown
-const userInput = document.getElementById('userInput') as HTMLInputElement;
-const userDropdown = document.getElementById('userDropdown');
 
-// Function to render dropdown options based on user input
-function renderDropdown(users: { id: string, value: string,email:string }[]) {
-// Clear previous options
-userDropdown.innerHTML = ''; 
-users.forEach(user => {
-const option = document.createElement('div');
-option.className = 'dropdown-item';
-option.style.padding = '8px';
-option.style.cursor = 'pointer';
-option.textContent = user.value;
-option.onclick = () => selectUser(user);
-userDropdown.appendChild(option);
-});
-}
+// // Add HTML structure for the pop-up with a dropdown and a close "X" button
+// popup.innerHTML = `
+// <div class="share-popup-content">
+// <div class="share-popup-header">
+// <h4>Share</h4>
+// <span class="share-close-popup" onClick="hideSharePopUp()">x</span>
+// </div>
+// <div class="share-popup-body">
+// <div id="share-reactSelect">
+//     <input type="text" id="userInput" placeholder="Add a Name, Group, or Email" style="
+//     width: 100%; 
+//     padding: 10px;
+//     font-size: 14px;
+//     border-radius: 4px;
+//     border: 1px solid #ccc;
+//   "/>
+//   <div id="userDropdown" class="user-dropdown" style="
+//     display: none;
+//     position: absolute;
+//     width: 29.8%;
+//     max-height: 150px;
+//     overflow-y: auto;
+//     background-color: white;
+//     border: 1px solid #ccc;
+//     border-radius: 4px;
+//     z-index: 1000;
+//   ">
+//   </div>
+// </div>
+//  <div>
+//   <select id="permissionSelect" style="
+//     margin-bottom:10px;
+//     width: 100%; 
+//     padding: 10px;
+//     font-size: 14px;
+//     border-radius: 4px;
+//     border: 1px solid #ccc;
+//     margin-top: 10px;
+//   ">
+//     <option value="" disabled selected>Permission</option>
+//     ${options}
+//   </select>
+// </div>
+// <textarea id="share-message" placeholder="Write a message..." >
+// </textarea>
+// </div>
+// <div class="share-popup-footer">
+// <button id="share-shareFileButton">Share</button>
+// </div>
+// </div>
+// `;
 
-// Function to show the dropdown when the input is clicked
-userInput.addEventListener('focus', () => {
-userDropdown.style.display = 'block';
+// // Append the  popup to the body
+// document.body.appendChild(popup);
 
-// Display all users initially
-renderDropdown(users); 
-});
-userInput.addEventListener('paste', (event) => {
-  setTimeout(() => {
-    const inputValue = userInput.value.toLowerCase();
-    const matchedUser = users.find(user => user.email.toLowerCase() === inputValue);
+// // Get references to the input box and dropdown
+// const userInput = document.getElementById('userInput') as HTMLInputElement;
+// const userDropdown = document.getElementById('userDropdown');
+
+// // Function to render dropdown options based on user input
+// function renderDropdown(users: { id: string, value: string,email:string }[]) {
+// // Clear previous options
+// userDropdown.innerHTML = ''; 
+// users.forEach(user => {
+// const option = document.createElement('div');
+// option.className = 'dropdown-item';
+// option.style.padding = '8px';
+// option.style.cursor = 'pointer';
+// option.textContent = user.value;
+// option.onclick = () => selectUser(user);
+// userDropdown.appendChild(option);
+// });
+// }
+
+// // Function to show the dropdown when the input is clicked
+// userInput.addEventListener('focus', () => {
+// userDropdown.style.display = 'block';
+
+// // Display all users initially
+// renderDropdown(users); 
+// });
+// userInput.addEventListener('paste', (event) => {
+//   setTimeout(() => {
+//     const inputValue = userInput.value.toLowerCase();
+//     const matchedUser = users.find(user => user.email.toLowerCase() === inputValue);
     
-    if (matchedUser) {
-      renderDropdown([matchedUser]);
-      userDropdown.style.display = 'none';
-    }
-  }, 0); // Use setTimeout to ensure the paste event updates the input value first
-});
-// Filter dropdown based on input value
-userInput.addEventListener('input', () => {
-const searchValue = userInput.value.toLowerCase();
-const filteredUsers= users.filter(user => user.value.toLowerCase().includes(searchValue));
-renderDropdown(filteredUsers);
-});
+//     if (matchedUser) {
+//       renderDropdown([matchedUser]);
+//       userDropdown.style.display = 'none';
+//     }
+//   }, 0); // Use setTimeout to ensure the paste event updates the input value first
+// });
+// // Filter dropdown based on input value
+// userInput.addEventListener('input', () => {
+// const searchValue = userInput.value.toLowerCase();
+// const filteredUsers= users.filter(user => user.value.toLowerCase().includes(searchValue));
+// renderDropdown(filteredUsers);
+// });
 
-// Function to select a user and display it inside the input
-function selectUser(user: { id: string, value: string,email:string }) {
-console.log("selected user",selectedUsers)
-if (!selectedUsers.some(selectedUser => selectedUser.id === user.id)) {
+// // Function to select a user and display it inside the input
+// function selectUser(user: { id: string, value: string,email:string }) {
+// console.log("selected user",selectedUsers)
+// if (!selectedUsers.some(selectedUser => selectedUser.id === user.id)) {
 
-selectedUsers.push(user);
+// selectedUsers.push(user);
 
-// Create a span for the selected user with a close button
-const selectedUserDiv = document.createElement('span');
-selectedUserDiv.className = 'selected-user';
-selectedUserDiv.style.display = 'inline-block';
-selectedUserDiv.style.padding = '2px 6px';
-selectedUserDiv.style.backgroundColor = '#e0e0e0';
-selectedUserDiv.style.borderRadius = '12px';
-selectedUserDiv.style.marginRight = '5px';
-selectedUserDiv.style.position = 'relative';
+// // Create a span for the selected user with a close button
+// const selectedUserDiv = document.createElement('span');
+// selectedUserDiv.className = 'selected-user';
+// selectedUserDiv.style.display = 'inline-block';
+// selectedUserDiv.style.padding = '2px 6px';
+// selectedUserDiv.style.backgroundColor = '#e0e0e0';
+// selectedUserDiv.style.borderRadius = '12px';
+// selectedUserDiv.style.marginRight = '5px';
+// selectedUserDiv.style.position = 'relative';
 
-selectedUserDiv.textContent = user.value;
+// selectedUserDiv.textContent = user.value;
 
-// Create close button for deselecting the user
-const closeButton = document.createElement('span');
-closeButton.textContent = 'x';
-closeButton.style.cursor = 'pointer';
-closeButton.style.marginLeft = '5px';
-closeButton.onclick = () => deselectUser(user.id, selectedUserDiv);
-selectedUserDiv.appendChild(closeButton);
+// // Create close button for deselecting the user
+// const closeButton = document.createElement('span');
+// closeButton.textContent = 'x';
+// closeButton.style.cursor = 'pointer';
+// closeButton.style.marginLeft = '5px';
+// closeButton.onclick = () => deselectUser(user.id, selectedUserDiv);
+// selectedUserDiv.appendChild(closeButton);
 
-// Append the selected user to the input field
-userInput.parentNode!.insertBefore(selectedUserDiv, userInput);
-userInput.value = ''; 
-}
-userDropdown.style.display = 'none'; 
-}
+// // Append the selected user to the input field
+// userInput.parentNode!.insertBefore(selectedUserDiv, userInput);
+// userInput.value = ''; 
+// }
+// userDropdown.style.display = 'none'; 
+// }
 
-// Function to deselect a user
-function deselectUser(userId: string, selectedUserDiv: HTMLElement) {
-// selectedUsers = selectedUsers.filter(id => id !== userId);
-selectedUsers = selectedUsers.filter(selectedUser => selectedUser.id !== userId);
-console.log("selected user",selectedUsers);
-selectedUserDiv.remove();
-}
+// // Function to deselect a user
+// function deselectUser(userId: string, selectedUserDiv: HTMLElement) {
+// // selectedUsers = selectedUsers.filter(id => id !== userId);
+// selectedUsers = selectedUsers.filter(selectedUser => selectedUser.id !== userId);
+// console.log("selected user",selectedUsers);
+// selectedUserDiv.remove();
+// }
 
-// Hide the dropdown if clicked outside
-document.addEventListener('click', (event) => {
-if (!userInput.contains(event.target as Node) && !userDropdown.contains(event.target as Node)) {
-userDropdown.style.display = 'none';
-}
-});
+// // Hide the dropdown if clicked outside
+// document.addEventListener('click', (event) => {
+// if (!userInput.contains(event.target as Node) && !userDropdown.contains(event.target as Node)) {
+// userDropdown.style.display = 'none';
+// }
+// });
 
-// Capture selected permission
-let selectedPermission = "";
-document.getElementById('permissionSelect').addEventListener('change', (event) => {
-selectedPermission = (event.target as HTMLSelectElement).value;
-console.log("Selected Permission:", selectedPermission);
-});
+// // Capture selected permission
+// let selectedPermission = "";
+// document.getElementById('permissionSelect').addEventListener('change', (event) => {
+// selectedPermission = (event.target as HTMLSelectElement).value;
+// console.log("Selected Permission:", selectedPermission);
+// });
 
-// Adding event listener to the "Share" button
-document.getElementById('share-shareFileButton').addEventListener('click', async function() {
-  console.log("selectedUserArray",selectedUsers);
-  console.log("Entity",entity);
-  console.log("FileId",fileID);
-  console.log("SiteId",siteId);
-  console.log("currentFolderPathForFile",currentFolderPathForFile);
-  console.log("FileName",fileName);
-  console.log("filesize",FileSize);
-  console.log("FileVersion",FileVersion);
-  console.log("Status",Status);
-  console.log("FilePreviewURL",FilePreviewURL);
-  console.log("DocumentLibraryName",DocumentLibraryName)
+// // Adding event listener to the "Share" button
+// document.getElementById('share-shareFileButton').addEventListener('click', async function() {
+//   console.log("selectedUserArray",selectedUsers);
+//   console.log("Entity",entity);
+//   console.log("FileId",fileID);
+//   console.log("SiteId",siteId);
+//   console.log("currentFolderPathForFile",currentFolderPathForFile);
+//   console.log("FileName",fileName);
+//   console.log("filesize",FileSize);
+//   console.log("FileVersion",FileVersion);
+//   console.log("Status",Status);
+//   console.log("FilePreviewURL",FilePreviewURL);
+//   console.log("DocumentLibraryName",DocumentLibraryName)
 
-  // New Code push the data into the DMSShareWithOtherMaster Start
-  try {
-    const isoDate = new Date().toISOString().slice(0, 19) + 'Z';
-    const payloadForDMSShareWithOtherMaster={
-      FileName:fileName,
-      FileUID:fileID,
-      CurrentUser:currentUserEmailRef.current,
-      CurrentFolderPath:currentFolderPathForFile,
-      SiteName:entity,
-      PermissionType:selectedPermission,
-      ShareAt:isoDate,
-      FileVersion:FileVersion,
-      FileSize:FileSize,
-      Status:Status,
-      FilePreviewURL:FilePreviewURL,
-      SiteID:siteId,
-      DocumentLibraryName:DocumentLibraryName
-    }
-    selectedUsers.forEach(async(user)=>{
-          (payloadForDMSShareWithOtherMaster as any).UserID=user.id;
-          (payloadForDMSShareWithOtherMaster as any).ShareWithOthers=user.value;
-          (payloadForDMSShareWithOtherMaster as any).ShareWithMe=user.email;
-          const newItem = await sp.web.lists.getByTitle(`DMSShareWithOtherMaster`).items.add(payloadForDMSShareWithOtherMaster)
-          console.log("Data added successfully in the",newItem);
-    })
+//   // New Code push the data into the DMSShareWithOtherMaster Start
+//   try {
+//     const isoDate = new Date().toISOString().slice(0, 19) + 'Z';
+//     const payloadForDMSShareWithOtherMaster={
+//       FileName:fileName,
+//       FileUID:fileID,
+//       CurrentUser:currentUserEmailRef.current,
+//       CurrentFolderPath:currentFolderPathForFile,
+//       SiteName:entity,
+//       PermissionType:selectedPermission,
+//       ShareAt:isoDate,
+//       FileVersion:FileVersion,
+//       FileSize:FileSize,
+//       Status:Status,
+//       FilePreviewURL:FilePreviewURL,
+//       SiteID:siteId,
+//       DocumentLibraryName:DocumentLibraryName
+//     }
+//     selectedUsers.forEach(async(user)=>{
+//           (payloadForDMSShareWithOtherMaster as any).UserID=user.id;
+//           (payloadForDMSShareWithOtherMaster as any).ShareWithOthers=user.value;
+//           (payloadForDMSShareWithOtherMaster as any).ShareWithMe=user.email;
+//           const newItem = await sp.web.lists.getByTitle(`DMSShareWithOtherMaster`).items.add(payloadForDMSShareWithOtherMaster)
+//           console.log("Data added successfully in the",newItem);
+//     })
    
-  } catch (error) {
-    console.log("Error in adding data to the DMSShareWithOtherMaster",error);
-  }
+//   } catch (error) {
+//     console.log("Error in adding data to the DMSShareWithOtherMaster",error);
+//   }
 
 
-});
+// });
 
 
-}
+// }
 // hide the share popup
 // @ts-ignore
-window.hideSharePopUp=()=>{
-const popup=document.querySelector('.share-popup');
+// window.hideSharePopUp=()=>{
+// const popup=document.querySelector('.share-popup');
 
-if(popup){
-popup.remove();
-}
-}
+// if(popup){
+// popup.remove();
+// }
+// }
 
 
 // Sharewith Me And Share With Others
@@ -6909,48 +6976,48 @@ popup.remove();
 // } else {
 //     console.log(`Item with ID ${4} inherits permissions from its parent.`);
 // }
-  const myfunction = async () => {
-    const subsiteContext = await sp.site.openWebById(siteID);
+  // const myfunction = async () => {
+  //   const subsiteContext = await sp.site.openWebById(siteID);
 
-    // Fetch all the groups in the subsite
-    interface IMember {
-      PrincipalType: number;
-      Title: string;
-      Id: number;
-    }
+  //   // Fetch all the groups in the subsite
+  //   interface IMember {
+  //     PrincipalType: number;
+  //     Title: string;
+  //     Id: number;
+  //   }
 
-    interface IRoleAssignmentInfo {
-      Member?: IMember;
-    }
+  //   interface IRoleAssignmentInfo {
+  //     Member?: IMember;
+  //   }
 
-    const groups3: IRoleAssignmentInfo[] = await subsiteContext.web.roleAssignments.expand("Member")();
-    console.log("groups3", groups3);
+  //   const groups3: IRoleAssignmentInfo[] = await subsiteContext.web.roleAssignments.expand("Member")();
+  //   console.log("groups3", groups3);
 
-    // Filter the groups for current user roles (_View, _Read, _Contribute, _Admin, etc.)
-    const filteredMembers = groups3.filter((roleAssignment) => {
-      return roleAssignment.Member.PrincipalType === 8; // Group PrincipalType
-    });
+  //   // Filter the groups for current user roles (_View, _Read, _Contribute, _Admin, etc.)
+  //   const filteredMembers = groups3.filter((roleAssignment) => {
+  //     return roleAssignment.Member.PrincipalType === 8; // Group PrincipalType
+  //   });
 
-    const filteredGroups = filteredMembers.map((object) => ({
-      value: object.Member.Title,
-      label: object.Member.Title,
-      Id: object.Member.Id,
-    }));
-    console.log("filteredGroups", filteredGroups);
-    mydatacard = "12"
-    // Check if current user is in the _Admin or _Contribute group
-    const isAdmin = filteredGroups.some((group) => group.value.includes("_Admin"));
-    const isContribute = filteredGroups.some((group) => group.value.includes("_Contribute"));
-    if(isAdmin){
-      isadmin = "Admin"
-      console.log("User is Admin")
-    }
-    if(isContribute){
-      isadmin = "Contribute"
-      console.log("User is Contribute")
-    }
-  }
-  myfunction()
+  //   const filteredGroups = filteredMembers.map((object) => ({
+  //     value: object.Member.Title,
+  //     label: object.Member.Title,
+  //     Id: object.Member.Id,
+  //   }));
+  //   console.log("filteredGroups", filteredGroups);
+  //   mydatacard = "12"
+  //   // Check if current user is in the _Admin or _Contribute group
+  //   const isAdmin = filteredGroups.some((group) => group.value.includes("_Admin"));
+  //   const isContribute = filteredGroups.some((group) => group.value.includes("_Contribute"));
+  //   if(isAdmin){
+  //     isadmin = "Admin"
+  //     console.log("User is Admin")
+  //   }
+  //   if(isContribute){
+  //     isadmin = "Contribute"
+  //     console.log("User is Contribute")
+  //   }
+  // }
+  // myfunction()
 
   console.log("Inside the toggleMenu2");
   console.log(siteID, "siteID")
@@ -7075,9 +7142,9 @@ popup.remove();
                     // Directly delete the file if no popup is required
                     try {
                         await window.deleteFile(fileId, siteID,IsHardDelete,ListToUpdate);
-                        // alert('Your file was deleted successfully.');
+   
                     } catch (error) {
-                        // alert('Error deleting file.');
+                 
                     }
                 }
                 break;
@@ -7134,7 +7201,7 @@ popup.remove();
   
   
 //   if(IsHardDelete === "true"){
-//     alert( `in true IsHardDelete is ${IsHardDelete}`)
+
 //     try {
 //       const deleteffile =  await web.getFileById(fileId).delete();
 //       console.log(deleteffile , "deleteffile");
@@ -7143,7 +7210,7 @@ popup.remove();
 //     }
     
 //   }else if(IsHardDelete === "false"){
-//     alert( `in false IsHardDelete is ${IsHardDelete}`)
+
 //     try {
 //       const updatedData =await listItem.update({
 //         IsDeleted:isoDate  
@@ -7155,7 +7222,7 @@ popup.remove();
     
 //   }
   
-//    alert(`File with ID: ${fileId} has been deleted successfully.`);
+
 //    console.log(currentfolderpath , "currentfolderpath")
 //    console.log("currentEntity",currentEntity);
    
@@ -7172,14 +7239,14 @@ popup.remove();
 //         console.log("selected List",currentList);
 //         const items999 = await sp.web.lists
 //         .getByTitle(currentList).items.filter(`FileUID eq '${fileId}'`).top(1)();
-//                         alert(items999)
+
         
 //         if (items999.length > 0) {
 //         const itemId = items999[0].ID;
 
         
 //         if(IsHardDelete === "true"){
-//           alert( `in true IsHardDelete is ${IsHardDelete}`)
+
 //          try {
 //           await sp.web.lists.getByTitle(currentList).items.getById(itemId).delete();
 //           console.log(`Item with FileUid ${fileId} has been deleted.`);
@@ -7188,7 +7255,7 @@ popup.remove();
 //          }
            
 //         }else if(IsHardDelete === "false"){
-//           alert( `in flase IsHardDelete is ${IsHardDelete}`)
+
 
 //           try {
 //             await sp.web.lists.getByTitle(currentList).items.getById(itemId).update({
@@ -7230,7 +7297,7 @@ window.deleteFile = async(fileId:string, siteID:string, IsHardDelete:any, ListTo
   
   
   if(IsHardDelete === "true"){
-    // alert( `in true IsHardDelete is ${IsHardDelete}`)
+
     try {
       const deleteffile =  await web.getFileById(fileId).delete();
       console.log(deleteffile , "deleteffile");
@@ -7239,7 +7306,7 @@ window.deleteFile = async(fileId:string, siteID:string, IsHardDelete:any, ListTo
     }
     
   }else if(IsHardDelete === "false"){
-    // alert( `in false IsHardDelete is ${IsHardDelete}`)
+
     try {
       const updatedData =await listItem.update({
         IsDeleted:isoDate  
@@ -7251,7 +7318,7 @@ window.deleteFile = async(fileId:string, siteID:string, IsHardDelete:any, ListTo
     
   }
   
-  //  alert(`File with ID: ${fileId} has been deleted successfully.`);
+
    console.log(currentfolderpath , "currentfolderpath")
    console.log("currentEntity",currentEntity);
    
@@ -7304,9 +7371,9 @@ window.deleteFile = async(fileId:string, siteID:string, IsHardDelete:any, ListTo
       
           const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
           const siteUrl = window.location.origin;
-            const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-            //const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-          //  const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+            // const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+            // const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+           const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
           console.log("previewUrl",previewUrl);
           payload.FilePreviewURL=previewUrl
 
@@ -7332,14 +7399,14 @@ window.deleteFile = async(fileId:string, siteID:string, IsHardDelete:any, ListTo
         
         // const items999 = await sp.web.lists
         // .getByTitle(currentList).items.filter(`FileUID eq '${fileId}'`).top(1)();
-        // alert(items999)
+ 
         
         // if (items999.length > 0) {
         // const itemId = items999[0].ID;
 
         
         // if(IsHardDelete === "true"){
-        //   // alert( `in true IsHardDelete is ${IsHardDelete}`)
+  
         //  try {
         //   await sp.web.lists.getByTitle(currentList).items.getById(itemId).delete();
         //   console.log(`Item with FileUid ${fileId} has been deleted.`);
@@ -7348,7 +7415,7 @@ window.deleteFile = async(fileId:string, siteID:string, IsHardDelete:any, ListTo
         //  }
            
         // }else if(IsHardDelete === "false"){
-        //   // alert( `in false IsHardDelete is ${IsHardDelete}`)
+
 
         //   try {
         //     // await sp.web.lists.getByTitle(currentList).items.getById(itemId).update({
@@ -7400,8 +7467,7 @@ window.view=(message:string)=>{
 //     if(createFileButton){
 //     createFileButton.style.display = 'none'
 //     }
-//   setlistorgriddata('')
-//   setlistorgriddata('')
+
 //   setShowMyrequButtons(false)
 //   setShowMyfavButtons(false)
 
@@ -7577,8 +7643,8 @@ window.view=(message:string)=>{
 // This Function is Called when we click on the MyFavourite
  // This Function is Called when we click on the MyFavourite
 //  const myFavorite= async (event: any = null, siteIdToUpdate: string = null,searchText:any=null) => {
-//   // // alert()
-//   // setlistorgriddata('')
+
+
 //   // setMyreqormyfav('Myfavourite')
 //   // // setShowButtons(true)
 //   // setShowMyrequButtons(false)
@@ -7586,10 +7652,9 @@ window.view=(message:string)=>{
 
 
 //   setTimeout(() => {
-//     // alert("set timer")
-//     setlistorgriddata('');  // Update state to '' after a delay
 
-//     console.log(listorgriddata, "list")
+
+
 //   }, 100);
   
 //   const wait = document.getElementById('files-container')
@@ -7598,7 +7663,7 @@ window.view=(message:string)=>{
 //   setShowMyfavButtons(true)
 //   setMyreqormyfav((previous)=>'Myfavourite')
  
-//   // setlistorgriddata('')
+
 //   const hidegidvewlistviewbutton=document.getElementById("hidegidvewlistviewbutton")
 //   if (hidegidvewlistviewbutton) {
 //     console.log("enter here .....................")
@@ -7708,8 +7773,8 @@ window.view=(message:string)=>{
 //   return;
 // // };
 // const myFavorite= async (event: any = null, siteIdToUpdate: string = null,searchText:any=null) => {
-//   // // alert()
-//   // setlistorgriddata('')
+
+
 //   // setMyreqormyfav('Myfavourite')
 //   // // setShowButtons(true)
 //   // setShowMyrequButtons(false)
@@ -7717,10 +7782,10 @@ window.view=(message:string)=>{
 
 
 //   setTimeout(() => {
-//     // alert("set timer")
-//     setlistorgriddata('');  // Update state to '' after a delay
 
-//     console.log(listorgriddata, "list")
+
+
+
 //   }, 100);
   
 //   const wait = document.getElementById('files-container')
@@ -7729,7 +7794,7 @@ window.view=(message:string)=>{
 //   setShowMyfavButtons(true)
 //   setMyreqormyfav((previous)=>'Myfavourite')
  
-//   // setlistorgriddata('')
+
 //   const hidegidvewlistviewbutton=document.getElementById("hidegidvewlistviewbutton")
 //   if (hidegidvewlistviewbutton) {
 //     console.log("enter here .....................")
@@ -7849,8 +7914,7 @@ window.view=(message:string)=>{
 //     if(createFileButton){
 //     createFileButton.style.display = 'none'
 //     }
-//   setlistorgriddata('')
-//   setlistorgriddata('')
+
 //   setShowMyrequButtons(false)
 //   setShowMyfavButtons(false)
 
@@ -8032,6 +8096,7 @@ window.view=(message:string)=>{
 
 // }
 const mycreatedfolders = async (event:any=null, searchText:any=null )=>{
+   entityclicktext = ''
   setdisplayuploadfileandcreatefolder(false)
 const wait = document.getElementById('files-container')
 wait.classList.remove('hidemydatacards')
@@ -8090,14 +8155,14 @@ let folderItems:any[]=[]
   const userGroups = await sp.web.siteUsers.getById(currentUser.Id).groups();
   const isMemberOfSuperAdmin = userGroups.some(group => group.Title === `DMSSuper_Admin`);
   if(isMemberOfSuperAdmin){
-    // alert("Current user is super admin")
+
     superAdmin=true;
     folderItems = await sp.web.lists
     .getByTitle("DMSFolderMaster")
     .items.select("CurrentUser" , "IsFolder" , "FolderPath" , "DocumentLibraryName","SiteTitle","ID" , "IsPrivate","IsLibrary","FolderName","IsRename")
     .orderBy("Created", false).getAll();
   }else{
-    // alert("Current user not a super admin")
+
     folderItems = await sp.web.lists
     .getByTitle("DMSFolderMaster")
     .items.select("CurrentUser" , "IsFolder" , "FolderPath" , "DocumentLibraryName","SiteTitle","ID" , "IsPrivate","IsLibrary","FolderName","IsRename")
@@ -8199,13 +8264,16 @@ if(filteredFileData.length === 0){
 }
 // change the array name in the for loop
 for(const files of filteredFileData){
-  // console.log("FolderName",files.FolderName);
-  let folderName='';
-  if(files.IsLibrary === true){
-    folderName=files.DocumentLibraryName;
-  }else if(files.IsFolder === true){
-    folderName=files.FolderName;
-  }
+// console.log("FolderName",files.FolderName);
+let deleteFolderName=''
+let folderName='';
+if(files.IsLibrary === true){
+  folderName=files.DocumentLibraryName;
+  deleteFolderName=files.DocumentLibraryName;
+}else if(files.IsFolder === true){
+  folderName=files.FolderName;
+  deleteFolderName=files.FolderName;
+}
   if(files.IsRename !== null){
     folderName=files.IsRename;
   }
@@ -8230,7 +8298,7 @@ for(const files of filteredFileData){
   </div></div></div>
   <div class="col-md-10"> 
   <p class="p1st p1stfolder">${folderName}</p>
-  <p class="p3rd">${files.SiteTitle} </p>
+  <p class="p2nd">${files.SiteTitle} </p>
   <div class="mycreatedfolderpublicorlibrary"> <p class="filestatus">${folderisprivateorpublic} </p> 
   
   <p class="filestatus2 ${files.IsLibrary === true ? 'root-folder' : 'sub-folder'}"> ${files.IsLibrary === true ? 'Root Folder' : 'Sub Folder'} </p> </div>
@@ -8258,7 +8326,7 @@ menu.innerHTML = `
     Add Meta Data
   </li>
   ${superAdmin === true ? 
-    `<li onclick="deleteFolder('${files.SiteTitle}','${folderName}','${files.ID}','${files.SiteID}','${files.FolderPath}','${files.IsLibrary}')">
+    `<li onclick="deleteFolder('${files.SiteTitle}','${deleteFolderName}','${files.ID}','${files.SiteID}','${files.FolderPath}','${files.IsLibrary}')">
     <img src=${DeleteFolder} alt="Edit"/>
     Delete Folder
     </li>
@@ -8412,56 +8480,64 @@ window.renameFolder=(siteName:any,folderName:any,itemId:any,siteId:any)=>{
       existingPopup.remove();
     }
   
-    // Create the popup container
-    const popup = document.createElement("div");
-    popup.id = "rename-popup";
-    popup.style.position = "fixed";
-    popup.style.top = "50%";
-    popup.style.left = "50%";
-    popup.style.transform = "translate(-50%, -50%)";
-    popup.style.padding = "20px";
-    popup.style.backgroundColor = "#fff";
-    popup.style.boxShadow = "0px 4px 6px rgba(0,0,0,0.1)";
-    popup.style.borderRadius = "8px";
-    popup.style.zIndex = "1000";
-  
-    // Add the heading
-    const heading = document.createElement("h3");
-    heading.innerText = "Rename Folder";
-    heading.style.marginBottom = "15px";
-    popup.appendChild(heading);
-  
-    // Add a close button
-    const closeButton = document.createElement("span");
-    closeButton.innerText = "×";
-    closeButton.style.position = "absolute";
-    closeButton.style.top = "10px";
-    closeButton.style.right = "10px";
-    closeButton.style.cursor = "pointer";
-    closeButton.style.fontSize = "18px";
-    closeButton.onclick = () => popup.remove();
-    popup.appendChild(closeButton);
-  
-    // Add the input box with the current folder name as the default value
-    const input = document.createElement("input");
-    input.type = "text";
-    input.value = folderName; // Pre-fill with current name
-    input.style.width = "100%";
-    input.style.marginBottom = "15px";
-    input.style.padding = "8px";
-    input.style.border = "1px solid #ccc";
-    input.style.borderRadius = "4px";
-    popup.appendChild(input);
-  
-    // Add the submit button
-    const submitButton = document.createElement("button");
-    submitButton.innerText = "Submit";
-    submitButton.style.padding = "10px 20px";
-    submitButton.style.backgroundColor = "#0078d4";
-    submitButton.style.color = "#fff";
-    submitButton.style.border = "none";
-    submitButton.style.borderRadius = "4px";
-    submitButton.style.cursor = "pointer";
+     // Create the popup container
+     const popup = document.createElement("div");
+     popup.id = "rename-popup";
+     popup.style.position = "fixed";
+     popup.style.top = "50%";
+     popup.style.left = "50%";
+     popup.style.transform = "translate(-50%, -50%)";
+     popup.style.padding = "20px";
+     popup.style.backgroundColor = "#fff";
+     popup.style.boxShadow = "0px 4px 6px rgba(0,0,0,0.1)";
+     popup.style.borderRadius = "8px";
+     popup.style.zIndex = "1000";
+   
+     // Add the heading
+     const heading = document.createElement("h3");
+     heading.innerText = "Rename Folder";
+     heading.style.marginBottom = "15px";
+     popup.appendChild(heading);
+   
+     // Add a close button
+     const closeButton = document.createElement("span");
+     closeButton.innerText = "×";
+     closeButton.style.position = "absolute";
+     closeButton.style.top = "10px";
+     closeButton.style.right = "10px";
+     closeButton.style.cursor = "pointer";
+     closeButton.style.fontSize = "18px";
+     closeButton.style.border = "1px solid #ccc";
+     closeButton.style.color = "#333";
+     closeButton.style.minWidth = "30px";
+     closeButton.style.height = "30px";
+     closeButton.style.textAlign = "center";
+     closeButton.style.borderRadius = "1000px";
+     closeButton.onclick = () => popup.remove();
+     popup.appendChild(closeButton);
+   
+     // Add the input box with the current folder name as the default value
+     const input = document.createElement("input");
+     input.type = "text";
+     input.value = folderName; // Pre-fill with current name
+     input.style.width = "100%";
+     input.style.marginBottom = "15px";
+     input.style.padding = "8px";
+     input.style.border = "1px solid #ccc";
+     input.style.borderRadius = "4px";
+     popup.appendChild(input);
+   
+     // Add the submit button
+     const submitButton = document.createElement("button");
+     submitButton.innerText = "Submit";
+     submitButton.style.padding = "6px 20px";
+     submitButton.style.backgroundColor = "#1fb0e5";
+     submitButton.style.color = "#fff";
+     submitButton.style.border = "none";
+     submitButton.style.borderRadius = "4px";
+     submitButton.style.cursor = "pointer";
+     submitButton.style.float = "right";
+     submitButton.style.marginTop = "0px";
     submitButton.onclick = async() => {
       const newName = input.value.trim();
       if (newName) {
@@ -8485,7 +8561,7 @@ window.renameFolder=(siteName:any,folderName:any,itemId:any,siteId:any)=>{
         }
         
       } else {
-        alert("Folder name cannot be empty.");
+
       }
     };
     popup.appendChild(submitButton);
@@ -8520,7 +8596,7 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); 
     z-index: 1000; 
-    width: 400px;
+    width: 800px;
   `;
 
   // Add the close button
@@ -8530,10 +8606,11 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
     position: absolute; 
     top: 10px; 
     right: 15px; 
-    font-size: 20px; 
+    font-size: 18px; 
     font-weight: bold; 
     color: #333; 
-    cursor: pointer;
+    cursor: pointer; border:1px solid #ccc; line-height:30px;
+    border-radius:1000px;min-width:30px;height:30px; text-align:center;
   `;
   closeButton.onclick = () => document.body.removeChild(popup);
 
@@ -8541,14 +8618,15 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
   const formContent = existingColumns
     .map(
       (column) => `
-        <div style="margin-bottom: 15px;">
+         <div className="row1">
+        <div style="margin-bottom: 15px;" classname="col-sm-4">
           <input 
             type="text" 
             id="col-${column.ID}" 
             value="${column.IsRename !== null ? column.IsRename : column.ColumnName}" 
             data-id="${column.ID}" 
             style="width: calc(100% - 10px); padding: 8px; border: 1px solid #ccc; border-radius: 4px;" />
-        </div>
+        </div> </div>
       `
     )
     .join("");
@@ -8557,19 +8635,19 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
     <h3 style="margin-top: 0; text-align: center; font-size: 18px;">Rename Columns</h3>
     <form id="renameForm">
       ${formContent}
-      <div style="margin-top: 20px; text-align: right;">
+       <div style="margin-top: 20px; text-align: right;">
         <button type="button" id="cancelBtn" style="
           background: #ccc; 
           border: none; 
-          padding: 8px 15px; 
+          padding: 6px 15px; 
           border-radius: 4px; 
           cursor: pointer; 
           margin-right: 10px;">Cancel</button>
         <button type="submit" style="
-          background: #0078d4; 
+          background: #1fb0e5; 
           color: white; 
           border: none; 
-          padding: 8px 15px; 
+          padding: 6px 15px; 
           border-radius: 4px; 
           cursor: pointer;">Save</button>
       </div>
@@ -8638,8 +8716,6 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
       console.log("Updated items:", updatedItems);
 
 
-
-      // alert("Column names updated successfully!");
       document.body.removeChild(popup);
     });
 
@@ -8652,8 +8728,8 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
 
 
    const myFavorite= async (event: any = null, siteIdToUpdate: string = null,searchText:any=null) => {
-    // // alert()
-    // setlistorgriddata('')
+
+
     // setMyreqormyfav('Myfavourite')
     // // setShowButtons(true)
     // setShowMyrequButtons(false)
@@ -8676,10 +8752,10 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
         }
     // end
     setTimeout(() => {
-      // alert("set timer")
+
       setlistorgriddata('');  // Update state to '' after a delay
  
-      console.log(listorgriddata, "list")
+
     }, 100);
     
     const wait = document.getElementById('files-container')
@@ -8688,7 +8764,7 @@ window.renameColumn=async(siteName:string,documentLibraryName:string)=>{
     setShowMyfavButtons(true)
     setMyreqormyfav((previous)=>'Myfavourite')
    
-    // setlistorgriddata('')
+
     // const hidegidvewlistviewbutton=document.getElementById("hidegidvewlistviewbutton")
     // if (hidegidvewlistviewbutton) {
     //   console.log("enter here .....................")
@@ -8934,7 +9010,8 @@ window.toggleFavourite=async (fileId,siteId)=> {
           SiteName:currentEntity,
           SiteID:siteId,
           Status:"",
-          FilePreviewURL:""
+          FilePreviewURL:"",
+          RequestNo:`DMS-${fileId}` 
         }
  
         folderData.forEach(async (file:any)=>{
@@ -8946,8 +9023,8 @@ window.toggleFavourite=async (fileId,siteId)=> {
             const encodedFilePath = encodeURIComponent(file.ServerRelativeUrl);
             const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
             const siteUrl = window.location.origin;
-              const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-            //  const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+              // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+             const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             console.log("previewUrl",previewUrl);
 
@@ -9076,148 +9153,148 @@ window.toggleFavourite=async (fileId,siteId)=> {
 
   // function to toggle between Favourite and UnFavourite
 // @ts-ignore
-window.toggleFavourite=async (fileId,siteId)=> {
+// window.toggleFavourite=async (fileId,siteId)=> {
  
-  console.log("SiteId",siteId)
+//   console.log("SiteId",siteId)
  
-  const favouriteToggle = document.getElementById(`favouriteToggle-${fileId}`);  
-  const markAsFavouriteIcon = favouriteToggle?.querySelector('.mark-as-favourite') as HTMLElement;
-  const unMarkAsFavouriteIcon = favouriteToggle?.querySelector('.unmark-as-favourite') as HTMLElement;
-  const textElement = favouriteToggle?.querySelector('.favourite-text') as HTMLElement;
+//   const favouriteToggle = document.getElementById(`favouriteToggle-${fileId}`);  
+//   const markAsFavouriteIcon = favouriteToggle?.querySelector('.mark-as-favourite') as HTMLElement;
+//   const unMarkAsFavouriteIcon = favouriteToggle?.querySelector('.unmark-as-favourite') as HTMLElement;
+//   const textElement = favouriteToggle?.querySelector('.favourite-text') as HTMLElement;
  
-  console.log("current Entity",currentEntity);
-  let listToUpdate=`DMS${currentEntity}FileMaster`;
+//   console.log("current Entity",currentEntity);
+//   let listToUpdate=`DMS${currentEntity}FileMaster`;
  
-  async function markAsFavourite(fileId:any, siteId:any){
+//   async function markAsFavourite(fileId:any, siteId:any){
        
-        const siteContext = await sp.site.openWebById(siteId);
-        const folderData = await siteContext.web.getFolderByServerRelativePath(currentfolderpath).files.select("Name", "Length", "ServerRelativeUrl", "UniqueId","MajorVersion","ListItemAllFields/Status","ListItemAllFields/IsDeleted").expand('ListItemAllFields')();
-        console.log("folderData",folderData);
+//         const siteContext = await sp.site.openWebById(siteId);
+//         const folderData = await siteContext.web.getFolderByServerRelativePath(currentfolderpath).files.select("Name", "Length", "ServerRelativeUrl", "UniqueId","MajorVersion","ListItemAllFields/Status","ListItemAllFields/IsDeleted").expand('ListItemAllFields')();
+//         console.log("folderData",folderData);
  
-        const isFavourite=true;
-        const payload={
-          FileName:"",
-          FileUID:fileId,
-          FileVersion:"",
-          FileSize:"",
-          IsFavourite:isFavourite,
-          CurrentUser:currentUserEmailRef.current,
-          CurrentFolderPath:currentfolderpath,
-          DocumentLibraryName:currentDocumentLibrary,
-          FolderName:currentFolder,
-          SiteName:currentEntity,
-          SiteID:siteId,
-          Status:"",
-          FilePreviewURL: ""
-        }
+//         const isFavourite=true;
+//         const payload={
+//           FileName:"",
+//           FileUID:fileId,
+//           FileVersion:"",
+//           FileSize:"",
+//           IsFavourite:isFavourite,
+//           CurrentUser:currentUserEmailRef.current,
+//           CurrentFolderPath:currentfolderpath,
+//           DocumentLibraryName:currentDocumentLibrary,
+//           FolderName:currentFolder,
+//           SiteName:currentEntity,
+//           SiteID:siteId,
+//           Status:"",
+//           FilePreviewURL: ""
+//         }
  
-        folderData.forEach(async (file:any)=>{
-          if(file.UniqueId === fileId){
-            payload.FileName=file.Name;
-            payload.FileSize=((file.Length as unknown as number) / (1024 * 1024)).toFixed(2);
-            payload.FileVersion=String(file.MajorVersion)
-            payload.Status=file.ListItemAllFields.Status 
-            const encodedFilePath = encodeURIComponent(file.ServerRelativeUrl);
-            const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
-            const siteUrl = window.location.origin;
-              // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-             // const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-               const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-            //  const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-            console.log("previewUrl",previewUrl);
+//         folderData.forEach(async (file:any)=>{
+//           if(file.UniqueId === fileId){
+//             payload.FileName=file.Name;
+//             payload.FileSize=((file.Length as unknown as number) / (1024 * 1024)).toFixed(2);
+//             payload.FileVersion=String(file.MajorVersion)
+//             payload.Status=file.ListItemAllFields.Status 
+//             const encodedFilePath = encodeURIComponent(file.ServerRelativeUrl);
+//             const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
+//             const siteUrl = window.location.origin;
+//               // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+//              const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+//               //  const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+//             //  const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+//             console.log("previewUrl",previewUrl);
 
-            payload.FilePreviewURL=previewUrl               
-          }
-        })
-        console.log(payload);
+//             payload.FilePreviewURL=previewUrl               
+//           }
+//         })
+//         console.log(payload);
  
-        // Get the list by name
-        const list = sp.web.lists.getByTitle(listToUpdate);
+//         // Get the list by name
+//         const list = sp.web.lists.getByTitle(listToUpdate);
  
-        const data=await sp.web.lists.getByTitle(listToUpdate).items
-        .filter(`FileUID eq '${fileId}' and CurrentUser eq '${currentUserEmailRef.current}' and MyRequest eq 0`)();
-        console.log("Data",data);
+//         const data=await sp.web.lists.getByTitle(listToUpdate).items
+//         .filter(`FileUID eq '${fileId}' and CurrentUser eq '${currentUserEmailRef.current}' and MyRequest eq 0`)();
+//         console.log("Data",data);
  
-        // Add the new item to the list
-        if(data.length>0){
-          const itemId = data[0].Id;
-          console.log("items ID",itemId);
-          if(!data[0].IsFavourite && currentUserEmailRef.current === data[0].CurrentUser){
+//         // Add the new item to the list
+//         if(data.length>0){
+//           const itemId = data[0].Id;
+//           console.log("items ID",itemId);
+//           if(!data[0].IsFavourite && currentUserEmailRef.current === data[0].CurrentUser){
          
-              const updatedData=await sp.web.lists.getByTitle(listToUpdate).items.getById(itemId).update({
-                IsFavourite:true
-              });
-              console.log("Updated data",updatedData)
-        }
+//               const updatedData=await sp.web.lists.getByTitle(listToUpdate).items.getById(itemId).update({
+//                 IsFavourite:true
+//               });
+//               console.log("Updated data",updatedData)
+//         }
  
-        }else{
-            const addedItem = await list.items.add(payload);
-            console.log("New item added successfully:", addedItem);
-        }
+//         }else{
+//             const addedItem = await list.items.add(payload);
+//             console.log("New item added successfully:", addedItem);
+//         }
        
-  }
+//   }
  
  
-  async function UnmarkAsFavourite(fileId:any){
+//   async function UnmarkAsFavourite(fileId:any){
    
    
-    try {
+//     try {
      
-      const data=await sp.web.lists.getByTitle(listToUpdate).items
-      .filter(`FileUID eq '${fileId}' and CurrentUser eq '${currentUserEmailRef.current}' and MyRequest eq 0 `)();
+//       const data=await sp.web.lists.getByTitle(listToUpdate).items
+//       .filter(`FileUID eq '${fileId}' and CurrentUser eq '${currentUserEmailRef.current}' and MyRequest eq 0 `)();
  
-      console.log("Data",data);
-      const isFavourite=false;
+//       console.log("Data",data);
+//       const isFavourite=false;
  
-      if (data.length > 0) {
-        const itemId = data[0].Id;
-        console.log("items ID",itemId);
-        if(data[0].IsFavourite && data[0].CurrentUser === currentUserEmailRef.current){
-            const updatedData=await sp.web.lists.getByTitle(listToUpdate).items.getById(itemId).update({
-              IsFavourite:isFavourite
-            });
+//       if (data.length > 0) {
+//         const itemId = data[0].Id;
+//         console.log("items ID",itemId);
+//         if(data[0].IsFavourite && data[0].CurrentUser === currentUserEmailRef.current){
+//             const updatedData=await sp.web.lists.getByTitle(listToUpdate).items.getById(itemId).update({
+//               IsFavourite:isFavourite
+//             });
  
-            console.log("Updated data",updatedData);
-        }else{
-          console.log("Can not find item relataed to current user to unmark");
-        }
+//             console.log("Updated data",updatedData);
+//         }else{
+//           console.log("Can not find item relataed to current user to unmark");
+//         }
        
      
-      } else {
-        console.log("No items found with FileUID:",  fileId);
-      }
+//       } else {
+//         console.log("No items found with FileUID:",  fileId);
+//       }
      
-    } catch (error) {
-      console.error("Error updating the list item:", error);
-    }
-  }
+//     } catch (error) {
+//       console.error("Error updating the list item:", error);
+//     }
+//   }
  
-  try {
+//   try {
        
-        if ( markAsFavouriteIcon && unMarkAsFavouriteIcon && textElement) {
+//         if ( markAsFavouriteIcon && unMarkAsFavouriteIcon && textElement) {
        
-          // Toggle visibility between the two SVGs and text content
-          if (markAsFavouriteIcon.style.display === 'none') {
-            markAsFavouriteIcon.style.display = 'inline';
-            unMarkAsFavouriteIcon.style.display = 'none';
-            textElement.textContent = 'Mark as Favourite';
+//           // Toggle visibility between the two SVGs and text content
+//           if (markAsFavouriteIcon.style.display === 'none') {
+//             markAsFavouriteIcon.style.display = 'inline';
+//             unMarkAsFavouriteIcon.style.display = 'none';
+//             textElement.textContent = 'Mark as Favourite';
                  
-            // Call function to unmark as favourite.
-            UnmarkAsFavourite(fileId);
-          } else {
-            markAsFavouriteIcon.style.display = 'none';
-            unMarkAsFavouriteIcon.style.display = 'inline';
-            textElement.textContent = 'Unmark as Favourite';
+//             // Call function to unmark as favourite.
+//             UnmarkAsFavourite(fileId);
+//           } else {
+//             markAsFavouriteIcon.style.display = 'none';
+//             unMarkAsFavouriteIcon.style.display = 'inline';
+//             textElement.textContent = 'Unmark as Favourite';
            
-            // Call function to mark as favourite.
-            markAsFavourite(fileId, siteId);
-          }
-        }
-  } catch (error) {
-           console.log("This Error From toggleFavourite Function",error);
-  }
+//             // Call function to mark as favourite.
+//             markAsFavourite(fileId, siteId);
+//           }
+//         }
+//   } catch (error) {
+//            console.log("This Error From toggleFavourite Function",error);
+//   }
  
-}
+// }
 // window.toggleFavourite=async (fileId,siteId)=> {
  
 //   console.log("SiteId",siteId)
@@ -9382,10 +9459,10 @@ window.toggleFavourite=async (fileId,siteId)=> {
 //       wait2.classList.remove('hidemydatacards')
     
 //       setTimeout(() => {
-//         // alert("set timer")
-//         setlistorgriddata('');  // Update state to '' after a delay
+
+
  
-//         console.log(listorgriddata, "list")
+
 //       }, 100);
     
 //       const wait = document.getElementById('files-container')
@@ -9393,7 +9470,7 @@ window.toggleFavourite=async (fileId,siteId)=> {
 //       setShowMyrequButtons(true)
 //       setShowMyfavButtons(false)
 //       setMyreqormyfav('Myrequest')
-//       // setlistorgriddata('')
+
 //       const hidegidvewlistviewbutton=document.getElementById("hidegidvewlistviewbutton")
 //       if (hidegidvewlistviewbutton) {
 //         console.log("enter here .....................")
@@ -9408,7 +9485,7 @@ window.toggleFavourite=async (fileId,siteId)=> {
 //       }
 
 
-//       // console.log(listorgriddata , "listorgriddata")
+
 //       console.log("searchInput",searchText);
 //       console.log("siteIdToUpdate",siteIdToUpdate);
 
@@ -9614,6 +9691,7 @@ window.toggleFavourite=async (fileId,siteId)=> {
   
 //     };
 const myRequest = async (event:React.MouseEvent<HTMLButtonElement>=null, siteIdToUpdate: string = null,    searchText:any=null ) => {
+  entityclicktext = ''
   setdisplayuploadfileandcreatefolder(false)
   ismyrequordoclibforfilepreview = "myRequest"
       // New code to hide the create file and folder button start
@@ -9639,10 +9717,10 @@ const myRequest = async (event:React.MouseEvent<HTMLButtonElement>=null, siteIdT
     //End 
     
 setTimeout(() => {
-  // alert("set timer")
+
   setlistorgriddata('');  // Update state to '' after a delay
 
-  console.log(listorgriddata, "list")
+
 }, 100);
 
 const wait = document.getElementById('files-container')
@@ -9650,7 +9728,7 @@ wait.classList.remove('hidemydatacards')
 setShowMyrequButtons(true)
 setShowMyfavButtons(false)
 setMyreqormyfav('Myrequest')
-// setlistorgriddata('')
+
 const hidegidvewlistviewbutton=document.getElementById("hidegidvewlistviewbutton")
 if (hidegidvewlistviewbutton) {
   console.log("enter here .....................")
@@ -9665,7 +9743,7 @@ if (hidegidvewlistviewbutton2) {
 }
 
 
-// console.log(listorgriddata , "listorgriddata")
+
 console.log("searchInput",searchText);
 console.log("siteIdToUpdate",siteIdToUpdate);
 
@@ -10101,11 +10179,18 @@ const fileNotFound=(fileName:any)=>{
   }
 
   updateBreadcrumb(path);
+  entityclicktext = path
+  if(entityclicktext === ''){
+
+  }else{
+  
+  }
+
 };
   const handleShowContent = (event: React.MouseEvent<HTMLButtonElement>) => {
     // console.log("enter here")
     event.preventDefault();
-   
+    setshowEntitySearch(false);
     //toggle the breadcrumb and selectedText For SideBar
     const selectedTextDiv=document.getElementById('selectedText');
     const breadcrumbElement=document.getElementById("breadcrumb");
@@ -10163,7 +10248,7 @@ window.manageWorkflow=async(DocumentLibraryName:string,SiteTilte:string, SiteID:
   // const workflowdiv= document.getElementById('workflowdiv')
   // if(workflowdiv){
   //   workflowdiv.classList.remove('workflowdivhide')
-  //   alert(workflowdiv.classList)
+
   //   workflowdiv.classList.add('workflowdiv')
   // }
   // setshowworkflowdiv("true")
@@ -10274,7 +10359,7 @@ window.editFile = async (siteName: string, documentLibraryName:string ) => {
             <option value="Number">Number</option>
           </select>
         </div>
-        <div class="col-md-2">
+      <div class="col-md-2">
           <img class="delete-column"  src="${require("../assets/delete.png")}" alt="add" style="width: 40px; margin-top:25px; cursor:pointer;" />
         </div>
       </div>
@@ -10316,6 +10401,36 @@ window.editFile = async (siteName: string, documentLibraryName:string ) => {
       );
       return; 
     }
+    // Validate that the new field names don't duplicate each other
+    const columnNames = newFields.map(field => field.columnName.toLowerCase());
+    const uniqueColumnNames = new Set(columnNames);
+    console.log("uniqueColumnNames",uniqueColumnNames);
+    if (columnNames.length !== uniqueColumnNames.size) {
+      popupContainer.style.display = 'none';
+      Swal.fire(
+        'Validation Error',
+        'Column names must be unique. Please choose different names for the new columns.',
+        'error'
+      );
+      return;
+    }
+
+  // Check that new column names don't match existing or renamed column names
+  const existingNames = existingColumns.map(col => col.ColumnName.toLowerCase());
+  const renamedNames = existingColumns.filter(col => col.IsRename).map(col => col.IsRename.toLowerCase());
+  const allExistingNames = [...existingNames, ...renamedNames];
+
+  const invalidNewColumns = newFields.filter(field => allExistingNames.includes(field.columnName.toLowerCase()));
+
+  if (invalidNewColumns.length > 0) {
+    popupContainer.style.display = 'none';
+    Swal.fire(
+      'Validation Error',
+      `The column names "${invalidNewColumns.map(f => f.columnName).join(', ')}" already exist. Please choose different names.`,
+      'error'
+    );
+    return;
+  }
   try {
     const payloadForPreviewFormMaster={
       SiteName:siteName,
@@ -10405,134 +10520,531 @@ formContent.addEventListener('click', (event) => {
 };
 
 //  Share File
+// window.shareFile=async(fileID:string,siteId:string,currentFolderPathForFile:string,fileName:string,flag:string,FileVersion:any,FileSize:any,Status:any,FilePreviewURL:any,DocumentLibraryName:any)=>{
+// const testidsub =await sp.site.openWebById(siteId)  
+
+// let filePath=`${currentFolderPathForFile}/${fileName}`;
+
+// const fileServerRelativePath = testidsub.web.getFileByServerRelativePath(filePath);
+
+// const item = await fileServerRelativePath.getItem();
+
+
+// const filePermissions = await item.getCurrentUserEffectivePermissions(); 
+
+// const hasFullControl = testidsub.web.hasPermissions(filePermissions, PermissionKind.ManageWeb);
+// const hasEdit = testidsub.web.hasPermissions(filePermissions, PermissionKind.EditListItems);
+// const hasContribute = testidsub.web.hasPermissions(filePermissions, PermissionKind.AddListItems) && testidsub.web.hasPermissions(filePermissions, PermissionKind.EditListItems);
+// const hasRead = testidsub.web.hasPermissions(filePermissions, PermissionKind.ViewListItems);
+
+// let filePermission:string;
+// if (hasFullControl) {
+//   filePermission ="Full Control";
+// } else if (hasEdit) {
+//   filePermission ="Edit";
+// } else if (hasContribute) {
+//   filePermission = "Contribute";
+// } else if (hasRead) {
+//   filePermission = "Read";
+// } else {
+//   filePermission = "No Access";
+// }
+
+
+// const parts = currentFolderPathForFile.split("/");  
+// const entity = parts[3]; 
+// console.log(entity); 
+
+// const fetchUser=async(entity:any)=>{
+//   const user0 = await sp.web.siteUsers();
+//   const combineUsersArray=user0.map((user)=>(
+//         {
+//           id:String(user.Id),
+//           value: user.Title,
+//           email: user.Email,
+//         }
+//   ))
+//   console.log("Sub site users",combineUsersArray);
+
+//   return combineUsersArray;
+// }
+
+// const users=await fetchUser(entity);
+// const existingPopup = document.getElementById('share-popup');
+// if (existingPopup) {
+// existingPopup.remove();
+// }
+
+// let selectedUsers: { id: string; value: string; email:string }[] = [];
+
+// const popup = document.createElement("div");
+// popup.id = 'share-popup';
+// popup.className = "share-popup";
+
+// let options=''
+// if(filePermission === "Full Control"){
+// options=`
+//   <option value="Full Control">Full Control</option>
+//   <option value="Contribute">Contribute</option>
+//   <option value="Edit">Edit</option>
+//   <option value="Read">Read</option>
+// `
+// }else if(filePermission === "Contribute" || filePermission === "Edit"){
+// options=`
+// <option value="Contribute">Contribute</option>
+// <option value="Edit">Edit</option>
+// <option value="Read">Read</option>
+// `
+// }else if(filePermission === "Read"){
+// options=`
+// <option value="Read">Read</option>
+// ` 
+// }
+
+// popup.innerHTML = `
+// <div class="share-popup-content">
+// <div class="share-popup-header">
+// <h4>Share</h4>
+// <span class="share-close-popup" onClick="hideSharePopUp()">x</span>
+// </div>
+// <div class="share-popup-body">
+// <div id="share-reactSelect">
+//     <input type="text" id="userInput" placeholder="Add a Name, Group, or Email" style="
+//     width: 100%; 
+//     padding: 10px;
+//     font-size: 14px;
+//     border-radius: 4px;
+//     border: 1px solid #ccc;
+//   "/>
+//   <div id="userDropdown" class="user-dropdown" style="
+//     display: none;
+//     position: absolute;
+//     width: 29.8%;
+//     max-height: 150px;
+//     overflow-y: auto;
+//     background-color: white;
+//     border: 1px solid #ccc;
+//     border-radius: 4px;
+//     z-index: 1000;
+//   ">
+//   </div>
+// </div>
+//  <div>
+//   <select id="permissionSelect" style="
+//     margin-bottom:10px;
+//     width: 100%; 
+//     padding: 10px;
+//     font-size: 14px;
+//     border-radius: 4px;
+//     border: 1px solid #ccc;
+//     margin-top: 10px;
+//   ">
+//     <option value="" disabled selected>Permission</option>
+//     ${options}
+//   </select>
+// </div>
+// <textarea id="share-message" placeholder="Write a message..." >
+// </textarea>
+// </div>
+// <div class="share-popup-footer">
+// <button id="share-shareFileButton">Share</button>
+// </div>
+// </div>
+// `;
+
+// // Append the  popup to the body
+// document.body.appendChild(popup);
+
+// // Get references to the input box and dropdown
+// const userInput = document.getElementById('userInput') as HTMLInputElement;
+// const userDropdown = document.getElementById('userDropdown');
+
+// // Function to render dropdown options based on user input
+// function renderDropdown(users: { id: string, value: string,email:string }[]) {
+// // Clear previous options
+// userDropdown.innerHTML = ''; 
+// users.forEach(user => {
+// const option = document.createElement('div');
+// option.className = 'dropdown-item';
+// option.style.padding = '8px';
+// option.style.cursor = 'pointer';
+// option.textContent = user.value;
+// option.onclick = () => selectUser(user);
+// userDropdown.appendChild(option);
+// });
+// }
+
+// // Function to show the dropdown when the input is clicked
+// userInput.addEventListener('focus', () => {
+// userDropdown.style.display = 'block';
+
+// // Display all users initially
+// renderDropdown(users); 
+// });
+
+// // Filter dropdown based on input value
+// userInput.addEventListener('input', () => {
+// const searchValue = userInput.value.toLowerCase();
+// const filteredUsers= users.filter(user => user.value.toLowerCase().includes(searchValue));
+// renderDropdown(filteredUsers);
+// });
+
+// // Function to select a user and display it inside the input
+// function selectUser(user: { id: string, value: string,email:string }) {
+// console.log("selected user",selectedUsers)
+// if (!selectedUsers.some(selectedUser => selectedUser.id === user.id)) {
+
+// selectedUsers.push(user);
+
+// // Create a span for the selected user with a close button
+// const selectedUserDiv = document.createElement('span');
+// selectedUserDiv.className = 'selected-user';
+// selectedUserDiv.style.display = 'inline-block';
+// selectedUserDiv.style.padding = '2px 6px';
+// selectedUserDiv.style.backgroundColor = '#e0e0e0';
+// selectedUserDiv.style.borderRadius = '12px';
+// selectedUserDiv.style.marginRight = '5px';
+// selectedUserDiv.style.position = 'relative';
+
+// selectedUserDiv.textContent = user.value;
+
+// // Create close button for deselecting the user
+// const closeButton = document.createElement('span');
+// closeButton.textContent = 'x';
+// closeButton.style.cursor = 'pointer';
+// closeButton.style.marginLeft = '5px';
+// closeButton.onclick = () => deselectUser(user.id, selectedUserDiv);
+// selectedUserDiv.appendChild(closeButton);
+
+// // Append the selected user to the input field
+// userInput.parentNode!.insertBefore(selectedUserDiv, userInput);
+// userInput.value = ''; 
+// }
+// userDropdown.style.display = 'none'; 
+// }
+
+// // Function to deselect a user
+// function deselectUser(userId: string, selectedUserDiv: HTMLElement) {
+// // selectedUsers = selectedUsers.filter(id => id !== userId);
+// selectedUsers = selectedUsers.filter(selectedUser => selectedUser.id !== userId);
+// console.log("selected user",selectedUsers);
+// selectedUserDiv.remove();
+// }
+
+// // Hide the dropdown if clicked outside
+// document.addEventListener('click', (event) => {
+// if (!userInput.contains(event.target as Node) && !userDropdown.contains(event.target as Node)) {
+// userDropdown.style.display = 'none';
+// }
+// });
+
+// // Capture selected permission
+// let selectedPermission = "";
+// document.getElementById('permissionSelect').addEventListener('change', (event) => {
+// selectedPermission = (event.target as HTMLSelectElement).value;
+// console.log("Selected Permission:", selectedPermission);
+// });
+
+// // Adding event listener to the "Share" button
+// document.getElementById('share-shareFileButton').addEventListener('click', async function() {
+//   const filePath=`${currentFolderPathForFile}/${fileName}`;
+//   console.log("filePath",filePath);
+//   // Check the Break role on the file start
+//   const testidsub =await sp.site.openWebById(siteId);
+//   const file =testidsub.web.getFileByServerRelativePath(filePath);
+//   const item = await file.getItem();
+//   const itemData = await item.select("HasUniqueRoleAssignments")();
+//   const breaKRole=itemData.HasUniqueRoleAssignments;
+//   console.log("breaKRole",breaKRole);
+//   if (!breaKRole) {
+//     // Break role inheritance, keeping current permissions
+//     await item.breakRoleInheritance(true);
+//     console.log("Inheritance broken, retaining previous permissions.");
+//   }
+
+//   // end
+
+//   // New Code push the data into the DMSShareWithOtherMaster Start
+//   try {
+//     const isoDate = new Date().toISOString().slice(0, 19) + 'Z';
+//     const payloadForDMSShareWithOtherMaster={
+//       FileName:fileName,
+//       FileUID:fileID,
+//       CurrentUser:currentUserEmailRef.current,
+//       CurrentFolderPath:currentFolderPathForFile,
+//       SiteName:entity, 
+//       PermissionType:selectedPermission,
+//       ShareAt:isoDate,
+//       FileVersion:FileVersion,
+//       FileSize:FileSize,
+//       Status:Status,
+//       FilePreviewURL:FilePreviewURL,
+//       SiteID:siteId,
+//       DocumentLibraryName:DocumentLibraryName
+//     }
+//     let roleType:number;
+//     if(selectedPermission === "Full Control"){
+//       // roleType=5;
+//       roleType=1073741829;
+//     }else if(selectedPermission === "Contribute"){
+//       // roleType=3;
+//       roleType=1073741827;
+//     }else if(selectedPermission === "Edit"){
+//       // roleType=6;
+//       roleType=1073741830;
+//     }else if(selectedPermission === "Read"){
+//       // roleType=2;
+//       roleType=1073741826;
+//     }else{
+//       roleType=0;
+//     }
+//     console.log("roletype",roleType);
+//     const Promiseshare = selectedUsers.map(async(user)=>{
+//           (payloadForDMSShareWithOtherMaster as any).UserID=user.id;
+//           (payloadForDMSShareWithOtherMaster as any).ShareWithOthers=user.value;
+//           (payloadForDMSShareWithOtherMaster as any).ShareWithMe=user.email;
+//           const newItem = await sp.web.lists.getByTitle(`DMSShareWithOtherMaster`).items.add(payloadForDMSShareWithOtherMaster)
+          
+//           //Add permission to the user in the file 
+//           const id=Number(user.id)
+//           console.log("User Id",id,"type",typeof id);
+//           await item.roleAssignments.add(id,roleType);
+//           console.log(`User ${user.email} added with role type ${selectedPermission},${roleType}.`);
+//           console.log("Data added successfully in the",newItem);
+//     })
+
+//     await Promise.all(Promiseshare)
+
+  
+//       const existingPopup = document.getElementById('share-popup');
+//       if (existingPopup) {
+//         existingPopup.remove();
+//         Swal.fire({
+//           title: "Access Provided Successfully",
+//           text: "The access has been provided successfully.",
+//           icon: "success"
+//         })
+//       }
+
+//   } catch (error) {
+//     console.log("Error in adding data to the DMSShareWithOtherMaster",error);
+//   }
+ 
+// });
+
+// }
 window.shareFile=async(fileID:string,siteId:string,currentFolderPathForFile:string,fileName:string,flag:string,FileVersion:any,FileSize:any,Status:any,FilePreviewURL:any,DocumentLibraryName:any)=>{
-const testidsub =await sp.site.openWebById(siteId)  
+  console.log("Share File called");
+  console.log("flag",flag);
+  console.log("file Id",fileID);
+  console.log("site Id",siteId);
+  console.log("FileName",fileName);
+  console.log("currentFolderPath",currentFolderPathForFile);
+  let preURL=FilePreviewURL;
+  // Check permission of file when it come from the myrequest start
+  const testidsub =await sp.site.openWebById(siteId)  
+  
+  let filePath=`${currentFolderPathForFile}/${fileName}`;
+  if(flag === "DocumentLibrary"){
+    // Extract the parent folder correctly
+    const parentFolder = filePath.substring(0, filePath.lastIndexOf('/'));
+    console.log(parentFolder, "parentFolder");
 
-let filePath=`${currentFolderPathForFile}/${fileName}`;
+    // Correctly encode the parent folder
+    const encodedParentFolder = encodeURIComponent(parentFolder);
 
-const fileServerRelativePath = testidsub.web.getFileByServerRelativePath(filePath);
+    // Get the base site URL
+    const siteUrl = window.location.origin;
+    console.log(siteUrl, "siteUrl");
+    const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${filePath}&parent=${encodedParentFolder}`;
+    // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodeURIComponent(filePath)}&parent=${encodedParentFolder}`;
+    // const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodeURIComponent(filePath)}&parent=${encodedParentFolder}`;
+    preURL=previewUrl;
+  }
+  console.log("filePath",filePath);
+  const fileServerRelativePath = testidsub.web.getFileByServerRelativePath(filePath);
+  // Retrieve the list item associated with the file
+  const item = await fileServerRelativePath.getItem();
+  console.log("items",item);
+  // Get current user permissions on the item (file)
+  const filePermissions = await item.getCurrentUserEffectivePermissions(); 
+  console.log("File permissions:", filePermissions);
+  // console.log("file listItems All field",file.ListItemAllFields);
 
-const item = await fileServerRelativePath.getItem();
+  const hasFullControl = testidsub.web.hasPermissions(filePermissions, PermissionKind.ManageWeb);
+  const hasEdit = testidsub.web.hasPermissions(filePermissions, PermissionKind.EditListItems);
+  const hasContribute = testidsub.web.hasPermissions(filePermissions, PermissionKind.AddListItems) && testidsub.web.hasPermissions(filePermissions, PermissionKind.EditListItems);
+  const hasRead = testidsub.web.hasPermissions(filePermissions, PermissionKind.ViewListItems);
+  console.log(hasFullControl , "hasFullControl")
+  console.log(hasEdit , "hasEdit")
+  console.log(hasContribute , "hasContribute")
+  console.log(hasRead , "hasRead")
+  let filePermission:string;
+  if (hasFullControl) {
+    filePermission ="Full Control";
+  } else if (hasEdit) {
+    filePermission ="Edit";
+  } else if (hasContribute) {
+    filePermission = "Contribute";
+  } else if (hasRead) {
+    filePermission = "Read";
+  } else {
+    filePermission = "No Access";
+  }
 
+  console.log("filePermission",filePermission);
 
-const filePermissions = await item.getCurrentUserEffectivePermissions(); 
+  // exreact the Entity from folder path
+  const parts = currentFolderPathForFile.split("/");  
+  const entity = parts[3]; 
+  console.log(entity); 
 
-const hasFullControl = testidsub.web.hasPermissions(filePermissions, PermissionKind.ManageWeb);
-const hasEdit = testidsub.web.hasPermissions(filePermissions, PermissionKind.EditListItems);
-const hasContribute = testidsub.web.hasPermissions(filePermissions, PermissionKind.AddListItems) && testidsub.web.hasPermissions(filePermissions, PermissionKind.EditListItems);
-const hasRead = testidsub.web.hasPermissions(filePermissions, PermissionKind.ViewListItems);
+  const fetchUser=async(entity:any)=>{
+    // const [
+    //   users,
+    //   users1,
+    //   users2,
+    //   users3,
+    //   users4,
+    // ] = await Promise.all([
+    //   sp.web.siteGroups.getByName(`${entity}_Read`).users(),
+    //   sp.web.siteGroups.getByName(`${entity}_Initiator`).users(),
+    //   sp.web.siteGroups.getByName(`${entity}_Contribute`).users(),
+    //   sp.web.siteGroups.getByName(`${entity}_Admin`).users(),
+    //   sp.web.siteGroups.getByName(`${entity}_View`).users(),
+    // ]);
+    // console.log(users, "users ", users1,users2,users3,users4);
+    // const combineArray = [
+    //   ...(users || []),
+    //   ...(users1 || []),
+    //   ...(users2 || []),
+    //   ...(users3 || []),
+    //   ...(users4 || []),
+    // ];
 
-let filePermission:string;
-if (hasFullControl) {
-  filePermission ="Full Control";
-} else if (hasEdit) {
-  filePermission ="Edit";
-} else if (hasContribute) {
-  filePermission = "Contribute";
-} else if (hasRead) {
-  filePermission = "Read";
-} else {
-  filePermission = "No Access";
-}
+    // const siteContext = await sp.site.openWebById(OthProps.siteID);
+    const user0 = await sp.web.siteUsers();
+    const combineUsersArray=user0.map((user)=>(
+          {
+            id:String(user.Id),
+            value: user.Title,
+            email: user.Email,
+          }
+    ))
+    console.log("Sub site users",combineUsersArray);
+      
+    // const resultArray=combineUsersArray.map((user) => ( 
+    //   {
+    //     id:String(user.Id),
+    //     value: user.Title,
+    //     email: user.Email
+    //   }
+    // ))
+    // console.log("combineArray", combineArray);
+    // console.log("resultArray",resultArray)
 
+    return combineUsersArray;
+  }
 
-const parts = currentFolderPathForFile.split("/");  
-const entity = parts[3]; 
-console.log(entity); 
+  const users=await fetchUser(entity);
+  console.log("UserArray",users);
+ 
 
-const fetchUser=async(entity:any)=>{
-  const user0 = await sp.web.siteUsers();
-  const combineUsersArray=user0.map((user)=>(
-        {
-          id:String(user.Id),
-          value: user.Title,
-          email: user.Email,
-        }
-  ))
-  console.log("Sub site users",combineUsersArray);
-
-  return combineUsersArray;
-}
-
-const users=await fetchUser(entity);
+// Check if a popup already exists, if so, remove it before creating a new one
 const existingPopup = document.getElementById('share-popup');
 if (existingPopup) {
 existingPopup.remove();
 }
 
-let selectedUsers: { id: string; value: string; email:string }[] = [];
+// Dummy data
+// const users = [
+//   { value: 'Test1', id: '14',email:"User1@officeindia.onmicrosoft.com" },
+//   { value: 'Test2', id: '31',email:"User2@officeindia.onmicrosoft.com" },
+//   { value: 'Test3', id: '137',email:"User3@officeindia.onmicrosoft.com"},
+//   { value: 'Test4', id: '33',email:"User4@officeindia.onmicrosoft.com" },
+//   { value: 'Test5', id: '32',email:"User5@officeindia.onmicrosoft.com" },
+//   { value: 'Test6', id: '34',email:"User6@officeindia.onmicrosoft.com" },
+//   { value: 'Test User1', id: '39',email:"User7@officeindia.onmicrosoft.com" },
+//   ];
 
+
+// Declare selectedUsers with an explicit type, assuming user IDs are of type string for selecting the user for share
+let selectedUsers: { id: string; value: string; email:string }[] = [];
+// Create the pop-up element
 const popup = document.createElement("div");
 popup.id = 'share-popup';
 popup.className = "share-popup";
 
+// Show permissions options.
 let options=''
 if(filePermission === "Full Control"){
 options=`
-  <option value="Full Control">Full Control</option>
+    <option value="Full Control">Full Control</option>
+    <option value="Contribute">Contribute</option>
+    <option value="Edit">Edit</option>
+    <option value="Read">Read</option>
+`
+}else if(filePermission === "Contribute" || filePermission === "Edit"){
+options=`
   <option value="Contribute">Contribute</option>
   <option value="Edit">Edit</option>
   <option value="Read">Read</option>
 `
-}else if(filePermission === "Contribute" || filePermission === "Edit"){
-options=`
-<option value="Contribute">Contribute</option>
-<option value="Edit">Edit</option>
-<option value="Read">Read</option>
-`
 }else if(filePermission === "Read"){
 options=`
-<option value="Read">Read</option>
+  <option value="Read">Read</option>
 ` 
 }
 
+
+// Add HTML structure for the pop-up with a dropdown and a close "X" button
 popup.innerHTML = `
 <div class="share-popup-content">
 <div class="share-popup-header">
-<h4>Share</h4>
-<span class="share-close-popup" onClick="hideSharePopUp()">x</span>
+  <h4>Share</h4>
+  <span class="share-close-popup" onClick="hideSharePopUp()">x</span>
 </div>
 <div class="share-popup-body">
-<div id="share-reactSelect">
-    <input type="text" id="userInput" placeholder="Add a Name, Group, or Email" style="
-    width: 100%; 
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-  "/>
-  <div id="userDropdown" class="user-dropdown" style="
-    display: none;
-    position: absolute;
-    width: 29.8%;
-    max-height: 150px;
-    overflow-y: auto;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    z-index: 1000;
-  ">
+  <div id="share-reactSelect">
+      <input type="text" id="userInput" placeholder="Add a Name, Group, or Email" style="
+      width: 100%; 
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    "/>
+    <div id="userDropdown" class="user-dropdown" style="
+      display: none;
+      position: absolute;
+      width: 29.8%;
+      max-height: 150px;
+      overflow-y: auto;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      z-index: 1000;
+    ">
+    </div>
   </div>
-</div>
- <div>
-  <select id="permissionSelect" style="
-    margin-bottom:10px;
-    width: 100%; 
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    margin-top: 10px;
-  ">
-    <option value="" disabled selected>Permission</option>
-    ${options}
-  </select>
-</div>
-<textarea id="share-message" placeholder="Write a message..." >
-</textarea>
+   <div>
+    <select id="permissionSelect" style="
+      margin-bottom:10px;
+      width: 100%; 
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    ">
+      <option value="" disabled selected>Permission</option>
+      ${options}
+    </select>
+  </div>
+  <textarea id="share-message" placeholder="Write a message..." >
+  </textarea>
 </div>
 <div class="share-popup-footer">
-<button id="share-shareFileButton">Share</button>
+  <button id="share-shareFileButton">Share</button>
 </div>
 </div>
 `;
@@ -10632,93 +11144,267 @@ console.log("Selected Permission:", selectedPermission);
 
 // Adding event listener to the "Share" button
 document.getElementById('share-shareFileButton').addEventListener('click', async function() {
-  const filePath=`${currentFolderPathForFile}/${fileName}`;
-  console.log("filePath",filePath);
-  // Check the Break role on the file start
-  const testidsub =await sp.site.openWebById(siteId);
-  const file =testidsub.web.getFileByServerRelativePath(filePath);
-  const item = await file.getItem();
-  const itemData = await item.select("HasUniqueRoleAssignments")();
-  const breaKRole=itemData.HasUniqueRoleAssignments;
-  console.log("breaKRole",breaKRole);
-  if (!breaKRole) {
-    // Break role inheritance, keeping current permissions
-    await item.breakRoleInheritance(true);
-    console.log("Inheritance broken, retaining previous permissions.");
-  }
+    // console.log("selectedUserArray",selectedUsers);
+    // console.log("Entity",entity);
+    // console.log("FileId",fileID);
+    // console.log("SiteId",siteId);
+    // console.log("currentFolderPathForFile",currentFolderPathForFile);
+    // console.log("FileName",fileName);
+    // console.log("filesize",FileSize);
+    // console.log("FileVersion",FileVersion);
+    // console.log("Status",Status);
+    // console.log("FilePreviewURL",FilePreviewURL);
+    // console.log("DocumentLibraryName",DocumentLibraryName)
+    const filePath=`${currentFolderPathForFile}/${fileName}`;
+    console.log("filePath",filePath);
+    // Check the Break role on the file start
+    const testidsub =await sp.site.openWebById(siteId);
+    const file =testidsub.web.getFileByServerRelativePath(filePath);
+    
+    // No need to break the inheritance start
+    // const item = await file.getItem();
+    // const itemData = await item.select("HasUniqueRoleAssignments")();
+    // const breaKRole=itemData.HasUniqueRoleAssignments;
+    // console.log("breaKRole",breaKRole);
+    // if (!breaKRole) {
+    //   // Break role inheritance, keeping current permissions
+    //   await item.breakRoleInheritance(true);
+    //   console.log("Inheritance broken, retaining previous permissions.");
+    // }
+    // End
+    // end
 
-  // end
-
-  // New Code push the data into the DMSShareWithOtherMaster Start
-  try {
-    const isoDate = new Date().toISOString().slice(0, 19) + 'Z';
-    const payloadForDMSShareWithOtherMaster={
-      FileName:fileName,
-      FileUID:fileID,
-      CurrentUser:currentUserEmailRef.current,
-      CurrentFolderPath:currentFolderPathForFile,
-      SiteName:entity, 
-      PermissionType:selectedPermission,
-      ShareAt:isoDate,
-      FileVersion:FileVersion,
-      FileSize:FileSize,
-      Status:Status,
-      FilePreviewURL:FilePreviewURL,
-      SiteID:siteId,
-      DocumentLibraryName:DocumentLibraryName
-    }
-    let roleType:number;
-    if(selectedPermission === "Full Control"){
-      // roleType=5;
-      roleType=1073741829;
-    }else if(selectedPermission === "Contribute"){
-      // roleType=3;
-      roleType=1073741827;
-    }else if(selectedPermission === "Edit"){
-      // roleType=6;
-      roleType=1073741830;
-    }else if(selectedPermission === "Read"){
-      // roleType=2;
-      roleType=1073741826;
-    }else{
-      roleType=0;
-    }
-    console.log("roletype",roleType);
-    const Promiseshare = selectedUsers.map(async(user)=>{
-          (payloadForDMSShareWithOtherMaster as any).UserID=user.id;
-          (payloadForDMSShareWithOtherMaster as any).ShareWithOthers=user.value;
-          (payloadForDMSShareWithOtherMaster as any).ShareWithMe=user.email;
-          const newItem = await sp.web.lists.getByTitle(`DMSShareWithOtherMaster`).items.add(payloadForDMSShareWithOtherMaster)
-          
-          //Add permission to the user in the file 
-          const id=Number(user.id)
-          console.log("User Id",id,"type",typeof id);
-          await item.roleAssignments.add(id,roleType);
-          console.log(`User ${user.email} added with role type ${selectedPermission},${roleType}.`);
-          console.log("Data added successfully in the",newItem);
-    })
-
-    await Promise.all(Promiseshare)
-    alert(selectedUsers.length)
-  
-      const existingPopup = document.getElementById('share-popup');
-      if (existingPopup) {
-        existingPopup.remove();
-        Swal.fire({
-          title: "Access Provided Successfully",
-          text: "The access has been provided successfully.",
-          icon: "success"
-        })
+    // New Code push the data into the DMSShareWithOtherMaster Start
+    try {
+      const isoDate = new Date().toISOString().slice(0, 19) + 'Z';
+      const payloadForDMSShareWithOtherMaster={
+        FileName:fileName,
+        FileUID:fileID,
+        CurrentUser:currentUserEmailRef.current,
+        CurrentFolderPath:currentFolderPathForFile,
+        SiteName:entity,
+        PermissionType:selectedPermission,
+        ShareAt:isoDate,
+        FileVersion:FileVersion,
+        FileSize:FileSize,
+        Status:Status,
+        // FilePreviewURL:FilePreviewURL,
+        FilePreviewURL:preURL,
+        SiteID:siteId,
+        DocumentLibraryName:DocumentLibraryName
       }
+      let roleType:number;
+      if(selectedPermission === "Full Control"){
+        // roleType=5;
+        roleType=1073741829;
+        // 1073741829
+      }else if(selectedPermission === "Contribute"){
+        // roleType=3;
+        roleType=1073741827;
+        // 1073741827
+      }else if(selectedPermission === "Edit"){
+        // roleType=6;
+        roleType=1073741830;
+      }else if(selectedPermission === "Read"){
+        // roleType=2;
+        roleType=1073741826;
+      }else{
+        roleType=0;
+      }
+      console.log("roletype",roleType);
+      selectedUsers.forEach(async(user)=>{
+            (payloadForDMSShareWithOtherMaster as any).UserID=user.id;
+            (payloadForDMSShareWithOtherMaster as any).ShareWithOthers=user.value;
+            (payloadForDMSShareWithOtherMaster as any).ShareWithMe=user.email;
+            const newItem = await sp.web.lists.getByTitle(`DMSShareWithOtherMaster`).items.add(payloadForDMSShareWithOtherMaster)
+            
+            //Add permission to the user in the file 
+            const id=Number(user.id)
+            console.log("User Id",id,"type",typeof id);
+            // const roleDefinitions = await sp.web.roleDefinitions();     
+            // const roleDefinition = roleDefinitions.find(rd => rd.RoleTypeKind === roleType); 
+            // console.log("roleDefinition",roleDefinition);    
+            // if(!roleDefinition) {       
+            //   throw new Error(`Role type ${roleType} not found.`);
+            // }
+            // await item.roleAssignments.add(id,roleType);
+            if(filePermission === "Full Control"){
+              console.log("Inside the File Permission Full Control");
+              // If the user have full control first break the inheritance than share the file
+              const item = await file.getItem();
+              const itemData = await item.select("HasUniqueRoleAssignments")();
+              const breaKRole=itemData.HasUniqueRoleAssignments;
+              console.log("breaKRole",breaKRole);
+              if (!breaKRole) {
+                // Break role inheritance, keeping current permissions
+                await item.breakRoleInheritance(true);
+                console.log("Inheritance broken, retaining previous permissions.");
+              }
+              await item.roleAssignments.add(id,roleType);
+              console.log(`User ${user.email} added with role type ${selectedPermission},${roleType}.`);
+              console.log("Data added successfully in the",newItem);
 
-  } catch (error) {
-    console.log("Error in adding data to the DMSShareWithOtherMaster",error);
-  }
- 
+              // Testing Changes start
+              const popup=document.querySelector('.share-popup');
+              if(popup){
+                popup.remove();
+              }
+              // onSuccess(`File Share Successfully with permission ${selectedPermission}`);
+              // end
+              Swal.fire('Success',`File Share Successfully with permission ${selectedPermission}`,'success')
+
+            }else{
+              let permission;
+              if(selectedPermission === "Contribute" || selectedPermission === "Edit"){
+                console.log("Inside the File Permission Contribute || Edit");
+                permission=SharingRole.Edit;
+              }else{
+                console.log("Inside the File Permission View");
+                permission=SharingRole.View;
+              }
+              file.shareWith(
+                user.email,     
+                // roleType,
+                permission          
+              );
+              console.log(`User ${user.email} added with role type ${selectedPermission},${roleType}.`);
+              console.log("Data added successfully in the",newItem);
+              const popup=document.querySelector('.share-popup');
+              if(popup){
+                popup.remove();
+              }
+              Swal.fire('Success',`File Share Successfully with permission ${selectedPermission}`,'success')
+            }
+            
+            // console.log("SharingRole.View",SharingRole.View);
+            // console.log("SharingRole.Edit",SharingRole.Edit);
+            // console.log("SharingRole.Owner",SharingRole.Owner);
+            // console.log("SharingRole.None",SharingRole.None);
+            // file.shareWith(
+            //   user.email,     
+            //   // roleType,
+            //   SharingRole.Edit          
+            // );
+            // console.log(`User ${user.email} added with role type ${selectedPermission},${roleType}---${SharingRole.Edit}.`);
+            // console.log("Data added successfully in the",newItem);
+
+            
+      })
+     
+    } catch (error) {
+      console.log("Error in adding data to the DMSShareWithOtherMaster",error);
+      // onError();
+    }
+   
+    // End
+
+
+    // required column
+    // FileNamex FileUIDx  CurrentUserx CurrentFolderPathx ShareWithOthersx ShareWithMex  SiteNamex       ShareAtx UserIDx PermissionTypex
+    // FileVersion FileSize Status FilePreviewURL
+
+    // const listToUpdateWithShareData=`DMS${entity}FileMaster`;
+    // console.log("listToUpdateWithShareData",listToUpdateWithShareData);
+
+    // Fetch the item from the list using its ID
+    // const item = await sp.web.lists.getByTitle(listToUpdateWithShareData).items.select("FileName","ShareWithOthers","ShareWithMe","FileUID","ID").filter(`FileUID eq '${fileID}' and CurrentUser eq '${currentUserEmailRef.current}'`)();
+    // console.log("Items",item)
+
+    // console.log("item",item);
+
+    // let dataArray;
+    // let dataArray: Array<{ FirstName: string; LastName?: string; SharedWith: string; SharedAt: string; TimeStamp: number; Permission: string,userId:string }> = [];
+          
+    // selectedUsers.forEach(async(user)=>{
+    
+    // const nameParts = user.value.trim().split(" ");
+    // const firstName = nameParts[0]; 
+    // let lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
+    // console.log("firstName",firstName) 
+    // console.log("lastName",lastName);
+    // if(lastName === ""){
+    //   lastName="";
+    // }
+
+    // const isoDate = new Date().toISOString().slice(0, 19) + 'Z';
+    // const timestamp = Date.now();
+    //   // let userObj={
+    //   //   FirstName:firstName,
+    //   //   LastName:lastName,
+    //   //   SharedWith:user.email,
+    //   //   SharedAt:isoDate,
+    //   //   TimeStamp:timestamp,
+    //   //   Permission:selectedPermission,
+    //   //   userId:user.id
+    //   // }
+    //   // dataArray.push(userObj);
+    //   // console.log("userObj",userObj);
+    // })
+
+    // console.log("dataArray",dataArray);
+
+    
+
+    // if(item[0].ShareWithMe === null && item[0].ShareWithOthers === null){
+
+    //       const dataInTheFormoOfString=JSON.stringify(dataArray);
+    //        // Now update specific columns of the item
+    //         const updatedItem = await sp.web.lists.getByTitle(listToUpdateWithShareData).items.getById(item[0].ID).update({
+    //           ShareWithOthers:dataInTheFormoOfString,
+    //           ShareWithMe:dataInTheFormoOfString
+    //         });
+
+    //         console.log("Data updated when ShareWithMe and ShareWithOthers are null",updatedItem);
+    // }else{
+    //    const shareWithOthers =JSON.parse(item[0].ShareWithOthers);
+    //    const shareWithMe=JSON.parse(item[0].ShareWithMe);
+
+    //    dataArray.forEach((user)=>{
+    //         // apply condition for sharing same file with same user multiple time using id of the user
+    //         const alReadySharedUserIndex=shareWithOthers.findIndex((item:any)=>{
+    //               return item.userId === user.userId
+    //         })
+    //         console.log("alReadySharedUser in shareWithOthers",alReadySharedUserIndex);
+    //         const alReadySharedUserIndex1=shareWithMe.findIndex((item:any)=>{
+    //             return item.userId === user.userId
+    //         })
+    //         console.log("alReadySharedUser in shareWithMe",alReadySharedUserIndex1);
+
+    //         if(alReadySharedUserIndex !== -1){
+    //               shareWithOthers.splice(alReadySharedUserIndex, 1);
+    //               shareWithOthers.push(user);
+    //               console.log("shareWithOthers",shareWithOthers);
+    //         }else{
+    //           shareWithOthers.push(user);
+    //         }
+
+    //         if(alReadySharedUserIndex1 !== -1){
+    //           shareWithMe.splice(alReadySharedUserIndex1, 1);
+    //           shareWithMe.push(user);
+    //           console.log("shareWithMe",shareWithMe);
+    //         }else{
+    //           shareWithMe.push(user);
+    //         }
+    //    })
+
+    //    console.log("shareWithOthers",shareWithOthers);
+    //    console.log("shareWithMe",shareWithMe);
+
+    //    const dataInTheFormoOfStringForShareWithMe=JSON.stringify(shareWithMe);
+    //    const dataInTheFormoOfStringForShareWithOthers=JSON.stringify(shareWithOthers);
+    //    // Now update specific columns of the item
+    //    const updatedItem = await sp.web.lists.getByTitle(listToUpdateWithShareData).items.getById(item[0].ID).update({
+    //     ShareWithOthers:dataInTheFormoOfStringForShareWithOthers,
+    //     ShareWithMe:dataInTheFormoOfStringForShareWithMe
+    //   });
+
+    //   console.log("Data updated when ShareWithMe and ShareWithOthers",updatedItem);
+    // }
+
 });
 
-}
 
+}
 
 
 // hide the share popup
@@ -10846,7 +11532,7 @@ resultArrayThatContainstheColumnDetails.forEach((item, index) => {
     // Add each detail column
     detailRowsHTML += `
       <div class="detail-column">
-        <div class="detail-label">${item.label}</div>
+        <div class="detail-label">${item.label}:</div>
         <div class="detail-value">${item.value}</div>
       </div>
     `;
@@ -10865,39 +11551,50 @@ if (resultArrayThatContainstheColumnDetails.length % 3 !== 0) {
  // Generate the dynamic HTML for the approver details
  let approverRowsHTML = "";
  approverDetailsArray.forEach((approver) => {
+  //  approverRowsHTML += `
+  //    <div class="detail-row-value-approver">
+  //      <div class="detail-value-approver">${approver.level}</div>
+  //      <div class="detail-value-approver">${approver.approver}</div>
+  //      <div class="detail-value-approver">${approver.actionDateTime}</div>
+  //      <div class="detail-value-approver">${approver.status}</div>
+  //      <div class="detail-value-approver">${approver.remark}</div>
+  //    </div>
+  //  `;
    approverRowsHTML += `
-     <div class="detail-row-value-approver">
-       <div class="detail-value-approver">${approver.level}</div>
-       <div class="detail-value-approver">${approver.approver}</div>
-       <div class="detail-value-approver">${approver.actionDateTime}</div>
-       <div class="detail-value-approver">${approver.status}</div>
-       <div class="detail-value-approver">${approver.remark}</div>
-     </div>
+      <tbody class="">
+       <td class="">${approver.level}</td>
+       <td class="">${approver.approver}</td>
+       <td class="">${approver.actionDateTime}</td>
+       <td class="">${approver.status}</td>
+       <td class="">${approver.remark}</td>
+     </tbody>
    `;
  });
 
-   // Create the popup
+    // Create the popup
   const popup = document.createElement("div");
   popup.className = "audit-history-popup";
   popup.innerHTML = `
   <div class="popup-content-auditHistory">
-    <div class="popup-header">
+    <div class="popup-header mb-0">
       <h5>Audit History</h5>
       <span class="close-btn" onclick="hideAuditHistoryPopup()">&times;</span>
     </div>
     <div class="popup-details">
       ${detailRowsHTML}
-      <div class="detail-row-approver">
-        <div class="detail-label-approver">Approval Level</div>
-        <div class="detail-label-approver">Approver</div>
-        <div class="detail-label-approver">Action DateTime</div>
-        <div class="detail-label-approver">Status</div>
-        <div class="detail-label-approver">Remark</div>
-      </div>
+      <table class="mtbalenew">
+      <thead>
+        <th class="">Approval Level</th>
+        <th class="">Approver</th>
+        <th class="">Action DateTime</th>
+        <th class="">Status</th>
+        <th >Remark</th>
+      </thead>
       ${approverRowsHTML}
-    </div>
+    </table>
   </div>
   `;
+
 
 // Append to body
 document.body.appendChild(popup);
@@ -10986,7 +11683,7 @@ const mainContainer = document.createElement('div');
 mainContainer.className = 'main-containeruploadfile';
 const librarydiv= document.getElementById('files-container')
 const backButton = document.createElement('button')
-backButton.textContent = 'Back To DMS';
+backButton.textContent = 'Close File Preview';
 const submitButton=document.createElement('button');
 const replaceButton=document.createElement('button');
 
@@ -11290,7 +11987,7 @@ mainContainer.appendChild(column2);
 
 //   // Extract the last part after the last '/'
 //   const fileName:any = filePath.substring(filePath.lastIndexOf('/') + 1);
-//   alert(fileName);
+
 //   // console.log("fileName",fileName);
 //   // Extract the rest of the path
 //   const folderPath = filePath.substring(0, filePath.lastIndexOf('/'));
@@ -11332,7 +12029,7 @@ mainContainer.appendChild(column2);
 
 //     if (!selectedFile) {
 //         console.error("No file selected.");
-//         // alert("Please select the file...");
+
 //         checkValidation(`Fill mandatory fields`)
 //         return;
 //     }
@@ -11430,7 +12127,7 @@ submitButton.addEventListener('click',async(event)=>{
 
     // Extract the last part after the last '/'
     const fileName:any = filePath.substring(filePath.lastIndexOf('/') + 1);
-    // alert(fileName);
+
     // console.log("fileName",fileName);
     // Extract the rest of the path
     const folderPath = filePath.substring(0, filePath.lastIndexOf('/'));
@@ -11472,7 +12169,7 @@ submitButton.addEventListener('click',async(event)=>{
 
       if (!selectedFile) {
           console.error("No file selected.");
-          // alert("Please select the file...");
+ 
           checkValidation(`Fill mandatory fields`)
           return;
       }
@@ -11515,7 +12212,7 @@ submitButton.addEventListener('click',async(event)=>{
       const fileExtensionOfOldFile =fileName.split('.').pop();
       // for same file extension
       if(fileExtensionOfSelectedFile === fileExtensionOfOldFile){
-          // alert("Same file extension");
+
           const file = web.getFileByServerRelativePath(filePath);
             await file.setContentChunked(selectedFile);
             if (file.exists) {
@@ -11526,7 +12223,7 @@ submitButton.addEventListener('click',async(event)=>{
           showReplaceMessage('File replaced successfully.');
           myRequest(null,null,null);
       }else{
-        // alert("file extension are not same");
+
         const folderInWhichWeUploadTheFile=web.getFolderByServerRelativePath(folderPath);
         const uploadResult = await folderInWhichWeUploadTheFile.files.addChunked(selectedFile.name, selectedFile);
         const listItem = await uploadResult.file.getItem();
@@ -11740,7 +12437,7 @@ librarydiv.appendChild(mainContainer)
                                 </button>
                                 <button type="button" className="btn btnlistview list-view mt-0" onClick={(event:any)=>MyrequestshowListView('ListViewComponent')}>
                                   <a className="listviewfonticon">
-                                  <FontAwesomeIcon style={{color: "black"}} icon={faListSquares}/>
+                                  <FontAwesomeIcon style={{color: "black"}} icon={faListSquares}/>&nbsp;
                                   </a>
                               List View
                                 </button>
@@ -11794,7 +12491,7 @@ librarydiv.appendChild(mainContainer)
                                   </button>
                                   <button type="button" className="btn btnlistview list-view" onClick={(event:any)=>MyrequestshowListView('ListViewComponent')}>
                                     <a className="listviewfonticon">
-                                    <FontAwesomeIcon style={{color: "black"}} icon={faListSquares}/>
+                                    <FontAwesomeIcon style={{color: "black"}} icon={faListSquares}/>&nbsp;
                                     </a>
                                     List View
                                   </button>
@@ -11969,16 +12666,7 @@ librarydiv.appendChild(mainContainer)
 
                        <div id="files-container"></div>
                      {
-                          // listorgriddata === ''  ? (
-                          //   <div id="files-container"></div>
-                          // ) : (
-                          //   listorgriddata === 'showListView' && (
-                          //     <Table
-                          //     onReturnToMain={handleReturnToMain}
-                          //     Currentbuttonclick={{ "buttonclickis": Myreqormyfav }}
-                          //   />
-                          //   )
-                          // )
+                         
 
                           listorgriddata === ''  ? (
                             <div id="files-container"></div>

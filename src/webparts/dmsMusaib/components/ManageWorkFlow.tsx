@@ -337,22 +337,29 @@ const handleCreate = async(e: any) => {
                 }}>
                   {toggleApprover === "Yes"  ?
                   (<div>
-                      <div className="card cardborder marginleftcard" style={{ height: "auto", width: "100%" }}>
-                                        <h5 className="mb-3 Permissionsectionstyle">
+                      <div className="" style={{ height: "auto", width: "100%" }}>
+                                        <h5 className="mb-1 Permissionsectionstyle">
                                           <strong>Approval Hierarchy</strong>
                                         </h5>
-                                        <p className="subheadernew">
+                                        <p className="subheadernew font-14">
                                           Define approval hierarchy for the documents submitted by Team
                                           members in this folder.
                                         </p>
-                                        <div className="mb-3">
-                                          <div className="col-12 d-flex justify-content-end">
+                                        <div style={{position:'relative',top:'-51px'}} className='row'>
+                                          <div className='col-sm-6'>
+                                            </div>
+                                            <div className='col-sm-6'>
+                                            <div className="mb-0">
+                                          <div style={{height:'20px'}} className="col-12 d-flex justify-content-end">
                                             <a onClick={handleAddRow}>
-                                              <img className="bi bi-plus" src={require("../assets/plus.png")} alt="add" style={{ width: "50px", height: "50px" }} />
+                                              <img className="bi bi-plus" src={require("../assets/plus.png")} alt="add" style={{ width: "50px", position:'relative', height: "50px", top:'0' }} />
                                             </a>
                                           </div>
                                         </div>
-                                        <div className="row mb-3 approvalheirarcystyle">
+                                            </div>
+                                          </div>
+                                       
+                                        <div className="row mb-1 approvalheirarcystyle">
                                           <div className="col-12 col-md-4">
                                             <label htmlFor="level" className="form-label approvalhierarcyfont">
                                               Level
@@ -367,7 +374,7 @@ const handleCreate = async(e: any) => {
                                         {rows.map((row) => (
                                           <div className="row mb-3 approvalheirarchyfield" key={row.id}>
                                             <div className="col-12 col-md-4">
-                                              <input type="text" className="form-control" id={`level-${row.id}`} value={`Level ${row.id + 1}`} disabled />
+                                              <input type="text" style={{height:'36px'}} className="form-control" id={`level-${row.id}`} value={`Level ${row.id + 1}`} disabled />
                                             </div>
                                             <div className="col-12 col-md-6">
                                               <Select
@@ -382,7 +389,7 @@ const handleCreate = async(e: any) => {
                                                 <span className="text-danger">{errorsForUserSelection[row.id].userSelect}</span>
                                               )}
                                             </div>
-                                            <div className="col-12 col-md-2 d-flex">
+                                            <div style={{gap:'10px'}} className="col-12 col-md-2 d-flex">
                                               <div className="form-check">
                                                 <input
                                                   className="form-check-input"

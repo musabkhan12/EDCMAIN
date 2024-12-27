@@ -64,7 +64,7 @@ const CreateDepartment: React.FC<BasicFormProps> = ({
                      // console.log("deparment ",department.Title);
                      if(department.Title !== null){
                              if(department.Title.replace(/\s+/g, '').toLowerCase() === jobTitle.replace(/\s+/g, '').toLowerCase()){
-                                 // alert(`${jobTitle} Already exist,`);
+                               
                                  // setErrorMessage(`${jobTitle} already exists.`);
                                  if(department.Active === isActive){
                                     alreadyExistValue1();
@@ -92,7 +92,7 @@ const CreateDepartment: React.FC<BasicFormProps> = ({
                     setTimeout(()=>{
                             onCancel();
                     },1000)
-                    // alert('Department updated successfully');
+                    
                 }
                 
                 
@@ -107,7 +107,7 @@ const CreateDepartment: React.FC<BasicFormProps> = ({
                     // console.log("deparment ",department.Title);
                     if(department.Title !== null){
                             if(department.Title.replace(/\s+/g, '').toLowerCase() === jobTitle.replace(/\s+/g, '').toLowerCase()){
-                                // alert(`${jobTitle} Already exist,`);
+                              
                                 // setErrorMessage(`${jobTitle} already exists.`);
                                 alreadyExistValue(jobTitle);
                                 alreadyExist=true;
@@ -121,7 +121,7 @@ const CreateDepartment: React.FC<BasicFormProps> = ({
                     // setErrorMessage(null); 
                     await sp.web.lists.getByTitle(listTitle).items.add(newItem);
                     onSuccess(jobTitle);
-                    // alert(`${jobTitle} added successfully`);
+                 
                     clearForm();
                     setTimeout(()=>{
                             onCancel();
@@ -131,7 +131,7 @@ const CreateDepartment: React.FC<BasicFormProps> = ({
 
         } catch (error) {
             console.error('Error adding item:', error);
-            // alert('Error adding item');
+       
         }
         // clearForm();
         // setTimeout(()=>{

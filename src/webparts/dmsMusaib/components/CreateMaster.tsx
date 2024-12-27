@@ -76,7 +76,7 @@ const Basic: React.FC<BasicFormProps> = ({
                 entity.forEach((e)=>{
                     if(e.Title !== null){
                         if(e.Title.replace(/\s+/g, '').toLowerCase() === jobTitle.replace(/\s+/g, '').toLowerCase()){
-                            // alert(`${jobTitle} Already exist,`);
+                           
                             // setErrorMessage(`${jobTitle} already exists.`);
                             if(e.Active === isActive){
                                 // console.log("e.Active",e.Active,"isActive",isActive);
@@ -95,7 +95,7 @@ const Basic: React.FC<BasicFormProps> = ({
                     Active:isActive
                     });
                     updateValue(jobTitle);
-                    // alert('Division updated successfully');
+                  
                 }
             }else{
 
@@ -107,7 +107,7 @@ const Basic: React.FC<BasicFormProps> = ({
             entity.forEach((e)=>{
                 if(e.Title !== null){
                     if(e.Title.replace(/\s+/g, '').toLowerCase() === jobTitle.replace(/\s+/g, '').toLowerCase()){
-                        // alert(`${jobTitle} Already exist,`);
+                       
                         // setErrorMessage(`${jobTitle} already exists.`);
                         alreadyExistValue(jobTitle);
                         alreadyExist=true;
@@ -121,7 +121,7 @@ const Basic: React.FC<BasicFormProps> = ({
                 // setErrorMessage(null);
                 const data=await sp.web.lists.getByTitle(listTitle).items.add(newItem);
                 console.log("Testing");
-                // alert(`${jobTitle} added successfully`);
+                
                 onSuccess(jobTitle);
                 clearForm();
                 setTimeout(()=>{
@@ -132,7 +132,7 @@ const Basic: React.FC<BasicFormProps> = ({
 
         } catch (error) {
             console.error('Error adding item:', error);
-            alert('Error adding item');
+            
         }
 
     };

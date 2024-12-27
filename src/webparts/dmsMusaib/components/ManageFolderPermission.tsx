@@ -877,7 +877,7 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
                     (
                       <div>           
                             
-                            <div className="card cardborder marginleftcard" style={{
+                            <div className="" style={{
                               height: "auto",
                               width:"auto",
                           }}
@@ -891,15 +891,23 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
                           <div>
                             {path}
                           </div>
-                          <div className="mb-3">
-                            <div className="col-12 d-flex justify-content-end">
+                          <div style={{top:'-51px', position:'relative'}} className='row'>
+                            <div className='col-sm-6'>
+
+                            </div>
+                            <div className='col-sm-6'>
+                            <div  className="mb-0">
+                            <div style={{height:'20px'}} className="col-12 d-flex justify-content-end">
                               <a onClick={handleAddRow}>
-                                <img className="bi bi-plus" src={require("../assets/plus.png")} alt="add" style={{ width: "50px", height: "50px" }} />
+                                <img className="bi bi-plus" src={require("../assets/plus.png")} alt="add" style={{ width: "50px", position:'relative', height: "50px" , top:'0px'}} />
                               </a>
                             </div>
                           </div>
+                            </div>
+                          </div>
+                        
                           {rowsForPermission.map((row)=>(
-                          <div className="row mb-3 approvalheirarcystyle" key={row.id}>
+                          <div className="row mb-2 approvalheirarcystyle" key={row.id}>
                                   <div className="col-12 col-md-6">
                                       <Select
                                           value={row.selectedUserForPermission}
@@ -912,8 +920,8 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
                                           noOptionsMessage={() => "No User Found..."}
                                       />
                                   </div>
-                                  <div className="col-12 col-md-6" style={{
-                                  width:"auto"
+                                  <div className="col-12 col-md-4" style={{
+                               
                                   }}>
                                       <Select
                                           value={row.selectedPermission || null}
@@ -1034,7 +1042,7 @@ const ManageFolderPermission : React.FC<ManageFolderPermissionProps> = ({
 
                             </div>
                             </div> */}
-                            <div className="modal-footer">
+                            <div className="modal-footer pb-0">
                                     <button type="button" className="btn btn-primary" 
                                     onClick={handleCreate}
                                     >

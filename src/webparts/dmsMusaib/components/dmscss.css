@@ -41,13 +41,15 @@
 #folderContainer2::-webkit-scrollbar-thumb:hover {
   background: #555; 
 }
-p.folder {font-size: 14px; font-weight: 600;}
+p.folder {font-size: 14px; font-weight: 600; margin-bottom: 7px; }
 .p3rd{
-  width: 100%; float: left;
+  width: 50%; float: left;
 }
-.filestatus{float:right;    width: 70px;
+.share-popup-header h4{    font-size: 1.25rem !important;}
+.filestatus,.filestatus2{float:right;    width: 70px;
   text-align: center;
   line-height: 21px !important;}
+  #folderContainer2 .expanded ul .toggle-button{padding: 3px !important;}
 .sidebardms {
   background-color: transparent;
   
@@ -100,7 +102,7 @@ p.folder {font-size: 14px; font-weight: 600;}
         border-radius: 1000px;
         text-align: center;
         line-height: 35px;
-        color: #ccc;
+        color: #333;
     }
     .btn-primary{
       background:#1fb0e5; border-color:#1fb0e5;
@@ -233,23 +235,25 @@ a:hover
 
 
 .shared-user {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
   background-color: #dadcde;
-  border-radius: 50%;
-  text-align: center;
-  line-height: 34px;
-  margin-right: 5px;
-  font-size: 14px;
-  color: #6c757d;margin-left: -12px;
-  margin-top: -5px;
+    border-radius: 50%;
+    color: #6c757d;
+    display: inline-block;
+    font-size: 11px;
+    height: 25px;
+    line-height: 27px;
+    margin-left: -12px;
+    margin-right: 5px;
+    margin-top: -5px;
+    text-align: center;
+    width: 25px;
+    FONT-WEIGHT: 600;
 }
 
 .more-users {
-  margin-left: -9px;
-  margin-top: 4px;
-  font-size: 14px;
+  font-size: 13px;
+  margin-left: -13px;
+  margin-top: -1px;
   color: #888;
 }
 .fileSizeAndVersion{
@@ -460,14 +464,26 @@ a:hover
  
 /* Close "X" button */
 .share-close-popup {
-  cursor: pointer;
-  font-size: 24px; line-height: 24px;
-  color: #333;
-  font-weight: bold; border:1px solid #ededed; height: 30px; border-radius: 1000px; width: 30px;
+  border: 1px solid #ededed;
+    border-radius: 1000px;
+    color: #666;
+    cursor: pointer;
+    font-size: 19px;
+    font-weight: 700;
+    height: 30px;
+    line-height: 24px;
+    width: 30px;
+    border-radius: 1000px;
+    min-width: 30px;
+    right: 11px;
+    position: relative;
+    line-height: 27px;
+    text-align: center;
 }
+#rename-popup h3, #renamePopup h3{ font-weight: 600 !important; text-align: left !important;  font-size: 18px !important;}
 .setApprover{margin-left: 0px !important; justify-content: center;}
 #showfolderpermission .modal-dialog, #workflowdiv .modal-dialog {min-width: 70% !important;}
-/* #files-container iframe{width: 100% !important;} */
+#files-container iframe{width: 100% !important; margin-top: 35px;}
 #showfolderpermission .modal-dialog .modal-content, #workflowdiv .modal-dialog .modal-content{
   width: 100% !important; padding: 15px !important;
 }
@@ -563,7 +579,7 @@ a:hover
 .edit-popup .row {
   margin-bottom: 15px;
   display: flex;
-  gap: 10px;
+  gap: 0px;
 }
  
 .edit-popup .form-group label {
@@ -605,13 +621,14 @@ a:hover
 /* Buttons (Save and Cancel) */
 .edit-popup button {
   padding: 10px 20px;
-  margin-top: 20px;
+  margin-top: 0px;
   background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  float:right;
 }
  
 .edit-popup button:hover {
@@ -691,8 +708,8 @@ a:hover
 }
  
 .detail-column {
-  padding: 10px;
-  word-wrap: break-word;
+  padding: 4px;
+  word-wrap: break-word; font-size: 14px;
 }
  
 /* Approver Header and Values */
@@ -745,6 +762,7 @@ a:hover
     border-radius: 30px;
     margin-top: 10px;
 }
+.sidebardmsButton :hover{background: #959b95 !important; color: #fff !important; }
 #files-container .popup-menu{display: none;}
 .popup-menu{position: absolute;
   box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.16), 0 2px 6px 0 rgba(0, 0, 0, 0.12);
@@ -758,10 +776,14 @@ a:hover
   padding: 0;
   font-size: 14px;
   margin-bottom: 0;}
-.popup-menu ul li{ padding: 7px; cursor: pointer; margin-bottom: 1px;}
-.popup-menu ul li:hover{background: #f7fbfc;}
-.popup-menu ul li img{width: 14px; float: left; margin-top: 3px; margin-right: 5px;}
+  .form-control:focus{box-shadow: none;}
+  .row1{width: 33.3%; float: left;}
+.popup-menu ul li{ padding: 7px; cursor: pointer; margin-bottom: 1px;font-size: 13px;}
+.popup-menu ul li:hover{background: #f7fbfc;color: #1fb0e5;}
+.popup-menu ul li img{width: 14px; float: left; margin-top: 4px; margin-right: 5px;}
 .sidebardmsButton:hover{background: #fff;}
+
+.popup-menu ul li:hover img{filter: sepia(100%) hue-rotate(190deg) saturate(500%);}
 #hidegidvewlistviewbutton, #hidegidvewlistviewbutton2{justify-content: end; display: flex; gap: 5px;}
 .btngridview.active {
   background: #1fb0e5 ; color: #fff; border-color: #1fb0e5;
@@ -794,7 +816,7 @@ a:hover
  #files-container .card {
     border: 1px solid #54ade0 !important;
     border-radius: 6px !important;
-    height: 107px; padding: 0.75rem; position: relative !important;
+    height: 94px; padding: 0.75rem; position: relative !important;
 }
 .three-dots{position: absolute;
   right: 16px;
@@ -821,12 +843,12 @@ a:hover
 }
 .input-container input{height: 36px;}
 .main-containeruploadfile h1{font-size: 20px; text-align: center;}
-.p3rd, .p2nd{margin-bottom: 5px !important; font-size: 12px; color: #6b6b6b;}
+.p3rd,.p2nd{margin-bottom: 5px !important; font-size: 12px; color: #6b6b6b;}
 .p1st{-webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   display: -webkit-box;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 21px;
   margin-top: -4px !important;
   overflow: hidden;
@@ -837,8 +859,14 @@ a:hover
   margin-bottom: 5px !important;
   height: 20px;
 }
-.p1stfolder{
-
+.p2nd{
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  
+  overflow: hidden;
+  
+  text-overflow: ellipsis;
 }
    .newbutton button{height: 40px; font-size: 14px; padding: 6px 10px;}
 .filestatus {
@@ -858,6 +886,10 @@ a:hover
 .cardborder {
   border: 1px solid #54ade0 !important; border-radius: 20px !important; padding: 15px !important;
 }
+.css-b62m3t-container{font-size: 14px;}
+.subheader {color: #6b6b6b !important;}
+.p-31{padding: 20px !important; width: 100% !important;}
+.modal .cardborder{border: 0px solid #54ade0 !important; }
 .mtbalenew{
   width: 100%;
     position: relative;
