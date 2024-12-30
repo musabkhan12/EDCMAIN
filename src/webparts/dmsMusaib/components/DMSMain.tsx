@@ -169,6 +169,7 @@ let currentsiteID = ""
 let iscontribute = "" 
 let isadmin = ""
 let mydatacard = ""
+let IsFolderDeligationUser=false;
 let mydata: string[] = [];
 
 // start
@@ -1638,6 +1639,8 @@ const myrequestbuttonclick =()=>{
                   // const userGroups = await sp.web.siteUsers.getById(currentUser.Id).groups();
                   const isMemberOfGroup = userGroups.some(group => group.Title === `${currentEntity}_Admin`);
                   const isMemberOfSuperAdmin = userGroups.some(group => group.Title === `DMSSuper_Admin`);
+                  const isMemberOfDeligation = userGroups.some(group => group.Title === `${currentEntity}_FolderDeligation`);
+                  console.log("isMemberOfDeligation",isMemberOfDeligation);
                   console.log("isMemberOfSuperAdmin",isMemberOfSuperAdmin);
                   console.log(`Is member of ${currentEntity}_Admin:`, isMemberOfGroup);
                   // console.log(`User is a member of the group: ${currentEntity}_Admin`);
@@ -1652,6 +1655,15 @@ const myrequestbuttonclick =()=>{
                   // if(CreateRoot){
                   //   CreateRoot.style.display="none";
                   // }
+                 }else if(isMemberOfDeligation){
+                    IsFolderDeligationUser=true;
+                    console.log(`User is a member of the group: ${currentEntity}_FolderDeligation`);
+                    if(createFileButton){
+                      createFileButton.style.display=  "none";
+                    }
+                    if(CreateFolder){
+                      CreateFolder.style.display="block";
+                    }
                  }else {
                     console.log(`User is not a member of the group: ${currentEntity}_Admin`);
                     if(createFileButton){
@@ -1709,6 +1721,7 @@ const myrequestbuttonclick =()=>{
               const userGroups = await sp.web.siteUsers.getById(currentUser.Id).groups();
               const isMemberOfGroup = userGroups.some(group => group.Title === `${currentEntity}_Admin`);
               const isMemberOfSuperAdmin = userGroups.some(group => group.Title === `DMSSuper_Admin`);
+              const isMemberOfDeligation = userGroups.some(group => group.Title === `${currentEntity}_FolderDeligation`);
               console.log("isMemberOfSuperAdmin",isMemberOfSuperAdmin);
               console.log(`Is member of ${currentEntity}_Admin:`, isMemberOfGroup);
               // console.log(`User is a member of the group: ${currentEntity}_Admin`);
@@ -1720,7 +1733,16 @@ const myrequestbuttonclick =()=>{
               if(CreateFolder){
                 CreateFolder.style.display="block";
               }
-             }else {
+             }else if(isMemberOfDeligation){
+              IsFolderDeligationUser=true;
+              console.log(`User is a member of the group: ${currentEntity}_FolderDeligation`);
+              if(createFileButton){
+                createFileButton.style.display=  "none";
+              }
+              if(CreateFolder){
+                CreateFolder.style.display="block";
+              }
+           }else {
                 console.log(`User is not a member of the group: ${currentEntity}_Admin`);
                 if(createFileButton){
                   createFileButton.style.display="none";
@@ -4312,9 +4334,9 @@ if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepre
 }
 if(ismyrequordoclibforfilepreview === "getdoclibdata"){
 // Generate the correct preview URL
-const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+// const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
 //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-  // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentSubsite}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+  const previewUrl = `${siteUrl}/sites/AlRostmani/${currentSubsite}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
 // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
 
 console.log(previewUrl, "Generated preview URL");
@@ -7371,9 +7393,9 @@ window.deleteFile = async(fileId:string, siteID:string, IsHardDelete:any, ListTo
       
           const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
           const siteUrl = window.location.origin;
-            // const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+            const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             // const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-           const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+          //  const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
           console.log("previewUrl",previewUrl);
           payload.FilePreviewURL=previewUrl
 
@@ -9023,8 +9045,8 @@ window.toggleFavourite=async (fileId,siteId)=> {
             const encodedFilePath = encodeURIComponent(file.ServerRelativeUrl);
             const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
             const siteUrl = window.location.origin;
-              // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-             const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+              const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+            //  const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             console.log("previewUrl",previewUrl);
 
@@ -10856,8 +10878,8 @@ window.shareFile=async(fileID:string,siteId:string,currentFolderPathForFile:stri
     // Get the base site URL
     const siteUrl = window.location.origin;
     console.log(siteUrl, "siteUrl");
-    const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${filePath}&parent=${encodedParentFolder}`;
-    // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodeURIComponent(filePath)}&parent=${encodedParentFolder}`;
+    // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${filePath}&parent=${encodedParentFolder}`;
+    const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodeURIComponent(filePath)}&parent=${encodedParentFolder}`;
     // const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodeURIComponent(filePath)}&parent=${encodedParentFolder}`;
     preURL=previewUrl;
   }
@@ -12713,7 +12735,8 @@ librarydiv.appendChild(mainContainer)
                       "Department" : currentDepartment,
                       "DocumentLibrary": currentDocumentLibrary,
                       "Folder" :currentFolder,
-                      "folderpath": currentfolderpath
+                      "folderpath": currentfolderpath,
+                      "IsFolderDeligationUser":`${IsFolderDeligationUser}`
                      }}
                      onReturnToMain={handleReturnToMain} />
                     )}

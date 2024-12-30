@@ -501,6 +501,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
     let validateColumns=false;
     let validateUser=false;
+    let formFieldValidation=false;
     // console.log("Handcreate called");
 
     // Validate the form
@@ -539,7 +540,13 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
       }
     }
     
-
+    // Validation for forbidden column names
+    const forbiddenNames = ["Status", "IsDeleted"];
+    const invalidFields = formFields.filter((field) => forbiddenNames.includes(field.fieldName));
+    if (invalidFields.length > 0) {
+      formFieldValidation=true;
+          // return;
+    }
     // If errors exist, set them to the state and prevent submission
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -547,6 +554,12 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
         // alert("Add Columns Fields and Type");
     }else if(validateUser){
         // alert("Please select at least one user");
+    }else if(formFieldValidation){
+      Swal.fire(
+        'Validation Error',
+        `The column names "${invalidFields.map(f => f.fieldName).join(', ')}" are not allowed. Please choose different names.`,
+        'error'
+      );
     }
     else {
       
@@ -557,12 +570,19 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
       if(OthProps.DocumentLibrary === ""){
         (payloadForFolderMaster as any).DocumentLibraryName=folderName;
-         (payloadForFolderMaster as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
-        //  (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmanispfx2/${OthProps.Entity}/${folderName}`;
-        // (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
+        //  (payloadForFolderMaster as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
+         (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmanispfx2/${OthProps.Entity}/${folderName}`;
+        //  (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
         (payloadForFolderMaster as any).IsLibrary=true;
         (payloadForFolderMaster as any).IsActive=false;
-
+        if(folderPrivacy === "private"){
+          (payloadForFolderMaster as any).IsPrivate=true;
+        }else if(folderPrivacy === "public"){
+          (payloadForFolderMaster as any).IsPrivate=false;
+        }
+        if(OthProps.IsFolderDeligationUser === "true"){
+          (payloadForFolderMaster as any).IsFolderDeligation=true;
+        }
       }else{
         (payloadForFolderMaster as any).DocumentLibraryName=OthProps.DocumentLibrary;
         (payloadForFolderMaster as any).FolderPath=`${OthProps.folderpath}/${folderName}`;
@@ -580,6 +600,10 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
           (payloadForFolderMaster as any).IsPrivate=true;
         }else if(folderPrivacy === "public"){
           (payloadForFolderMaster as any).IsPrivate=false;
+        }
+
+        if(OthProps.IsFolderDeligationUser === "true"){
+          (payloadForFolderMaster as any).IsFolderDeligation=true;
         }
       }
 
@@ -682,7 +706,8 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
             SiteName:OthProps.Entity,
             DocumentLibraryName:folderName,
             IsRequired:true,
-            AddorRemoveThisColumn:"Add To Library"
+            AddorRemoveThisColumn:"Add To Library",
+            IsInProgress:true
           }
 
           // console.log("payloadForPreviewFormMaster",payloadForPreviewFormMaster)
@@ -787,7 +812,75 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
 
       // }
     // new code end
-            
+      if(OthProps.IsFolderDeligationUser === "true"){
+        const payloadForFolderDelegation={
+          SiteTitle:OthProps.Entity,
+          CurrentUser:currentUserEmailRef.current,
+          Processname:'New Folder Request',
+          RequestNo:`DMS${new Date().toISOString()}`,
+          Status:'Pending',
+          SubmitStatus:'Submitted'
+        }
+
+        if(OthProps.DocumentLibrary === ""){
+          (payloadForFolderDelegation as any).DocumentLibraryName=folderName;
+          //  (payloadForFolderDelegation as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
+           (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmanispfx2/${OthProps.Entity}/${folderName}`;
+          //  (payloadForFolderDelegation as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
+          (payloadForFolderDelegation as any).IsLibrary=true;
+          // (payloadForFolderDelegation as any).IsActive=false;
+          if(folderPrivacy === "private"){
+            (payloadForFolderDelegation as any).IsPrivate=true;
+          }else if(folderPrivacy === "public"){
+            (payloadForFolderDelegation as any).IsPrivate=false;
+          }
+          // if(OthProps.IsFolderDeligationUser === "true"){
+          //   (payloadForFolderDelegation as any).IsFolderDeligation=true;
+          // }
+          if(approvalOption === "Yes"){
+            (payloadForFolderDelegation as any).IsApproval=true;
+          }else if(approvalOption === "No"){
+            (payloadForFolderDelegation as any).IsApproval=false;
+          }
+        }else{
+          (payloadForFolderDelegation as any).DocumentLibraryName=OthProps.DocumentLibrary;
+          (payloadForFolderDelegation as any).FolderPath=`${OthProps.folderpath}/${folderName}`;
+          (payloadForFolderDelegation as any).IsFolder=true;
+          // (payloadForFolderDelegation as any).IsActive=true;
+  
+          if(OthProps.Folder ===  ""){
+              (payloadForFolderDelegation as any).FolderName=folderName;
+          }else{
+              (payloadForFolderDelegation as any).FolderName=folderName;
+              (payloadForFolderDelegation as any).ParentFolderId=OthProps.Folder;
+              
+          }
+          if(folderPrivacy === "private"){
+            (payloadForFolderDelegation as any).IsPrivate=true;
+          }else if(folderPrivacy === "public"){
+            (payloadForFolderDelegation as any).IsPrivate=false;
+          }
+  
+          // if(OthProps.IsFolderDeligationUser === "true"){
+          //   (payloadForFolderMaster as any).IsFolderDeligation=true;
+          // }
+        }
+  
+        if(OthProps.Department !== ""){
+          (payloadForFolderDelegation as any).Department=OthProps.Department
+        }
+        if(OthProps.Devision !== ""){
+          (payloadForFolderDelegation as any).Devision=OthProps.Devision
+        }
+
+
+        try {
+          await sp.web.lists.getByTitle('DMSFolderDeligationMaster').items.add(payloadForFolderDelegation);
+          console.log("Item added successfully in the DMSFolderDeligationMaster list");
+        } catch (error) {
+          console.log("Error in adding item in DMSFolderDeligationMaster list",error);
+        }
+      }
       // Clear form on successful submission
       Swal.fire({
         title: "Folder Created Successfully",
