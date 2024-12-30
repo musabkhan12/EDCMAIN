@@ -101,7 +101,12 @@ console.log("documentLibraryName" , documentLibraryName)
       const fileExtension = file.name.split('.').pop()?.toLowerCase();
   
       if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
-        alert('Invalid file type. Only DOC, DOCX, PPT, PDF, XLS, XLSX, TXT, PNG, JPG, JPEG are allowed.');
+        // alert('Invalid file type. Only DOC, DOCX, PPT, PDF, XLS, XLSX, TXT, PNG, JPG, JPEG are allowed.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid file type',
+          text: 'Only DOC, DOCX, PPT, PDF, XLS, XLSX, TXT, PNG, JPG, JPEG are allowed.',
+        });
         event.target.value = ''; // Clear the input
       } else {
         uploadFile(file);
