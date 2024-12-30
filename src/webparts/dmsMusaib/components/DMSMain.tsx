@@ -2295,6 +2295,70 @@ const myrequestbuttonclick =()=>{
   const getdoclibdata = async (FolderPath: any , siteID:any , docLibName:any) => {
     setlistorgriddata('');
     
+
+    // main code i shere 
+    try {
+      // Get the file object
+      let filePath = '/sites/AlRostmani/TestHub/DL1/PermissonTest1.doc'
+      const siteid = "3f7babac-3bce-478c-aa2b-1f7df7ed177f"
+      const testidsub2 = await sp.site.openWebById(siteid);
+
+        const file = testidsub2.web.getFileByServerRelativePath(filePath);
+        const item = await file.getItem();  
+        const itemDetails = await item.select("Editor/ID", "Editor/Title", "Editor/Id" ,"*").expand("Editor")()
+
+        console.log("itemDetails",itemDetails)
+        console.log("file detail is",file)
+        // Fetch historical versions
+        const historicalVersions = await file.versions
+          .select(
+            "ID",
+            "CheckInComment",
+            "Created",
+            "CreatedBy/Title",
+            "CreatedBy/Id",
+            "CreatedBy/Name",
+            "IsCurrentVersion",
+            "Size",
+            "Url",
+            "VersionLabel"
+          )
+          .expand("CreatedBy")();
+    
+        // Fetch current version details
+        const currentFileDetails = await file
+          .select(
+            "Name",
+            "Length",
+
+          )
+          .expand("Author"  )();
+          let currentVersionofitem:any = currentFileDetails;
+         console.log("currentFileDetails",currentFileDetails)
+        // Map current file details into the same structure as versions
+        const currentVersion = {
+          ID: historicalVersions.length + 1, // Current version appears last
+          VersionLabel: `${historicalVersions.length + 1}.0`, // Example label
+          CheckInComment: "N/A", // No check-in comment for current version
+          Created: itemDetails.Created,
+          CreatedBy: {
+            Title: itemDetails?.Editor?.Title,
+            Id:  itemDetails?.Editor?.ID,
+          },
+          IsCurrentVersion: true,
+          Size: currentFileDetails.Length,
+          Url: filePath,
+        };
+    
+        // Combine current version with historical versions
+        const allVersions = [...historicalVersions, currentVersion];
+    
+        console.log("All File Versions (Including Current):", allVersions);
+ 
+      } catch (error) {
+        console.error("Error fetching file versions:", error);
+        throw error;
+      }
     const noFileMessage = document.createElement("p");
     
     //  ismyrequordoclibforfilepreview = "getdoclibdata"
@@ -4251,116 +4315,228 @@ const createFileCardForDocumentLibrary=(file:any,fileIcon:any,siteID:string,IsHa
 
 //   };
 window.PreviewFile = function(path :any , SiteID:any , docLibName:any,flag:string , filepreviewurl){
-// console.log(docLibName , "docLibName")
-console.log(filepreviewurl , "filepreviewurl")
-console.log("path",path);
-const segments = path.split('/');
-// extarct the current entity start
-  const currentSubsite = segments[3]; 
-// end
-// Find the index of 'sites'
-const sitesIndex = segments.indexOf('sites');
-
-// If 'sites' is found and there are enough segments after it
-let myactualdoclib
-if (sitesIndex !== -1 && segments.length > sitesIndex + 3) {
-  myactualdoclib = segments[sitesIndex + 3];
-  console.log(myactualdoclib , "myactualdoclib")
-  // return segments[sitesIndex + 3];  // The document library is the 4th segment after 'sites'
-} else {
-  // return null;  // Return null if not enough segments are available
-}
-event.preventDefault()
-event.stopPropagation()
-const createpreviewdiv = document.createElement('div')
-createpreviewdiv.style.display = 'grid'
-const previewfileframe = document.createElement('iframe') 
-previewfileframe.id = 'filePreview'
-previewfileframe.style.width = '930px'
-previewfileframe.style.height = '500px'
-const librarydiv= document.getElementById('files-container')
-const createbutton = document.createElement('button')
-createbutton.textContent = 'Close File preivew';
-console.log("enter here in preview : ",path)
-const encodedFilePath = encodeURIComponent(path);
-console.log(encodedFilePath, "encodedFilePath");
-
-// Extract the parent folder correctly
-const parentFolder = path.substring(0, path.lastIndexOf('/'));
-console.log(parentFolder, "parentFolder");
-
-// Correctly encode the parent folder
-const encodedParentFolder = encodeURIComponent(parentFolder);
-
-// Get the base site URL
-const siteUrl = window.location.origin;
-console.log(siteUrl, "siteUrl");
-
-console.log(path , ".....path")
-if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepreview  === "sharewithme" || ismyrequordoclibforfilepreview  === "sharewithothers"){
-  const previewUrl = filepreviewurl
-
+  // console.log(docLibName , "docLibName")
+  console.log(filepreviewurl , "filepreviewurl")
+  console.log("path",path);
+  const segments = path.split('/');
+  // extarct the current entity start
+    const currentSubsite = segments[3];
+  // end
+  // Find the index of 'sites'
+  const sitesIndex = segments.indexOf('sites');
+   
+  // If 'sites' is found and there are enough segments after it
+  let myactualdoclib
+  if (sitesIndex !== -1 && segments.length > sitesIndex + 3) {
+    myactualdoclib = segments[sitesIndex + 3];
+    console.log(myactualdoclib , "myactualdoclib")
+    // return segments[sitesIndex + 3];  // The document library is the 4th segment after 'sites'
+  } else {
+    // return null;  // Return null if not enough segments are available
+  }
+  event.preventDefault()
+  event.stopPropagation()
+  const createpreviewdiv = document.createElement('div')
+  createpreviewdiv.style.display = 'grid'
+  const previewfileframe = document.createElement('iframe')
+  previewfileframe.id = 'filePreview'
+  previewfileframe.style.width = '930px'
+  previewfileframe.style.height = '500px'
+  const librarydiv= document.getElementById('files-container')
+  const createbutton = document.createElement('button')
+  createbutton.textContent = 'Close File preivew';
+  console.log("enter here in preview : ",path)
+  const encodedFilePath = encodeURIComponent(path);
+  console.log(encodedFilePath, "encodedFilePath");
+   
+  // Extract the parent folder correctly
+  const parentFolder = path.substring(0, path.lastIndexOf('/'));
+  console.log(parentFolder, "parentFolder");
+   
+  // Correctly encode the parent folder
+  const encodedParentFolder = encodeURIComponent(parentFolder);
+   
+  // Get the base site URL
+  const siteUrl = window.location.origin;
+  console.log(siteUrl, "siteUrl");
+   
+  console.log(path , ".....path")
+  if( ismyrequordoclibforfilepreview === "myRequest" || ismyrequordoclibforfilepreview  === "sharewithme" || ismyrequordoclibforfilepreview  === "sharewithothers"){
+    const previewUrl = filepreviewurl
+   
+    console.log(previewUrl, "Generated preview URL");
+   
+    console.log("Generated Preview URL:", previewUrl);
+    if(previewUrl){
+      librarydiv.innerHTML = "";
+      previewfileframe.src = previewUrl;
+      previewfileframe.onload = () => {
+        console.log("Iframe has loaded");
+   
+        const checkAndHideButton = () => {
+          try {
+            const iframeDocument = previewfileframe.contentDocument || previewfileframe.contentWindow?.document;
+            if (iframeDocument) {
+              const button = iframeDocument.getElementById("OneUpCommandBar") as HTMLElement;
+              const excelToolbar = iframeDocument.getElementById("m_excelEmbedRenderer_m_ewaEmbedViewerBar") as HTMLElement;
+              if(excelToolbar){
+                excelToolbar.style.display= "none"
+              }
+              if (button) {
+                console.log("Hiding the OneUpCommandBar element");
+                button.style.display = "none";
+   
+   
+                // spinner.style.display = "none";
+                previewfileframe.style.display = "block";
+   
+   
+              } else {
+                console.log("OneUpCommandBar not found, rechecking...");
+              }
+             
+              const helpbutton = iframeDocument.getElementById("m_excelEmbedRenderer_m_ewaEmbedViewerBar") as HTMLElement;
+              if(helpbutton){
+                helpbutton.style.display = "none"
+              }
+            }
+          } catch (error) {
+            console.error("Error accessing iframe content:", error);
+          }
+   
+   
+          setTimeout(checkAndHideButton, 100);
+        };
+   
+   
+        checkAndHideButton();
+      };
+      createpreviewdiv.appendChild(createbutton)
+      createpreviewdiv.appendChild(previewfileframe);
+      librarydiv.appendChild(createpreviewdiv)
+      createbutton.addEventListener('click', function() {
+        event.preventDefault()
+        event.stopPropagation()
+   
+        if(ismyrequordoclibforfilepreview === "myRequest"){
+          myRequest();
+        }
+        if(ismyrequordoclibforfilepreview === "sharewithme"){
+          ShareWithMe();
+        }
+        if(ismyrequordoclibforfilepreview === "sharewithothers"){
+          ShareWithOther();
+        }
+        // if(flag === "shareWithMe"){
+        //     ShareWithMe(null,null);
+        // }
+        // if(flag === "documentLibrary"){
+        //   getdoclibdata(currentfolderpath , currentsiteID , currentDocumentLibrary)
+        // }
+       
+    });
+    }
+  }
+  if(ismyrequordoclibforfilepreview === "getdoclibdata"){
+  // Generate the correct preview URL
+  // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+   const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+    // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentSubsite}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+  // const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
+   
   console.log(previewUrl, "Generated preview URL");
- 
-  console.log("Generated Preview URL:", previewUrl);
-  if(previewUrl){
-    librarydiv.innerHTML = "";
-    previewfileframe.src = previewUrl;
-    createpreviewdiv.appendChild(createbutton)
-    createpreviewdiv.appendChild(previewfileframe);
-    librarydiv.appendChild(createpreviewdiv)
-    createbutton.addEventListener('click', function() {
-      event.preventDefault()
-      event.stopPropagation()
- 
-      if(ismyrequordoclibforfilepreview === "myRequest"){
-        myRequest();
-      }
-      if(ismyrequordoclibforfilepreview === "sharewithme"){
-        ShareWithMe();
-      }
-      if(ismyrequordoclibforfilepreview === "sharewithothers"){
-        ShareWithOther();
-      }
-      // if(flag === "shareWithMe"){
-      //     ShareWithMe(null,null);
-      // }
-      // if(flag === "documentLibrary"){
-      //   getdoclibdata(currentfolderpath , currentsiteID , currentDocumentLibrary)
-      // }
-      
-  });
+   
+    console.log("Generated Preview URL:", previewUrl);
+    if(previewUrl){
+      librarydiv.innerHTML = "";
+      previewfileframe.src = previewUrl;
+      previewfileframe.onload = () => {
+        console.log("Iframe has loaded");
+   
+        const checkAndHideButton = () => {
+          try {
+            const iframeDocument = previewfileframe.contentDocument || previewfileframe.contentWindow?.document;
+            if (iframeDocument) {
+              const button = iframeDocument.getElementById("OneUpCommandBar") as HTMLElement;
+              const excelToolbar = iframeDocument.getElementById("m_excelEmbedRenderer_m_ewaEmbedViewerBar") as HTMLElement;
+              if(excelToolbar){
+                excelToolbar.style.display= "none"
+              }
+              if (button) {
+                console.log("Hiding the OneUpCommandBar element");
+                button.style.display = "none";
+   
+   
+                // spinner.style.display = "none";
+                previewfileframe.style.display = "block";
+   
+   
+              } else {
+                console.log("OneUpCommandBar not found, rechecking...");
+              }
+             
+              const helpbutton = iframeDocument.getElementById("m_excelEmbedRenderer_m_ewaEmbedViewerBar") as HTMLElement;
+              if(helpbutton){
+                helpbutton.style.display = "none"
+              }
+            }
+          } catch (error) {
+            console.error("Error accessing iframe content:", error);
+          }
+   
+   
+          setTimeout(checkAndHideButton, 100);
+        };
+   
+   
+        checkAndHideButton();
+      };
+      createpreviewdiv.appendChild(createbutton)
+      createpreviewdiv.appendChild(previewfileframe);
+      librarydiv.appendChild(createpreviewdiv)
+      createbutton.addEventListener('click', function() {
+        event.preventDefault()
+        event.stopPropagation()
+   
+        // if(flag === "shareWithMe"){
+        //     ShareWithMe(null,null);
+        // }
+        // if(flag === "documentLibrary"){
+        //   getdoclibdata(currentfolderpath , currentsiteID , currentDocumentLibrary)
+        // }
+        getdoclibdata(currentfolderpath , currentsiteID , currentDocumentLibrary)
+    });
+    }
   }
-}
-if(ismyrequordoclibforfilepreview === "getdoclibdata"){
-// Generate the correct preview URL
-// const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-//  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-  const previewUrl = `${siteUrl}/sites/AlRostmani/${currentSubsite}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-// const previewUrl = `${siteUrl}/sites/SPFXDemo/${currentEntity}/${myactualdoclib}/Forms/AllItems.aspx?id=${path}&parent=${encodedParentFolder}`;
-
-console.log(previewUrl, "Generated preview URL");
- 
-  console.log("Generated Preview URL:", previewUrl);
-  if(previewUrl){
-    librarydiv.innerHTML = "";
-    previewfileframe.src = previewUrl;
-    createpreviewdiv.appendChild(createbutton)
-    createpreviewdiv.appendChild(previewfileframe);
-    librarydiv.appendChild(createpreviewdiv)
-    createbutton.addEventListener('click', function() {
-      event.preventDefault()
-      event.stopPropagation()
-
-      // if(flag === "shareWithMe"){
-      //     ShareWithMe(null,null);
-      // }
-      // if(flag === "documentLibrary"){
-      //   getdoclibdata(currentfolderpath , currentsiteID , currentDocumentLibrary)
-      // }
-      getdoclibdata(currentfolderpath , currentsiteID , currentDocumentLibrary)
-  });
+   
   }
+const RemoveSSearchFile = async (event: React.FormEvent) => {
+  event.preventDefault();
+  event.stopPropagation();
+  const searchInput = document.getElementById('searchinput') as HTMLInputElement;
+  setcurrentSearchText('');
+  searchInput.value = '';
+  if (routeToDiffSideBar === "myRequest") {
+    myRequest(null, null, null);
+  }
+
+  else if (routeToDiffSideBar === "myFavourite") {
+
+    // console.log("myFavourite");
+    myFavorite(null, null, null);
+
+  }
+  else if (routeToDiffSideBar === "myFolder") {
+    // console.log("Inside search => myFolder");
+    mycreatedfolders(event, null);
+  }
+  else if (routeToDiffSideBar === "shareWithOthers") {
+    ShareWithOther(null, null);
+  }
+  else if (routeToDiffSideBar === "shareWithMe") {
+    ShareWithMe(null, null);
+  }else if(routeToDiffSideBar === "recyclebin"){
+    Recyclebin(null,null,null);
 }
 
 }
@@ -4372,7 +4548,7 @@ const searchFiles = async (event: React.FormEvent) => {
   const searchText = searchInput.value;
   console.log(searchText, "searchText")
   setcurrentSearchText(searchText);
-
+    
   if (searchText !== "") {
     try {
       console.log(currentfolderpath, "currentfolderpath")
@@ -4432,7 +4608,7 @@ const searchFiles = async (event: React.FormEvent) => {
         files.forEach((file: IDocumentDisplayFields) => {
           const card = document.createElement("div");
           const { fileIcon } = getFileIcon(file.Title);
-          card.className = "card";
+          card.className = "cardsearch";
           card.dataset.fileId = file.UniqueId;
           let fileserverrelativeurl=file.Path.substring(RootsiteUrl.length)
           // console.log(file.UniqueId , "file.UniqueId")
@@ -4440,16 +4616,17 @@ const searchFiles = async (event: React.FormEvent) => {
           let filefoldername=foldernamesplit?.slice(-2, -1)[0];
           card.innerHTML = `
                  <div class="row">
-        <div class="col-md-2 pe-0">
+        <div class="col-md-1 neww pe-0">
                   <img class="filextension" src=${fileIcon} alt="File icon"/>
                  </div>
-                  <div class="col-md-10 pe-0">
-                 <p class="p1st"><a href="#" onclick="PreviewFile('${fileserverrelativeurl}', '${currentsiteID}' , '${currentDocumentLibrary}')" >${file.Title} (${filefoldername})</a></p>
-                  <p class="p3rd">${((file.Size as unknown as number) / (1024 * 1024)).toFixed(2)} MB</p>
-                   <p class="p3rd"></p>
-                  <p class="p3rd">Uploaded by: ${file.CreatedBy}</p>
-                  <p class="p3rd">Published on: ${file.Modified?.toLocaleDateString()}</p>
-                  <p class="p3rd">${file.Summary}</p>
+                  <div class="col-md-11 pe-0">
+                   <p class="p2nd"> ${((file.Size as unknown as number) / (1024 * 1024)).toFixed(2)} MB</p>
+                 <p class="p1st mb-1"><a href="#" class="newfont" onclick="PreviewFile('${fileserverrelativeurl}', '${currentsiteID}' , '${currentDocumentLibrary}')" >${file.Title} (${filefoldername})</a></p>
+                                   <p class="p2nd1 mb-1">${file.Summary}</p>
+                                   <div class="newdes mt-2">
+                  <p class="p2nd mb-0"><span class="fw-bold newfont">Uploaded by : </span> <span style="font-size:13px; font-weight:500"> ${file.CreatedBy} </span> &nbsp; &nbsp;| </p>
+                  <p class="p2nd mb-0"><span  class="fw-bold newfont">Published on :</span> <span style="font-size:13px;font-weight:500"> ${file.Modified?.toLocaleDateString()} </span> </p>
+                     </div>
                  </div></div>
                   <div id="three-dots" class="three-dots" onclick="toggleMenu2('${file.UniqueId}', '${currentsiteID}')">
                     <span>...</span>
@@ -7393,8 +7570,8 @@ window.deleteFile = async(fileId:string, siteID:string, IsHardDelete:any, ListTo
       
           const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
           const siteUrl = window.location.origin;
-            const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-            // const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+            // const previewUrl = `${siteUrl}/sites/AlRostmani/DMSOrphanDocs/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+            const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
           //  const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
           console.log("previewUrl",previewUrl);
           payload.FilePreviewURL=previewUrl
@@ -9045,9 +9222,9 @@ window.toggleFavourite=async (fileId,siteId)=> {
             const encodedFilePath = encodeURIComponent(file.ServerRelativeUrl);
             const parentFolder = file.ServerRelativeUrl.substring(0, file.ServerRelativeUrl.lastIndexOf('/'));
             const siteUrl = window.location.origin;
-              const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+              // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             //  const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
-            //  const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
+             const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodedFilePath}&parent=${encodeURIComponent(parentFolder)}`;
             console.log("previewUrl",previewUrl);
 
             payload.FilePreviewURL=previewUrl             
@@ -10879,8 +11056,8 @@ window.shareFile=async(fileID:string,siteId:string,currentFolderPathForFile:stri
     const siteUrl = window.location.origin;
     console.log(siteUrl, "siteUrl");
     // const previewUrl = `${siteUrl}/sites/IntranetUAT/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${filePath}&parent=${encodedParentFolder}`;
-    const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodeURIComponent(filePath)}&parent=${encodedParentFolder}`;
-    // const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodeURIComponent(filePath)}&parent=${encodedParentFolder}`;
+    // const previewUrl = `${siteUrl}/sites/AlRostmani/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodeURIComponent(filePath)}&parent=${encodedParentFolder}`;
+    const previewUrl = `${siteUrl}/sites/AlRostmanispfx2/${currentEntity}/${currentDocumentLibrary}/Forms/AllItems.aspx?id=${encodeURIComponent(filePath)}&parent=${encodedParentFolder}`;
     preURL=previewUrl;
   }
   console.log("filePath",filePath);
@@ -11309,10 +11486,54 @@ document.getElementById('share-shareFileButton').addEventListener('click', async
             // );
             // console.log(`User ${user.email} added with role type ${selectedPermission},${roleType}---${SharingRole.Edit}.`);
             // console.log("Data added successfully in the",newItem);
-
+            try {
+              const subject = `File shared with you: ${fileName}`;
+              const body = `File shared with you: ${fileName}`;
+              const emailProps:any = {
+                To: [user.email],
+                Subject: subject,
+                Body: body,
+                AdditionalHeaders: {
+                  "content-type": "text/html",
+                }
+              };
+          
+              // Send the email
+              await sp.utility.sendEmail(emailProps);
+              console.log("Email sent successfully to", user.email);
+          
+            } catch (error) {
+              console.error("Error sending email:", error);
+            }
             
       })
-     
+  
+      // try {
+      //   // Fetch user details using user IDs
+      //   const userPromises = selectedUsers.map(userId => sp.web.getUserById(Number(userId.id))());
+      //   const users = await Promise.all(userPromises);
+        
+      //   // Get email addresses from user details
+      //   const emailAddresses = users.map(user => user.Email);
+      //   const subject = `File shared with you: ${fileName}`;
+      //   const body = `File shared with you: ${fileName}`;
+      //   // Construct the email properties
+      //   const emailProps = {
+      //     To: emailAddresses,
+      //     Subject: subject,
+      //     Body: body,
+      //     AdditionalHeaders: {
+      //       "content-type": "text/html",
+      //     }
+      //   };
+    
+      //   // Send the email
+      //   await sp.utility.sendEmail(emailProps);
+      //   console.log("Email sent successfully to", emailAddresses);
+    
+      // } catch (error) {
+      //   console.error("Error sending email:", error);
+      // }
     } catch (error) {
       console.log("Error in adding data to the DMSShareWithOtherMaster",error);
       // onError();
@@ -12673,6 +12894,13 @@ librarydiv.appendChild(mainContainer)
                           className="search-input"
                           placeholder="Search files..."
                         />
+                        {/* <a className="searchbutton" onClick={RemoveSSearchFile}>
+                          <img
+                            src={require("../assets/cross.png")}
+                            alt="Search"
+                            className="search-icon"
+                          />
+                        </a> */}
                         <a className="searchbutton" onClick={searchFiles}>
                           <img
                             src={require("../assets/searchicon.png")}
