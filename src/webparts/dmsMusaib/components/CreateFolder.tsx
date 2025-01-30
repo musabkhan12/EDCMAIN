@@ -571,7 +571,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
       if(OthProps.DocumentLibrary === ""){
         (payloadForFolderMaster as any).DocumentLibraryName=folderName;
         //  (payloadForFolderMaster as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
-         (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmanispfx2/${OthProps.Entity}/${folderName}`;
+         (payloadForFolderMaster as any).FolderPath=`/sites/edcspfx/${OthProps.Entity}/${folderName}`;
         //  (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
         (payloadForFolderMaster as any).IsLibrary=true;
         (payloadForFolderMaster as any).IsActive=false;
@@ -825,7 +825,7 @@ const CreateFolder: React.FC<CreateFolderProps> = ({
         if(OthProps.DocumentLibrary === ""){
           (payloadForFolderDelegation as any).DocumentLibraryName=folderName;
           //  (payloadForFolderDelegation as any).FolderPath=`/sites/IntranetUAT/${OthProps.Entity}/${folderName}`;
-           (payloadForFolderMaster as any).FolderPath=`/sites/AlRostmanispfx2/${OthProps.Entity}/${folderName}`;
+           (payloadForFolderMaster as any).FolderPath=`/sites/edcspfx/${OthProps.Entity}/${folderName}`;
           //  (payloadForFolderDelegation as any).FolderPath=`/sites/AlRostmani/${OthProps.Entity}/${folderName}`;
           (payloadForFolderDelegation as any).IsLibrary=true;
           // (payloadForFolderDelegation as any).IsActive=false;
